@@ -1,0 +1,7 @@
+export { HeroSection } from './hero-section';
+export { HowItWorksSection } from './how-it-works-section';
+export { KeyFeaturesSection } from './key-features-section';
+export { SocialProofSection } from './social-proof-section';
+export { FinalCtaSection } from './final-cta-section';
+export { FooterSection } from './footer-section';
+export { HeaderMenu } from "./app-header";
