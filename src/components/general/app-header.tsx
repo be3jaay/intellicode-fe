@@ -142,7 +142,7 @@ export function HeaderMenu() {
         <Group justify="space-between" h="100%">
           <Group>
             <Group gap="xs">
-              <HiredUpLogo fill="#2563eb" withLogo />
+              <HiredUpLogo fill="#8bc232" withLogo />
             </Group>
           </Group>
 

@@ -1,31 +1,31 @@
-"use client";
-import { Box, Card, Grid, Group, Stack, Text, TextInput, Badge, Image, Loader, Center, Skeleton } from "@mantine/core";
-import { Button } from "@/components/ui";
-import { Search, Plus, Users, BookOpen, Filter, ChevronDown, AlertCircle } from "lucide-react";
-import { useState } from "react";
-import { CourseValueResponse } from "@/services/course-service/course-type";
+"use client"
+import { Box, Card, Grid, Group, Stack, Text, TextInput, Badge, Image, Center, Skeleton, Paper } from "@mantine/core"
+import { Button } from "@/components/ui"
+import { Search, Plus, Users, BookOpen, Filter, AlertCircle, ChevronDown } from "lucide-react"
+import { useState } from "react"
+import type { CourseValueResponse } from "@/services/course-service/course-type"
 
 export interface Course {
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    thumbnail?: string;
-    students?: number;
-    modules?: number;
-    lastUpdated?: string;
+    id: string
+    title: string
+    description: string
+    category: string
+    thumbnail?: string
+    students?: number
+    modules?: number
+    lastUpdated?: string
 }
 
 interface CourseGridViewerProps {
-    courses: CourseValueResponse[];
-    onViewCourse: (course: CourseValueResponse) => void;
-    onCreateCourse: () => void;
-    isLoading?: boolean;
-    isError?: boolean;
-    error?: Error | null;
-    hasNextPage?: boolean;
-    isFetchingNextPage?: boolean;
-    onLoadMore?: () => void;
+    courses: CourseValueResponse[]
+    onViewCourse: (course: CourseValueResponse) => void
+    onCreateCourse: () => void
+    isLoading?: boolean
+    isError?: boolean
+    error?: Error | null
+    hasNextPage?: boolean
+    isFetchingNextPage?: boolean
+    onLoadMore?: () => void
 }
 
 export function CourseGridViewer({
@@ -39,19 +39,30 @@ export function CourseGridViewer({
     isFetchingNextPage = false,
     onLoadMore,
 }: CourseGridViewerProps) {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [selectedCategory, setSelectedCategory] = useState<string>("all");
+    const [searchQuery, setSearchQuery] = useState("")
+    const [selectedCategory, setSelectedCategory] = useState<string>("all")
 
     const filteredCourses = courses.filter((course) => {
-        const matchesSearch = course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            course.description.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchesCategory = selectedCategory === "all" || course.category === selectedCategory;
-        return matchesSearch && matchesCategory;
-    });
+        const matchesSearch =
+            course.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            course.description.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesCategory = selectedCategory === "all" || course.category === selectedCategory
+        return matchesSearch && matchesCategory
+    })
 
-    const categories = ["all", ...Array.from(new Set(courses.map(c => c.category)))];
+    const categories = ["all", ...Array.from(new Set(courses.map((c) => c.category)))]
 
-    // Skeleton Card Component
+    const renderStatus = (status: "waiting_for_approval" | "approved" | "rejected") => {
+        switch (status) {
+            case "waiting_for_approval":
+                return "Pending"
+            case "approved":
+                return "Approved"
+            case "rejected":
+                return "Rejected"
+        }
+    }
+
     const CourseCardSkeleton = () => (
         <Card
             shadow="sm"
@@ -59,96 +70,235 @@ export function CourseGridViewer({
             radius="md"
             style={{
                 height: "100%",
-                background: "white",
-                border: "1px solid #e5e7eb",
+                background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                border: "1px solid rgba(189, 240, 82, 0.15)",
+                position: "relative",
+                overflow: "hidden",
             }}
         >
+
             {/* Thumbnail Skeleton */}
-            <Skeleton height={180} radius="md" mb="md" />
+            <Skeleton
+                height={180}
+                radius="md"
+                mb="md"
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
 
             {/* Category Badge Skeleton */}
-            <Skeleton height={20} width={80} radius="sm" mb="xs" />
+            <Skeleton
+                height={22}
+                width={90}
+                radius="sm"
+                mb="xs"
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
 
             {/* Title Skeleton */}
-            <Skeleton height={24} radius="sm" mb="xs" />
-            <Skeleton height={24} width="70%" radius="sm" mb="md" />
+            <Skeleton
+                height={24}
+                radius="sm"
+                mb="xs"
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
+            <Skeleton
+                height={24}
+                width="70%"
+                radius="sm"
+                mb="md"
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
 
             {/* Description Skeleton */}
-            <Skeleton height={16} radius="sm" mb={4} />
-            <Skeleton height={16} radius="sm" mb="md" />
+            <Skeleton
+                height={16}
+                radius="sm"
+                mb={4}
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
+            <Skeleton
+                height={16}
+                radius="sm"
+                mb="md"
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
 
             {/* Stats Skeleton */}
             <Group gap="xl" mb="md">
-                <Skeleton height={16} width={80} radius="sm" />
-                <Skeleton height={16} width={80} radius="sm" />
+                <Skeleton
+                    height={16}
+                    width={80}
+                    radius="sm"
+                    style={{
+                        background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                        backgroundSize: "200% 100%",
+                        animation: "shimmer 1.5s infinite",
+                    }}
+                />
+                <Skeleton
+                    height={16}
+                    width={80}
+                    radius="sm"
+                    style={{
+                        background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                        backgroundSize: "200% 100%",
+                        animation: "shimmer 1.5s infinite",
+                    }}
+                />
             </Group>
 
-            {/* Button Skeleton */}
-            <Skeleton height={36} radius="sm" />
+            <Skeleton
+                height={40}
+                radius="sm"
+                style={{
+                    background: "linear-gradient(90deg, #2a2a2a 0%, #333333 50%, #2a2a2a 100%)",
+                    backgroundSize: "200% 100%",
+                    animation: "shimmer 1.5s infinite",
+                }}
+            />
+
         </Card>
-    );
+    )
 
     return (
-        <Box>
-            {/* Header Section */}
-            <Group justify="space-between" mb="xl">
-                <Box>
-                    <Text size="xl" fw={700} mb={4}>
-                        My Courses
-                    </Text>
-                    <Text size="sm" c="dimmed">
-                        Manage and organize your course content
-                    </Text>
-                </Box>
-                <Button
-                    variant="primary"
-                    leftIcon={<Plus size={18} />}
-                    onClick={onCreateCourse}
-                    size="md"
-                    style={{
-                        background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
-                        boxShadow: "0 4px 12px rgba(37, 99, 235, 0.3)",
-                    }}
-                >
-                    New Course
-                </Button>
-            </Group>
+        <Box style={{ minHeight: "100vh" }}>
+            <Box
+                mb="xl"
+                style={{
+                    background: "linear-gradient(135deg, #1a1a1a 0%, #222222 50%, #1a1a1a 100%)",
+                    borderRadius: 16,
+                    padding: "32px 28px",
+                    position: "relative",
+                    overflow: "hidden",
+                    border: "1px solid rgba(189, 240, 82, 0.15)",
+                }}
+            >
 
-            {/* Search and Filter Bar */}
+                <Group justify="space-between" style={{ position: "relative", zIndex: 1 }}>
+                    <Box>
+                        <Text
+                            size="32px"
+                            fw={700}
+                            mb={8}
+                            style={{
+                                background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                WebkitBackgroundClip: "text",
+                                WebkitTextFillColor: "transparent",
+                                backgroundClip: "text",
+                            }}
+                        >
+                            My Courses
+                        </Text>
+                        <Text size="sm" c="#9ca3af">
+                            Manage and organize your course content
+                        </Text>
+                    </Box>
+                    <Button
+                        variant="primary"
+                        leftIcon={<Plus size={20} />}
+                        onClick={onCreateCourse}
+                        size="md"
+                        style={{
+                            background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                            color: "#0a0a0a",
+                            fontWeight: 600,
+                            padding: "12px 24px",
+                            height: 44,
+                            fontSize: 15,
+                            border: "none",
+                            boxShadow: "0 4px 16px rgba(189, 240, 82, 0.3), 0 0 0 1px rgba(189, 240, 82, 0.2)",
+                            transition: "all 0.2s ease",
+                        }}
+                    >
+                        New Course
+                    </Button>
+                </Group>
+            </Box>
+
             <Card
                 shadow="sm"
-                padding="lg"
+                padding="xl"
                 radius="md"
                 mb="xl"
                 style={{
-                    background: "rgba(255, 255, 255, 0.7)",
-                    backdropFilter: "blur(10px)",
-                    border: "1px solid rgba(37, 99, 235, 0.1)",
+                    background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                    border: "1px solid rgba(189, 240, 82, 0.15)",
+                    position: "relative",
+                    overflow: "hidden",
                 }}
             >
-                <Group gap="md">
+
+                <Stack gap="md" style={{ position: "relative", zIndex: 1 }}>
                     <TextInput
-                        placeholder="Search courses..."
-                        leftSection={<Search size={18} />}
+                        placeholder="Search courses by title or description..."
+                        leftSection={<Search size={18} color="#bdf052" />}
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        style={{ flex: 1 }}
+                        size="md"
                         styles={{
                             input: {
+                                background: "#1a1a1a",
+                                border: "1px solid rgba(189, 240, 82, 0.2)",
+                                color: "#ffffff",
                                 borderRadius: 8,
+                                fontSize: 14,
+                                transition: "all 0.2s ease",
+                                "&:focus": {
+                                    borderColor: "#bdf052",
+                                    boxShadow: "0 0 0 3px rgba(189, 240, 82, 0.1)",
+                                },
+                                "&::placeholder": {
+                                    color: "#6b7280",
+                                },
                             },
                         }}
                     />
-                    <Group gap="xs">
-                        <Filter size={18} color="#64748b" />
+
+                    <Group gap="xs" align="center">
+                        <Filter size={18} color="#b3a1ff" />
+                        <Text size="sm" c="#9ca3af" fw={500}>
+                            Filter:
+                        </Text>
                         {categories.map((cat) => (
                             <Badge
                                 key={cat}
                                 variant={selectedCategory === cat ? "filled" : "light"}
-                                color={selectedCategory === cat ? "blue" : "gray"}
+                                size="lg"
                                 style={{
                                     cursor: "pointer",
                                     textTransform: "capitalize",
+                                    background:
+                                        selectedCategory === cat
+                                            ? "linear-gradient(135deg, #b3a1ff 0%, #9b87e8 100%)"
+                                            : "rgba(179, 161, 255, 0.1)",
+                                    color: selectedCategory === cat ? "#0a0a0a" : "#b3a1ff",
+                                    border: selectedCategory === cat ? "none" : "1px solid rgba(179, 161, 255, 0.3)",
+                                    fontWeight: 600,
+                                    padding: "8px 16px",
                                     transition: "all 0.2s ease",
                                 }}
                                 onClick={() => setSelectedCategory(cat)}
@@ -157,7 +307,7 @@ export function CourseGridViewer({
                             </Badge>
                         ))}
                     </Group>
-                </Group>
+                </Stack>
             </Card>
 
             {/* Loading State with Skeleton */}
@@ -176,28 +326,45 @@ export function CourseGridViewer({
                     radius="md"
                     style={{
                         textAlign: "center",
-                        background: "rgba(254, 242, 242, 0.5)",
-                        border: "2px dashed #f87171",
+                        background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                        border: "2px solid rgba(248, 113, 113, 0.3)",
+                        position: "relative",
+                        overflow: "hidden",
                     }}
                 >
-                    <Stack align="center" gap="md" py="xl">
+                    <Box
+                        style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 400,
+                            height: 400,
+                            background: "radial-gradient(circle, rgba(246, 172, 174, 0.08) 0%, transparent 70%)",
+                            filter: "blur(80px)",
+                            pointerEvents: "none",
+                        }}
+                    />
+
+                    <Stack align="center" gap="md" py="xl" style={{ position: "relative", zIndex: 1 }}>
                         <Box
                             style={{
                                 width: 80,
                                 height: 80,
                                 borderRadius: "50%",
-                                background: "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)",
+                                background: "linear-gradient(135deg, rgba(246, 172, 174, 0.2) 0%, rgba(248, 113, 113, 0.2) 100%)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                border: "2px solid rgba(248, 113, 113, 0.3)",
                             }}
                         >
-                            <AlertCircle size={36} color="#dc2626" />
+                            <AlertCircle size={36} color="#f6acae" />
                         </Box>
-                        <Text size="lg" fw={600} c="red">
+                        <Text size="lg" fw={600} c="#f6acae">
                             Failed to load courses
                         </Text>
-                        <Text size="sm" c="dimmed" maw={400}>
+                        <Text size="sm" c="#9ca3af" maw={400}>
                             {error?.message || "Something went wrong. Please try again."}
                         </Text>
                     </Stack>
@@ -209,28 +376,45 @@ export function CourseGridViewer({
                     radius="md"
                     style={{
                         textAlign: "center",
-                        background: "rgba(239, 246, 255, 0.5)",
-                        border: "2px dashed #cbd5e1",
+                        background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                        border: "2px dashed rgba(189, 240, 82, 0.3)",
+                        position: "relative",
+                        overflow: "hidden",
                     }}
                 >
-                    <Stack align="center" gap="md" py="xl">
+                    <Box
+                        style={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 400,
+                            height: 400,
+                            background: "radial-gradient(circle, rgba(189, 240, 82, 0.08) 0%, transparent 70%)",
+                            filter: "blur(80px)",
+                            pointerEvents: "none",
+                        }}
+                    />
+
+                    <Stack align="center" gap="md" py="xl" style={{ position: "relative", zIndex: 1 }}>
                         <Box
                             style={{
                                 width: 80,
                                 height: 80,
                                 borderRadius: "50%",
-                                background: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
+                                background: "linear-gradient(135deg, rgba(189, 240, 82, 0.15) 0%, rgba(163, 215, 66, 0.15) 100%)",
                                 display: "flex",
                                 alignItems: "center",
                                 justifyContent: "center",
+                                border: "2px solid rgba(189, 240, 82, 0.3)",
                             }}
                         >
-                            <BookOpen size={36} color="#2563eb" />
+                            <BookOpen size={36} color="#bdf052" />
                         </Box>
-                        <Text size="lg" fw={600}>
+                        <Text size="lg" fw={600} c="#e9eeea">
                             No courses found
                         </Text>
-                        <Text size="sm" c="dimmed" maw={400}>
+                        <Text size="sm" c="#9ca3af" maw={400}>
                             {searchQuery || selectedCategory !== "all"
                                 ? "Try adjusting your search or filter"
                                 : "Get started by creating your first course"}
@@ -241,6 +425,15 @@ export function CourseGridViewer({
                                 leftIcon={<Plus size={18} />}
                                 onClick={onCreateCourse}
                                 mt="sm"
+                                style={{
+                                    background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                    color: "#0a0a0a",
+                                    fontWeight: 600,
+                                    padding: "12px 24px",
+                                    height: 44,
+                                    border: "none",
+                                    boxShadow: "0 4px 16px rgba(189, 240, 82, 0.3)",
+                                }}
                             >
                                 Create Your First Course
                             </Button>
@@ -251,153 +444,135 @@ export function CourseGridViewer({
                 <Grid gutter="lg">
                     {filteredCourses.map((course) => (
                         <Grid.Col key={course.id} span={{ base: 12, sm: 6, lg: 4 }}>
-                            <Card
-                                shadow="sm"
-                                padding="lg"
+                            <Paper
+                                shadow="md"
                                 radius="md"
                                 style={{
-                                    height: "100%",
-                                    background: "white",
-                                    border: "1px solid #e5e7eb",
+                                    background: "#222222",
+                                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                                    overflow: "hidden",
                                     transition: "all 0.3s ease",
                                     cursor: "pointer",
-                                    position: "relative",
-                                    overflow: "hidden",
                                 }}
-                                styles={{
-                                    root: {
-                                        "&:hover": {
-                                            transform: "translateY(-4px)",
-                                            boxShadow: "0 12px 24px rgba(37, 99, 235, 0.15)",
-                                            borderColor: "#2563eb",
-                                        },
-                                    },
-                                }}
+                                onClick={() => onViewCourse(course)}
                             >
-                                {/* Thumbnail */}
-                                <Box
-                                    mb="md"
-                                    style={{
-                                        height: 180,
-                                        borderRadius: 8,
-                                        overflow: "hidden",
-                                        background: course.thumbnail
-                                            ? "transparent"
-                                            : "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                    }}
+
+                                <Box style={{
+                                    height: 180,
+                                    overflow: "hidden",
+                                    background: course.thumbnail
+                                        ? "transparent"
+                                        : "linear-gradient(135deg, rgba(189, 240, 82, 0.5) 0%, rgba(163, 215, 66, 0.5) 100%)",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    border: "1px solid rgba(189, 240, 82, 0.2)",
+                                }}
                                 >
                                     {course.thumbnail ? (
-                                        <Image
-                                            src={course.thumbnail}
-                                            alt={course.title}
-                                            height={180}
-                                            fit="cover"
-                                        />
+                                        <Image src={course.thumbnail || "/placeholder.svg"} alt={course.title} height={180} fit="cover" />
                                     ) : (
-                                        <BookOpen size={48} color="#2563eb" />
+                                        <BookOpen size={48} color="#bdf052" />
                                     )}
                                 </Box>
-
-                                {/* Category Badge */}
-                                <Group gap="xs" align="center" justify="space-between">
-                                    <Badge
-                                        size="sm"
-                                        variant="light"
-                                        color="blue"
-                                        mb="xs"
-                                        style={{ textTransform: "capitalize" }}
-                                    >
-                                        {course.category}
-                                    </Badge>
-                                    <Badge
-                                        size="sm"
-                                        variant="light"
-                                        color="blue"
-                                        mb="xs"
-                                        style={{ textTransform: "capitalize" }}
-                                    >
-                                        Pending
-                                    </Badge>
-                                </Group>
-                                {/* Course Title */}
-                                <Text fw={600} size="lg" mb="xs" lineClamp={2}>
-                                    {course.title}
-                                </Text>
-
-                                {/* Course Description */}
-                                <Text size="sm" c="dimmed" mb="md" lineClamp={2}>
-                                    {course.description}
-                                </Text>
-
-                                {/* Course Stats */}
-                                <Group gap="xl" mb="md">
-                                    <Group gap={6}>
-                                        <Users size={16} color="#64748b" />
-                                        <Text size="xs" c="dimmed">
-                                            {course.students || 0} students
-                                        </Text>
+                                <Box px="lg" pt="xl" pb="md" style={{
+                                    background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                                }}>
+                                    <Group gap="xs" align="center" justify="space-between" mb="md">
+                                        <Badge
+                                            size="sm"
+                                            variant="light"
+                                            style={{
+                                                background: "rgba(189, 240, 82, 0.15)",
+                                                color: "#bdf052",
+                                                border: "1px solid rgba(189, 240, 82, 0.3)",
+                                                textTransform: "capitalize",
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            {course.category}
+                                        </Badge>
+                                        <Badge
+                                            size="sm"
+                                            variant="light"
+                                            style={{
+                                                background: "rgba(179, 161, 255, 0.15)",
+                                                color: "#b3a1ff",
+                                                border: "1px solid rgba(179, 161, 255, 0.3)",
+                                                textTransform: "capitalize",
+                                                fontWeight: 600,
+                                            }}
+                                        >
+                                            {renderStatus(course.status) || "Pending"}
+                                        </Badge>
                                     </Group>
-                                    <Group gap={6}>
-                                        <BookOpen size={16} color="#64748b" />
-                                        <Text size="xs" c="dimmed">
-                                            {course.modules || 0} modules
-                                        </Text>
-                                    </Group>
-                                </Group>
 
-                                {/* View Course Button */}
-                                <Button
-                                    variant="primary"
-                                    fullWidth
-                                    onClick={() => onViewCourse(course)}
-                                    style={{
-                                        borderColor: "#2563eb",
-                                        color: "#f3f3f3",
-                                        transition: "all 0.2s ease",
-                                    }}
-                                >
-                                    View Course
-                                </Button>
-                            </Card>
+                                    <Text fw={600} c="#bdf052" size="lg" mb="xs" lineClamp={2}>
+                                        {course.title}
+                                    </Text>
+
+                                    <Text size="sm" c="#d1d5db" mb="md" lineClamp={2}>
+                                        {course.description}
+                                    </Text>
+
+                                    <Group gap="xl" mt="xl">
+                                        <Group gap={6}>
+                                            <Users size={16} color="#9ca3af" />
+                                            <Text size="xs" c="#9ca3af">
+                                                {course.students || 0} students
+                                            </Text>
+                                        </Group>
+                                        <Group gap={6}>
+                                            <BookOpen size={16} color="#9ca3af" />
+                                            <Text size="xs" c="#9ca3af">
+                                                {course.modules || 0} modules
+                                            </Text>
+                                        </Group>
+                                    </Group>
+                                </Box>
+                            </Paper>
                         </Grid.Col>
                     ))}
                 </Grid>
-            )}
+            )
+            }
 
             {/* Loading More Skeletons */}
-            {isFetchingNextPage && (
-                <Grid gutter="lg" mt="lg">
-                    {Array.from({ length: 3 }).map((_, index) => (
-                        <Grid.Col key={`skeleton-more-${index}`} span={{ base: 12, sm: 6, lg: 4 }}>
-                            <CourseCardSkeleton />
-                        </Grid.Col>
-                    ))}
-                </Grid>
-            )}
+            {
+                isFetchingNextPage && (
+                    <Grid gutter="lg" mt="lg">
+                        {Array.from({ length: 3 }).map((_, index) => (
+                            <Grid.Col key={`skeleton-more-${index}`} span={{ base: 12, sm: 6, lg: 4 }}>
+                                <CourseCardSkeleton />
+                            </Grid.Col>
+                        ))}
+                    </Grid>
+                )
+            }
 
-            {/* Load More Button */}
-            {hasNextPage && !isFetchingNextPage && filteredCourses.length > 0 && (
-                <Center mt="xl">
-                    <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={onLoadMore}
-                        leftIcon={<ChevronDown size={18} />}
-                        style={{
-                            minWidth: 200,
-                            borderColor: "#2563eb",
-                            color: "#2563eb",
-                            transition: "all 0.2s ease",
-                        }}
-                    >
-                        View More
-                    </Button>
-                </Center>
-            )}
-        </Box>
-    );
+            {
+                hasNextPage && !isFetchingNextPage && filteredCourses.length > 0 && (
+                    <Center mt="xl">
+                        <Button
+                            variant="outline"
+                            size="lg"
+                            onClick={onLoadMore}
+                            leftIcon={<ChevronDown size={18} />}
+                            style={{
+                                minWidth: 200,
+                                background: "rgba(179, 161, 255, 0.1)",
+                                border: "1px solid rgba(179, 161, 255, 0.3)",
+                                color: "#b3a1ff",
+                                fontWeight: 600,
+                                height: 44,
+                                transition: "all 0.2s ease",
+                            }}
+                        >
+                            Load More Courses
+                        </Button>
+                    </Center>
+                )
+            }
+        </Box >
+    )
 }
-

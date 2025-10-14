@@ -1,5 +1,5 @@
 import { apiClient } from "../api-client";
-import { CourseValue, CreateCourseResponse, CoursesResponse } from "./course-type";
+import { CourseValue, CreateCourseResponse, CoursesResponse, EnrollmentsResponse, EnrolledCourseDetailResponse, CourseValueResponse } from "./course-type";
 
 export class CourseService {
     public static async createCourse(course: CourseValue): Promise<CreateCourseResponse> {
@@ -25,6 +25,72 @@ export class CourseService {
         try {
             const response = await apiClient.get<CoursesResponse>(
                 `/course/my-courses?offset=${offset}&limit=${limit}`
+            );
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    // Student methods
+    public static async joinCourseByInviteCode(inviteCode: string): Promise<{
+        success: boolean;
+        message: string;
+        courseId?: string;
+    }> {
+        try {
+            const response = await apiClient.post<any>('/enrollment/join', {
+                invite_code: inviteCode
+            });
+            return {
+                success: true,
+                message: 'Successfully joined the course!',
+                courseId: response.data.course_id
+            };
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public static async getEnrolledCourses(offset: number = 0, limit: number = 10): Promise<EnrollmentsResponse> {
+        try {
+            const response = await apiClient.get<EnrollmentsResponse>(
+                `/course/my-enrollments?offset=${offset}&limit=${limit}`
+            );
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public static async getCourseByInviteCode(inviteCode: string): Promise<CourseValueResponse> {
+        try {
+            const response = await apiClient.get<{
+                success: boolean;
+                data: CourseValueResponse;
+            }>(`/course/invite/${inviteCode}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public static async getCourseDetails(courseId: string): Promise<CourseValueResponse> {
+        try {
+            const response = await apiClient.get<{
+                success: boolean;
+                data: CourseValueResponse;
+            }>(`/course/${courseId}`);
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
+    }
+
+    public static async getEnrolledCourseById(enrollmentId: string): Promise<EnrolledCourseDetailResponse> {
+        try {
+            const response = await apiClient.get<EnrolledCourseDetailResponse>(
+                `/course/enrolled/${enrollmentId}`
             );
             return response;
         } catch (error) {

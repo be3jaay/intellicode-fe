@@ -25,9 +25,9 @@ export const StateCard = ({
 }: StateCardProps) => {
     const variantStyles = {
         empty: {
-            background: "#1d4ed810",
-            border: "2px solid #1d4ed8",
-            iconColor: "#1d4ed8",
+            background: "#bdf05220",
+            border: "2px solid #bdf052",
+            iconColor: "#8bc232",
             defaultIcon: <Inbox size={48} />,
         },
         error: {

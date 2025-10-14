@@ -4,4 +4,5 @@ export * from "./controlled-checkbox";
 export * from "./controlled-pin-input";
 export { ControlledTextArea } from "./controlled-textarea";
 export { ControlledFileInput } from "./controlled-file-input";
-export  {ControlledSelectInput} from "./controlled-select"
+export { ControlledSelectInput } from "./controlled-select";
+export { ControlledNumberInput } from "./controlled-number-input";

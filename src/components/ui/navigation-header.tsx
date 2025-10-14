@@ -18,10 +18,6 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
             px="xl"
             align="center"
             justify="space-between"
-            style={{
-                borderBottom: '1px solid #e9ecef',
-                backgroundColor: 'white',
-            }}
         >
             <Group>
                 {toggle && (
@@ -30,13 +26,14 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
                         onClick={toggle}
                         hiddenFrom="sm"
                         size="sm"
+                        color="#e9eeea"
                     />
                 )}
                 <Text
                     size="xl"
                     fw={700}
                     style={{
-                        background: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
+                        background: 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)',
                         WebkitBackgroundClip: 'text',
                         WebkitTextFillColor: 'transparent',
                     }}
@@ -50,21 +47,25 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
                     <UnstyledButton>
                         <Group gap="sm">
                             <Avatar
-                                color="blue"
+                                color="lime"
                                 radius="xl"
                                 size="md"
+                                style={{
+                                    background: 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)',
+                                    color: '#222222'
+                                }}
                             >
                                 {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
                             </Avatar>
                             <Box style={{ flex: 1 }} visibleFrom="sm">
-                                <Text size="sm" fw={600}>
+                                <Text size="sm" fw={600} c="#e9eeea">
                                     {user?.firstName} {user?.lastName}
                                 </Text>
-                                <Text size="xs" c="dimmed" tt="capitalize">
+                                <Text size="xs" c="#9ca3af" tt="capitalize">
                                     {user?.role}
                                 </Text>
                             </Box>
-                            <ChevronDown size={16} />
+                            <ChevronDown size={16} color="#e9eeea" />
                         </Group>
                     </UnstyledButton>
                 </Menu.Target>

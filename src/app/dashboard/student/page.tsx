@@ -1,159 +1,196 @@
-'use client';
+"use client"
+import { Box, Stack, Grid, Group, Text, Button, rem } from "@mantine/core"
+import { BookOpen, ClipboardList, HelpCircle, Plus, ArrowRight } from "lucide-react"
+import { StatCard, CourseCard, WelcomeBanner, AchievementCard } from "@/components/dashboard/shared"
+import { useRouter } from "next/navigation"
 
-import { useAuth } from '@/providers/auth-context';
-import {
-    Title,
-    Text,
-    Paper,
-    Grid,
-    Box,
-    Stack,
-    Group,
-    Badge,
-    ThemeIcon,
-    Avatar,
-    Card,
-    Progress,
-} from '@mantine/core';
-import {
-    BookOpen,
-    Calendar,
-    CheckCircle,
-    Clock,
-    FileText,
-    TrendingUp,
-} from 'lucide-react';
-
-function StudentDashboard() {
-    const { user } = useAuth();
-
-    const stats = [
-        { label: 'Enrolled Courses', value: '5', icon: BookOpen, color: 'blue' },
-        { label: 'Completed', value: '12', icon: CheckCircle, color: 'green' },
-        { label: 'In Progress', value: '3', icon: Clock, color: 'orange' },
-        { label: 'Assignments', value: '8', icon: FileText, color: 'red' },
-    ];
-
-    const upcomingClasses = [
-        { course: 'Advanced React', time: 'Today, 2:00 PM', instructor: 'Dr. Smith' },
-        { course: 'Python for Data Science', time: 'Tomorrow, 10:00 AM', instructor: 'Prof. Johnson' },
-        { course: 'Web Design Fundamentals', time: 'Wed, 3:00 PM', instructor: 'Ms. Davis' },
-    ];
-
-    return (
-        <Box>
-            {/* Welcome Section */}
-            <Box mb="xl">
-                <Title order={2} mb="xs">
-                    Welcome back, {user?.firstName}!
-                </Title>
-                <Text c="dimmed">
-                    Here's what's happening with your courses today.
-                </Text>
-            </Box>
-
-            {/* Stats Grid */}
-            <Grid mb="xl">
-                {stats.map((stat) => (
-                    <Grid.Col key={stat.label} span={{ base: 12, sm: 6, md: 3 }}>
-                        <Paper shadow="sm" p="md" radius="md">
-                            <Group>
-                                <ThemeIcon size="xl" radius="md" color={stat.color}>
-                                    <stat.icon size={24} />
-                                </ThemeIcon>
-                                <Box>
-                                    <Text size="xs" c="dimmed" tt="uppercase" fw={700}>
-                                        {stat.label}
-                                    </Text>
-                                    <Text size="xl" fw={700}>
-                                        {stat.value}
-                                    </Text>
-                                </Box>
-                            </Group>
-                        </Paper>
-                    </Grid.Col>
-                ))}
-            </Grid>
-
-            {/* Main Content */}
-            <Grid>
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Paper shadow="sm" p="lg" radius="md">
-                        <Group mb="md" justify="space-between">
-                            <Group>
-                                <ThemeIcon size="lg" radius="md" variant="light" color="blue">
-                                    <Calendar size={20} />
-                                </ThemeIcon>
-                                <Title order={4}>Upcoming Classes</Title>
-                            </Group>
-                        </Group>
-                        <Stack gap="md">
-                            {upcomingClasses.map((cls, index) => (
-                                <Card key={index} padding="md" radius="sm" withBorder>
-                                    <Group justify="space-between" mb="xs">
-                                        <Text fw={600} size="sm">
-                                            {cls.course}
-                                        </Text>
-                                        <Badge size="sm" variant="light" color="blue">
-                                            {cls.time}
-                                        </Badge>
-                                    </Group>
-                                    <Group gap="xs">
-                                        <Avatar size="xs" radius="xl" color="blue">
-                                            {cls.instructor.charAt(0)}
-                                        </Avatar>
-                                        <Text size="xs" c="dimmed">
-                                            {cls.instructor}
-                                        </Text>
-                                    </Group>
-                                </Card>
-                            ))}
-                        </Stack>
-                    </Paper>
-                </Grid.Col>
-
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Paper shadow="sm" p="lg" radius="md">
-                        <Group mb="md">
-                            <ThemeIcon size="lg" radius="md" variant="light" color="green">
-                                <TrendingUp size={20} />
-                            </ThemeIcon>
-                            <Title order={4}>Performance Metrics</Title>
-                        </Group>
-                        <Stack gap="lg">
-                            <Box>
-                                <Group justify="space-between" mb="xs">
-                                    <Text size="sm">Overall Progress</Text>
-                                    <Text size="sm" fw={600}>
-                                        75%
-                                    </Text>
-                                </Group>
-                                <Progress value={75} color="blue" size="lg" radius="xl" />
-                            </Box>
-                            <Box>
-                                <Group justify="space-between" mb="xs">
-                                    <Text size="sm">Attendance Rate</Text>
-                                    <Text size="sm" fw={600}>
-                                        92%
-                                    </Text>
-                                </Group>
-                                <Progress value={92} color="green" size="lg" radius="xl" />
-                            </Box>
-                            <Box>
-                                <Group justify="space-between" mb="xs">
-                                    <Text size="sm">Assignment Completion</Text>
-                                    <Text size="sm" fw={600}>
-                                        88%
-                                    </Text>
-                                </Group>
-                                <Progress value={88} color="orange" size="lg" radius="xl" />
-                            </Box>
-                        </Stack>
-                    </Paper>
-                </Grid.Col>
-            </Grid>
-        </Box>
-    );
+// Mock data
+const studentStats = {
+    totalExams: 12,
+    totalAssignments: 18,
+    totalQuizzes: 24,
 }
 
-export default StudentDashboard;
+const enrolledCourses = [
+    {
+        id: "1",
+        title: "Introduction to Python Programming",
+        description: "Learn the fundamentals of Python programming from scratch",
+        progress: 65,
+        lastActivity: "2 days ago",
+        status: "active" as const,
+    },
+    {
+        id: "2",
+        title: "Web Development with React",
+        description: "Build modern web applications using React and TypeScript",
+        progress: 42,
+        lastActivity: "1 week ago",
+        status: "active" as const,
+    },
+    {
+        id: "3",
+        title: "Data Structures and Algorithms",
+        description: "Master essential data structures and algorithmic thinking",
+        progress: 88,
+        lastActivity: "Yesterday",
+        status: "active" as const,
+    },
+]
+
+const achievements = [
+    {
+        title: "Python Basics Master",
+        description: "Completed all Python fundamentals modules",
+        type: "badge" as const,
+        earnedDate: "Jan 15, 2025",
+        icon: "medal" as const,
+    },
+    {
+        title: "React Developer Certificate",
+        description: "Successfully finished React development course",
+        type: "certificate" as const,
+        earnedDate: "Dec 20, 2024",
+        icon: "trophy" as const,
+    },
+    {
+        title: "Quick Learner",
+        description: "Completed 10 lessons in a single day",
+        type: "badge" as const,
+        earnedDate: "Jan 10, 2025",
+        icon: "award" as const,
+    },
+]
+
+export default function StudentDashboard() {
+    const router = useRouter()
+
+    return (
+        <Box
+            style={{
+                minHeight: "100vh",
+                background: "#1a1a1a",
+                padding: rem(24),
+            }}
+        >
+            <Box style={{ maxWidth: rem(1400), margin: "0 auto" }}>
+                <Stack gap="xl">
+                    {/* Welcome Banner */}
+                    <WelcomeBanner userName="John Doe" />
+
+                    {/* Stats Grid */}
+                    <Grid>
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <StatCard
+                                title="Total Exams"
+                                value={studentStats.totalExams}
+                                icon={BookOpen}
+                                gradient="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
+                                iconColor="#fff"
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <StatCard
+                                title="Total Assignments"
+                                value={studentStats.totalAssignments}
+                                icon={ClipboardList}
+                                gradient="linear-gradient(135deg, #f093fb 0%, #f5576c 100%)"
+                                iconColor="#fff"
+                            />
+                        </Grid.Col>
+                        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
+                            <StatCard
+                                title="Total Quizzes"
+                                value={studentStats.totalQuizzes}
+                                icon={HelpCircle}
+                                gradient="linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)"
+                                iconColor="#fff"
+                            />
+                        </Grid.Col>
+                    </Grid>
+
+                    {/* Badges and Certificates */}
+                    <Box>
+                        <Group justify="space-between" mb="md">
+                            <Box>
+                                <Text size="xl" fw={700} c="#e9eeea" mb={4}>
+                                    Achievements
+                                </Text>
+                                <Text size="sm" c="dimmed">
+                                    Your earned badges and certificates
+                                </Text>
+                            </Box>
+                        </Group>
+                        <Grid>
+                            {achievements.map((achievement, index) => (
+                                <Grid.Col key={index} span={{ base: 12, sm: 6, lg: 4 }}>
+                                    <AchievementCard {...achievement} />
+                                </Grid.Col>
+                            ))}
+                        </Grid>
+                    </Box>
+
+                    {/* Enrolled Courses */}
+                    <Box>
+                        <Group justify="space-between" mb="md">
+                            <Box>
+                                <Text size="xl" fw={700} c="#e9eeea" mb={4}>
+                                    Currently Enrolled
+                                </Text>
+                                <Text size="sm" c="dimmed">
+                                    Continue your learning journey
+                                </Text>
+                            </Box>
+                            <Group gap="sm">
+                                <Button
+                                    leftSection={<Plus size={18} />}
+                                    variant="outline"
+                                    radius="md"
+                                    styles={{
+                                        root: {
+                                            borderColor: "#bdf052",
+                                            color: "#bdf052",
+                                            "&:hover": {
+                                                background: "rgba(189, 240, 82, 0.1)",
+                                            },
+                                        },
+                                    }}
+                                    onClick={() => router.push("/courses/join")}
+                                >
+                                    Join Course
+                                </Button>
+                                <Button
+                                    rightSection={<ArrowRight size={18} />}
+                                    radius="md"
+                                    styles={{
+                                        root: {
+                                            background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                            color: "#222222",
+                                            fontWeight: 600,
+                                            "&:hover": {
+                                                transform: "translateY(-2px)",
+                                            },
+                                        },
+                                    }}
+                                    onClick={() => router.push("/dashboard/student/courses")}
+                                >
+                                    View All Courses
+                                </Button>
+                            </Group>
+                        </Group>
+                        <Grid>
+                            {enrolledCourses.map((course) => (
+                                <Grid.Col key={course.id} span={{ base: 12, sm: 6, lg: 4 }}>
+                                    <CourseCard
+                                        {...course}
+                                        onClick={() => router.push(`/dashboard/student/courses/${course.id}`)}
+                                    />
+                                </Grid.Col>
+                            ))}
+                        </Grid>
+                    </Box>
+                </Stack>
+            </Box>
+        </Box>
+    )
+}

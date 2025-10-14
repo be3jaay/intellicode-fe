@@ -18,11 +18,27 @@ export default function DashboardLayout({
             <AppShell
                 header={{ height: 80 }}
                 navbar={{
-                    width: 300,
+                    width: 280,
                     breakpoint: 'sm',
                     collapsed: { mobile: !opened },
                 }}
                 padding="xl"
+                styles={{
+                    main: {
+                        background: '#222222',
+                        minHeight: '100vh',
+                    },
+                    navbar: {
+                        background: '#2a2a2a',
+                        borderRight: '1px solid rgba(189, 240, 82, 0.1)',
+                        textColor: 'white',
+
+                    },
+                    header: {
+                        background: '#2a2a2a',
+                        borderBottom: '1px solid rgba(189, 240, 82, 0.1)',
+                    }
+                }}
             >
                 <AppShell.Header>
                     <NavigationHeader opened={opened} toggle={toggle} />

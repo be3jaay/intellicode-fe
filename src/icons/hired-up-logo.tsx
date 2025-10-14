@@ -5,7 +5,7 @@ interface HiredUpLogoProps extends React.SVGProps<SVGSVGElement> {
     withLogo?: boolean;
 }
 
-export const HiredUpLogo: React.FC<HiredUpLogoProps> = ({ fill = "#2563eb", withLogo = true, width, height, ...props }) => (
+export const HiredUpLogo: React.FC<HiredUpLogoProps> = ({ fill = "#8bc232", withLogo = true, width, height, ...props }) => (
     <svg
         xmlns="http://www.w3.org/2000/svg"
         width={width || "120"}

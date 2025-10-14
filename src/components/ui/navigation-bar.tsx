@@ -136,12 +136,6 @@ export function NavigationBar() {
 
     return (
         <Stack gap="xs">
-            <Box mb="md">
-                <Text size="xs" fw={700} c="dimmed" tt="uppercase" mb="xs">
-                    Navigation
-                </Text>
-            </Box>
-
             {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -156,20 +150,8 @@ export function NavigationBar() {
                         style={{
                             borderRadius: '8px',
                             fontWeight: isActive ? 600 : 400,
-                        }}
-                        styles={{
-                            root: {
-                                '&[dataActive]': {
-                                    backgroundColor: '#eff6ff',
-                                    color: '#2563eb',
-                                    '&:hover': {
-                                        backgroundColor: '#dbeafe',
-                                    },
-                                },
-                                '&:hover': {
-                                    backgroundColor: '#f8f9fa',
-                                },
-                            },
+                            color: isActive ? '#b3a1ff' : '#e9eeea',
+                            backgroundColor: isActive ? '#b3a1ff25' : '#2a2a2a',
                         }}
                     />
                 );

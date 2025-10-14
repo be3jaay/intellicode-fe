@@ -72,7 +72,7 @@ export function CourseCreationModal({
             onClose={onClose}
             title={
                 <Group gap="xs">
-                    <BookOpen size={24} color="#2563eb" />
+                    <BookOpen size={24} color="#bdf052" />
                     <Text fw={600} size="xl">
                         Create New Course
                     </Text>
@@ -84,11 +84,12 @@ export function CourseCreationModal({
             radius="md"
             styles={{
                 content: {
-                    background: "linear-gradient(to bottom, #ffffff, #f8fafc)",
+                    background: "#222222",
                 },
                 header: {
                     paddingBottom: 16,
-                    borderBottom: "1px solid #e5e7eb",
+                    background: "#bdf052",
+                    borderBottom: "1px solid #444444",
                 },
             }}
         >
@@ -139,11 +140,11 @@ export function CourseCreationModal({
                                         border: "2px dashed #cbd5e1",
                                         borderRadius: 12,
                                         padding: "32px 16px",
-                                        background: "#f8fafc",
+                                        background: "#222222",
                                         cursor: "pointer",
                                         transition: "all 0.2s ease",
                                         "&:hover": {
-                                            borderColor: "#2563eb",
+                                            borderColor: "#bdf052",
                                             background: "#eff6ff",
                                         },
                                     },
@@ -155,7 +156,7 @@ export function CourseCreationModal({
                                             width: 64,
                                             height: 64,
                                             borderRadius: "50%",
-                                            background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                                            background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
                                             display: "flex",
                                             alignItems: "center",
                                             justifyContent: "center",
@@ -175,10 +176,10 @@ export function CourseCreationModal({
                             <Box
                                 style={{
                                     position: "relative",
-                                    border: "2px solid #2563eb",
+                                    border: "2px solid #bdf052",
                                     borderRadius: 12,
                                     padding: 16,
-                                    background: "#eff6ff",
+                                    background: "#222222",
                                 }}
                             >
                                 <Box
@@ -196,7 +197,7 @@ export function CourseCreationModal({
                                         style={{
                                             padding: "4px 8px",
                                             background: "white",
-                                            border: "1px solid #e5e7eb",
+                                            border: "1px solid #444444",
                                         }}
                                     >
                                         <X size={16} />
@@ -209,7 +210,7 @@ export function CourseCreationModal({
                                     fit="cover"
                                     height={200}
                                     style={{
-                                        border: "1px solid #e5e7eb",
+                                        border: "1px solid #444444",
                                     }}
                                 />
                             </Box>
@@ -226,7 +227,6 @@ export function CourseCreationModal({
                             Cancel
                         </Button>
                         <Button
-                            variant="primary"
                             onClick={handleSubmit(onSubmit)}
                             loading={isLoading}
                             disabled={isLoading}

@@ -20,13 +20,13 @@ export function StepCard({ icon, title, description, stepNumber }: StepCardProps
             style={{
                 textAlign: 'center',
                 background: 'linear-gradient(135deg, #ffffff 0%, #fefefe 100%)',
-                border: '1px solid rgba(37, 99, 235, 0.1)',
+                border: '1px solid rgba(189, 240, 82, 0.2)',
                 transition: 'all 0.3s ease',
                 cursor: 'pointer'
             }}
             onMouseEnter={(e) => {
                 e.currentTarget.style.transform = 'translateY(-5px)';
-                e.currentTarget.style.boxShadow = '0 10px 30px rgba(37, 99, 235, 0.15)';
+                e.currentTarget.style.boxShadow = '0 10px 30px rgba(189, 240, 82, 0.18)';
             }}
             onMouseLeave={(e) => {
                 e.currentTarget.style.transform = 'translateY(0px)';
@@ -40,8 +40,8 @@ export function StepCard({ icon, title, description, stepNumber }: StepCardProps
                 mb="md"
                 mx="auto"
                 style={{
-                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                    border: '1px solid rgba(37, 99, 235, 0.2)'
+                    background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
+                    border: '1px solid rgba(189, 240, 82, 0.3)'
                 }}
             >
                 {icon}

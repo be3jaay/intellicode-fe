@@ -89,7 +89,7 @@ export default function SignInContainer() {
   return (
     <Container fluid style={{ position: "relative", zIndex: 1 }}>
       <Grid align="center" >
-        <Grid.Col span={{ base: 12, md: 6 }} style={{ background: "linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)", minHeight: "100vh" }}>
+        <Grid.Col span={{ base: 12, md: 6 }} style={{ background: "linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)", minHeight: "100vh" }}>
           <Stack align="center" p="xl" >
             <Box ta="center">
               <Box
@@ -100,7 +100,7 @@ export default function SignInContainer() {
                   width: "80px",
                   height: "80px",
                   borderRadius: "50%",
-                  background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                  background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
                   marginBottom: "1rem",
                 }}
               >

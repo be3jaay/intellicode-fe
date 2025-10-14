@@ -15,7 +15,7 @@ export default function HomePage() {
   return (
     <Box style={{
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%)'
+      background: '#222222'
     }}>
       <ConditionalHeader />
       <HeroSection />

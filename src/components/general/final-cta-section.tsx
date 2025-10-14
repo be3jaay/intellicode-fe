@@ -19,8 +19,8 @@ export function FinalCtaSection() {
             size="xl"
             py={80}
             style={{
-                background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
-                color: 'white',
+                background: 'linear-gradient(135deg, #222222 0%, #2a2a2a 100%)',
+                color: '#e9eeea',
                 position: 'relative',
                 overflow: 'hidden',
                 marginBottom: 120,
@@ -59,15 +59,15 @@ export function FinalCtaSection() {
                         variant="primary"
                         rightIcon={<ArrowRight size={24} />}
                         style={{
-                            background: 'white',
-                            color: '#2563eb',
+                            background: 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)',
+                            color: '#222222',
                             fontWeight: 600,
                         }}
                         onMouseEnter={(e) => {
-                            e.currentTarget.style.background = 'linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%)';
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #d0f777 0%, #bdf052 100%)';
                         }}
                         onMouseLeave={(e) => {
-                            e.currentTarget.style.background = 'white';
+                            e.currentTarget.style.background = 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)';
                         }}
                     >
                         Start Free Today

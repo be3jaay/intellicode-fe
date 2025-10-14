@@ -1,6 +1,6 @@
-"use client";
-import { Box, Card, Group, Stack, Text, Tabs, Badge, Image, ActionIcon, CopyButton, Tooltip } from "@mantine/core";
-import { Button } from "@/components/ui";
+"use client"
+import { Box, Card, Group, Stack, Text, Tabs, Badge, ActionIcon, CopyButton, Tooltip } from "@mantine/core"
+import { Button } from "@/components/ui/button"
 import {
     ArrowLeft,
     Users,
@@ -8,24 +8,76 @@ import {
     FileText,
     ClipboardCheck,
     UserCheck,
-    Link as LinkIcon,
+    LinkIcon,
     Plus,
-    MoreVertical,
     Edit,
     Trash2,
     Check,
     Copy,
-} from "lucide-react";
-import { useState } from "react";
-import type { CourseValueResponse } from "@/services/course-service/course-type";
+} from "lucide-react"
+import { useState } from "react"
+import type { CourseValueResponse } from "@/services/course-service/course-type"
+import { BulkModuleCreator } from "./bulk-module-creator"
+import { AssignmentCreator } from "./assignment-creator"
+import { LessonCreator } from "./lesson-creator"
+import { BulkQuizCreator } from "./bulk-quiz-creator"
+import { ActivityCreator } from "./activity-creator"
+
+type ContentView = "main" | "modules" | "assignment" | "lesson" | "quiz" | "activity"
 
 interface CourseContentViewerProps {
-    course: CourseValueResponse;
-    onBack: () => void;
+    course: CourseValueResponse
+    onBack: () => void
 }
 
 export function CourseContentViewer({ course, onBack }: CourseContentViewerProps) {
-    const [activeTab, setActiveTab] = useState<string>("modules");
+    const [activeTab, setActiveTab] = useState<string>("modules")
+    const [currentView, setCurrentView] = useState<ContentView>("main")
+
+    const handleAddModule = () => {
+        setCurrentView("modules")
+    }
+
+    const handleAddAssignment = () => {
+        setCurrentView("assignment")
+    }
+
+    const handleAddLesson = () => {
+        setCurrentView("lesson")
+    }
+
+    const handleAddQuiz = () => {
+        setCurrentView("quiz")
+    }
+
+    const handleAddActivity = () => {
+        setCurrentView("activity")
+    }
+
+    const handleBackToMain = () => {
+        setCurrentView("main")
+    }
+
+    // Route to different views
+    if (currentView === "modules") {
+        return <BulkModuleCreator course={course} onBack={handleBackToMain} />
+    }
+
+    if (currentView === "assignment") {
+        return <AssignmentCreator course={course} onBack={handleBackToMain} />
+    }
+
+    if (currentView === "lesson") {
+        return <LessonCreator course={course} onBack={handleBackToMain} />
+    }
+
+    if (currentView === "quiz") {
+        return <BulkQuizCreator course={course} onBack={handleBackToMain} />
+    }
+
+    if (currentView === "activity") {
+        return <ActivityCreator course={course} onBack={handleBackToMain} />
+    }
 
     return (
         <Box
@@ -33,15 +85,16 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                 animation: "slideIn 0.3s ease-out",
             }}
         >
-            {/* Course Banner */}
             <Card
                 shadow="md"
                 padding={0}
-                radius="md"
+                radius="lg"
                 mb="xl"
                 style={{
                     overflow: "hidden",
                     position: "relative",
+                    background: "#1a1a1a",
+                    border: "1px solid rgba(189, 240, 82, 0.1)",
                 }}
             >
                 {/* Banner Image or Gradient */}
@@ -52,7 +105,7 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         position: "relative",
                         background: course.thumbnail
                             ? `url(${course.thumbnail})`
-                            : "linear-gradient(135deg, #2563eb 0%, #1d4ed8 50%, #1e40af 100%)",
+                            : "linear-gradient(135deg, rgba(189, 240, 82, 0.15) 0%, rgba(163, 215, 66, 0.1) 50%, rgba(139, 194, 50, 0.05) 100%)",
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                         display: "flex",
@@ -60,7 +113,6 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         padding: 32,
                     }}
                 >
-                    {/* Overlay gradient for better text readability */}
                     <Box
                         style={{
                             position: "absolute",
@@ -69,12 +121,11 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                             right: 0,
                             bottom: 0,
                             background: course.thumbnail
-                                ? "linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%)"
-                                : "linear-gradient(to bottom right, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 100%)",
+                                ? "linear-gradient(to top, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.6) 50%, rgba(26, 26, 26, 0.3) 100%)"
+                                : "linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(34, 34, 34, 0.6) 100%)",
                         }}
                     />
 
-                    {/* Back Button - Floating */}
                     <ActionIcon
                         variant="filled"
                         size="lg"
@@ -84,17 +135,25 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                             position: "absolute",
                             top: 24,
                             left: 24,
-                            background: "rgba(255, 255, 255, 0.95)",
+                            background: "rgba(34, 34, 34, 0.95)",
                             backdropFilter: "blur(10px)",
-                            border: "1px solid rgba(255, 255, 255, 0.3)",
-                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                            border: "1px solid rgba(189, 240, 82, 0.2)",
+                            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                             zIndex: 10,
+                            transition: "all 0.2s ease",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.background = "rgba(189, 240, 82, 0.15)"
+                            e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)"
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.background = "rgba(34, 34, 34, 0.95)"
+                            e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.2)"
                         }}
                     >
-                        <ArrowLeft size={20} color="#1f2937" />
+                        <ArrowLeft size={20} color="#bdf052" />
                     </ActionIcon>
 
-                    {/* Edit Banner Button - Floating */}
                     <Tooltip label="Edit course banner" position="left">
                         <ActionIcon
                             variant="filled"
@@ -104,23 +163,29 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 position: "absolute",
                                 top: 24,
                                 right: 24,
-                                background: "rgba(255, 255, 255, 0.95)",
+                                background: "rgba(34, 34, 34, 0.95)",
                                 backdropFilter: "blur(10px)",
-                                border: "1px solid rgba(255, 255, 255, 0.3)",
-                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+                                border: "1px solid rgba(189, 240, 82, 0.2)",
+                                boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                                 zIndex: 10,
                                 transition: "all 0.2s ease",
                             }}
                             onClick={() => {
-                                // TODO: Implement edit banner functionality
-                                console.log("Edit banner clicked");
+                                console.log("Edit banner clicked")
+                            }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.background = "rgba(189, 240, 82, 0.15)"
+                                e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)"
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.background = "rgba(34, 34, 34, 0.95)"
+                                e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.2)"
                             }}
                         >
-                            <Edit size={20} color="#1f2937" />
+                            <Edit size={20} color="#bdf052" />
                         </ActionIcon>
                     </Tooltip>
 
-                    {/* Default Icon for non-thumbnail banners */}
                     {!course.thumbnail && (
                         <Box
                             style={{
@@ -128,24 +193,25 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 top: "50%",
                                 left: "50%",
                                 transform: "translate(-50%, -50%)",
-                                opacity: 0.15,
+                                opacity: 0.08,
                             }}
                         >
-                            <BookOpen size={120} color="white" strokeWidth={1.5} />
+                            <BookOpen size={120} color="#bdf052" strokeWidth={1.5} />
                         </Box>
                     )}
 
-                    {/* Course Info Overlay */}
                     <Box style={{ position: "relative", zIndex: 5, width: "100%" }}>
                         <Group gap="sm" mb="sm">
                             <Badge
                                 size="lg"
                                 variant="filled"
-                                color="blue"
                                 style={{
                                     textTransform: "capitalize",
-                                    background: "rgba(37, 99, 235, 0.9)",
+                                    background: "rgba(189, 240, 82, 0.2)",
                                     backdropFilter: "blur(10px)",
+                                    color: "#bdf052",
+                                    border: "1px solid rgba(189, 240, 82, 0.3)",
+                                    fontWeight: 600,
                                 }}
                             >
                                 {course.category}
@@ -154,9 +220,10 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 size="lg"
                                 variant="filled"
                                 style={{
-                                    background: "rgba(255, 255, 255, 0.2)",
+                                    background: "rgba(255, 255, 255, 0.1)",
                                     backdropFilter: "blur(10px)",
-                                    color: "white",
+                                    color: "#e9eeea",
+                                    border: "1px solid rgba(255, 255, 255, 0.15)",
                                 }}
                                 leftSection={<Users size={14} />}
                             >
@@ -166,9 +233,10 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 size="lg"
                                 variant="filled"
                                 style={{
-                                    background: "rgba(255, 255, 255, 0.2)",
+                                    background: "rgba(255, 255, 255, 0.1)",
                                     backdropFilter: "blur(10px)",
-                                    color: "white",
+                                    color: "#e9eeea",
+                                    border: "1px solid rgba(255, 255, 255, 0.15)",
                                 }}
                                 leftSection={<BookOpen size={14} />}
                             >
@@ -179,8 +247,8 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                             size="32px"
                             fw={700}
                             style={{
-                                color: "white",
-                                textShadow: "0 2px 12px rgba(0, 0, 0, 0.3)",
+                                color: "#ffffff",
+                                textShadow: "0 2px 12px rgba(0, 0, 0, 0.5)",
                                 lineHeight: 1.2,
                             }}
                         >
@@ -190,8 +258,8 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                             size="md"
                             mt="xs"
                             style={{
-                                color: "rgba(255, 255, 255, 0.95)",
-                                textShadow: "0 1px 4px rgba(0, 0, 0, 0.3)",
+                                color: "#e9eeea",
+                                textShadow: "0 1px 4px rgba(0, 0, 0, 0.5)",
                                 maxWidth: 800,
                             }}
                             lineClamp={2}
@@ -202,35 +270,34 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                 </Box>
             </Card>
 
-            {/* Course Invitation Link Card */}
             <Card
                 shadow="sm"
                 padding="lg"
-                radius="md"
+                radius="lg"
                 mb="xl"
                 style={{
-                    background: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
-                    border: "1px solid #bfdbfe",
+                    background: "linear-gradient(135deg, rgba(189, 240, 82, 0.08) 0%, rgba(189, 240, 82, 0.04) 100%)",
+                    border: "1px solid rgba(189, 240, 82, 0.2)",
                 }}
             >
                 <Group justify="space-between" wrap="nowrap">
                     <Box style={{ flex: 1 }}>
                         <Group gap="xs" mb={8}>
-                            <LinkIcon size={18} color="#2563eb" />
-                            <Text size="sm" fw={600} c="gray.8">
+                            <LinkIcon size={18} color="#bdf052" />
+                            <Text size="sm" fw={600} c="#e9eeea">
                                 Course Invitation Link
                             </Text>
                         </Group>
                         <Group gap="xs">
                             <Text
                                 size="sm"
-                                c="dimmed"
                                 style={{
                                     fontFamily: "monospace",
-                                    background: "white",
+                                    background: "rgba(34, 34, 34, 0.8)",
+                                    color: "#bdf052",
                                     padding: "8px 14px",
                                     borderRadius: 8,
-                                    border: "1px solid #cbd5e1",
+                                    border: "1px solid rgba(189, 240, 82, 0.2)",
                                     fontSize: 13,
                                 }}
                             >
@@ -241,10 +308,12 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                     <Tooltip label={copied ? "Copied!" : "Copy link"} position="top">
                                         <ActionIcon
                                             variant="light"
-                                            color={copied ? "green" : "blue"}
                                             onClick={copy}
                                             size="lg"
                                             style={{
+                                                background: copied ? "rgba(189, 240, 82, 0.15)" : "rgba(179, 161, 255, 0.15)",
+                                                color: copied ? "#bdf052" : "#b3a1ff",
+                                                border: `1px solid ${copied ? "rgba(189, 240, 82, 0.3)" : "rgba(179, 161, 255, 0.3)"}`,
                                                 transition: "all 0.2s ease",
                                             }}
                                         >
@@ -256,39 +325,41 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         </Group>
                     </Box>
                     <Button
-                        variant="primary"
-                        leftIcon={<LinkIcon size={16} />}
+                        style={{
+                            background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                            color: "#1a1a1a",
+                            border: "none",
+                            fontWeight: 600,
+                        }}
                     >
+                        <LinkIcon size={16} style={{ marginRight: 8 }} />
                         Share Link
                     </Button>
                 </Group>
             </Card>
 
-            {/* Content Tabs */}
-            <Card shadow="sm" padding={0} radius="md">
+            <Card
+                shadow="sm"
+                padding={0}
+                radius="lg"
+                style={{ background: "#1a1a1a", border: "1px solid rgba(189, 240, 82, 0.1)" }}
+            >
                 <Tabs
                     value={activeTab}
                     onChange={(value) => setActiveTab(value || "modules")}
                     styles={{
                         root: {
-                            background: "white",
+                            background: "#1a1a1a",
                         },
                         list: {
-                            borderBottom: "1px solid #e5e7eb",
-                            padding: "0 24px",
+                            borderBottom: "1px solid rgba(189, 240, 82, 1)",
                         },
                         tab: {
                             padding: "16px 20px",
                             fontWeight: 500,
                             fontSize: 14,
+                            color: "#9ca3af",
                             transition: "all 0.2s ease",
-                            "&:hover": {
-                                background: "#f8fafc",
-                            },
-                            '&[data-active="true"]': {
-                                color: "#2563eb",
-                                borderColor: "#2563eb",
-                            },
                         },
                         panel: {
                             padding: 24,
@@ -296,20 +367,23 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     }}
                 >
                     <Tabs.List>
-                        <Tabs.Tab value="modules" leftSection={<BookOpen size={16} />}>
+                        <Tabs.Tab value="modules" color="#bdf052" leftSection={<BookOpen size={16} />}>
                             Modules
                         </Tabs.Tab>
-                        <Tabs.Tab value="lessons" leftSection={<FileText size={16} />}>
+                        <Tabs.Tab value="lessons" color="#bdf052" leftSection={<FileText size={16} />}>
                             Lessons
                         </Tabs.Tab>
-                        <Tabs.Tab value="activities" leftSection={<ClipboardCheck size={16} />}>
+                        <Tabs.Tab value="activities" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
                             Activities
                         </Tabs.Tab>
-                        <Tabs.Tab value="quizzes" leftSection={<ClipboardCheck size={16} />}>
+                        <Tabs.Tab value="quizzes" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
                             Quizzes
                         </Tabs.Tab>
-                        <Tabs.Tab value="students" leftSection={<UserCheck size={16} />}>
+                        <Tabs.Tab value="students" color="#bdf052" leftSection={<UserCheck size={16} />}>
                             Students
+                        </Tabs.Tab>
+                        <Tabs.Tab value="assignment" color="#bdf052" leftSection={<UserCheck size={16} />}>
+                            Assignments
                         </Tabs.Tab>
                     </Tabs.List>
 
@@ -317,8 +391,20 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     <Tabs.Panel value="modules">
                         <Stack gap="md">
                             <Group justify="space-between">
-                                <Text fw={600}>Course Modules</Text>
-                                <Button variant="primary" size="sm" leftIcon={<Plus size={16} />}>
+                                <Text fw={600} c="#e9eeea">
+                                    Course Modules
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    onClick={handleAddModule}
+                                    style={{
+                                        background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                        color: "#1a1a1a",
+                                        border: "none",
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    <Plus size={16} style={{ marginRight: 8 }} />
                                     Add Module
                                 </Button>
                             </Group>
@@ -330,8 +416,20 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     <Tabs.Panel value="lessons">
                         <Stack gap="md">
                             <Group justify="space-between">
-                                <Text fw={600}>Course Lessons</Text>
-                                <Button variant="primary" size="sm" leftIcon={<Plus size={16} />}>
+                                <Text fw={600} c="#e9eeea">
+                                    Course Lessons
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    onClick={handleAddLesson}
+                                    style={{
+                                        background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                        color: "#1a1a1a",
+                                        border: "none",
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    <Plus size={16} style={{ marginRight: 8 }} />
                                     Add Lesson
                                 </Button>
                             </Group>
@@ -343,8 +441,20 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     <Tabs.Panel value="activities">
                         <Stack gap="md">
                             <Group justify="space-between">
-                                <Text fw={600}>Course Activities</Text>
-                                <Button variant="primary" size="sm" leftIcon={<Plus size={16} />}>
+                                <Text fw={600} c="#e9eeea">
+                                    Course Activities
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    onClick={handleAddActivity}
+                                    style={{
+                                        background: "linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)",
+                                        color: "#fff",
+                                        border: "none",
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    <Plus size={16} style={{ marginRight: 8 }} />
                                     Add Activity
                                 </Button>
                             </Group>
@@ -352,13 +462,48 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         </Stack>
                     </Tabs.Panel>
 
-                    {/* Quizzes Tab */}
                     <Tabs.Panel value="quizzes">
                         <Stack gap="md">
                             <Group justify="space-between">
-                                <Text fw={600}>Course Quizzes</Text>
-                                <Button variant="primary" size="sm" leftIcon={<Plus size={16} />}>
+                                <Text fw={600} c="#e9eeea">
+                                    Course Quizzes
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    onClick={handleAddQuiz}
+                                    style={{
+                                        background: "linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)",
+                                        color: "#222222",
+                                        border: "none",
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    <Plus size={16} style={{ marginRight: 8 }} />
                                     Add Quiz
+                                </Button>
+                            </Group>
+                            <QuizzesContent />
+                        </Stack>
+                    </Tabs.Panel>
+
+                    <Tabs.Panel value="assignment">
+                        <Stack gap="md">
+                            <Group justify="space-between">
+                                <Text fw={600} c="#e9eeea">
+                                    Course Assignments
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    onClick={handleAddAssignment}
+                                    style={{
+                                        background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                        color: "#1a1a1a",
+                                        border: "none",
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    <Plus size={16} style={{ marginRight: 8 }} />
+                                    Add Assignment
                                 </Button>
                             </Group>
                             <QuizzesContent />
@@ -369,8 +514,17 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     <Tabs.Panel value="students">
                         <Stack gap="md">
                             <Group justify="space-between">
-                                <Text fw={600}>Enrolled Students</Text>
-                                <Button variant="outline" size="sm">
+                                <Text fw={600} c="#e9eeea">
+                                    Enrolled Students
+                                </Text>
+                                <Button
+                                    size="sm"
+                                    variant="outline"
+                                    style={{
+                                        borderColor: "rgba(189, 240, 82, 0.3)",
+                                        color: "#bdf052",
+                                    }}
+                                >
                                     Export List
                                 </Button>
                             </Group>
@@ -393,16 +547,15 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
         }
       `}</style>
         </Box>
-    );
+    )
 }
 
-// Content Components for each tab
 function ModulesContent() {
     const modules = [
         { id: "1", title: "Introduction to Programming", lessons: 5, duration: "2 hours" },
         { id: "2", title: "Variables and Data Types", lessons: 8, duration: "3 hours" },
         { id: "3", title: "Control Flow", lessons: 6, duration: "2.5 hours" },
-    ];
+    ]
 
     return (
         <Stack gap="sm">
@@ -412,17 +565,18 @@ function ModulesContent() {
                     padding="md"
                     radius="md"
                     style={{
-                        background: "#f8fafc",
-                        border: "1px solid #e5e7eb",
+                        background: "rgba(34, 34, 34, 0.6)",
+                        border: "1px solid rgba(189, 240, 82, 0.1)",
                         transition: "all 0.2s ease",
+                        cursor: "pointer",
                     }}
-                    styles={{
-                        root: {
-                            "&:hover": {
-                                borderColor: "#2563eb",
-                                background: "#eff6ff",
-                            },
-                        },
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)"
+                        e.currentTarget.style.background = "rgba(189, 240, 82, 0.05)"
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.1)"
+                        e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)"
                     }}
                 >
                     <Group justify="space-between" wrap="nowrap">
@@ -432,18 +586,19 @@ function ModulesContent() {
                                     width: 40,
                                     height: 40,
                                     borderRadius: 8,
-                                    background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                                    background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    color: "white",
-                                    fontWeight: 600,
+                                    color: "#1a1a1a",
+                                    fontWeight: 700,
+                                    fontSize: 16,
                                 }}
                             >
                                 {index + 1}
                             </Box>
                             <Box>
-                                <Text fw={600} size="sm" mb={4}>
+                                <Text fw={600} size="sm" mb={4} c="#e9eeea">
                                     {module.title}
                                 </Text>
                                 <Group gap="md">
@@ -457,10 +612,26 @@ function ModulesContent() {
                             </Box>
                         </Group>
                         <Group gap="xs">
-                            <ActionIcon variant="light" size="md">
+                            <ActionIcon
+                                variant="light"
+                                size="md"
+                                style={{
+                                    background: "rgba(179, 161, 255, 0.15)",
+                                    color: "#b3a1ff",
+                                    border: "1px solid rgba(179, 161, 255, 0.3)",
+                                }}
+                            >
                                 <Edit size={16} />
                             </ActionIcon>
-                            <ActionIcon variant="light" color="red" size="md">
+                            <ActionIcon
+                                variant="light"
+                                size="md"
+                                style={{
+                                    background: "rgba(246, 172, 174, 0.15)",
+                                    color: "#f6acae",
+                                    border: "1px solid rgba(246, 172, 174, 0.3)",
+                                }}
+                            >
                                 <Trash2 size={16} />
                             </ActionIcon>
                         </Group>
@@ -468,31 +639,55 @@ function ModulesContent() {
                 </Card>
             ))}
         </Stack>
-    );
+    )
 }
 
 function LessonsContent() {
     return (
-        <Card padding="xl" radius="md" style={{ background: "#f8fafc", textAlign: "center" }}>
+        <Card
+            padding="xl"
+            radius="md"
+            style={{
+                background: "rgba(34, 34, 34, 0.4)",
+                border: "1px solid rgba(189, 240, 82, 0.1)",
+                textAlign: "center",
+            }}
+        >
             <Text c="dimmed">No lessons yet. Start by adding your first lesson.</Text>
         </Card>
-    );
+    )
 }
 
 function ActivitiesContent() {
     return (
-        <Card padding="xl" radius="md" style={{ background: "#f8fafc", textAlign: "center" }}>
+        <Card
+            padding="xl"
+            radius="md"
+            style={{
+                background: "rgba(34, 34, 34, 0.4)",
+                border: "1px solid rgba(189, 240, 82, 0.1)",
+                textAlign: "center",
+            }}
+        >
             <Text c="dimmed">No activities yet. Create engaging activities for your students.</Text>
         </Card>
-    );
+    )
 }
 
 function QuizzesContent() {
     return (
-        <Card padding="xl" radius="md" style={{ background: "#f8fafc", textAlign: "center" }}>
+        <Card
+            padding="xl"
+            radius="md"
+            style={{
+                background: "rgba(34, 34, 34, 0.4)",
+                border: "1px solid rgba(189, 240, 82, 0.1)",
+                textAlign: "center",
+            }}
+        >
             <Text c="dimmed">No quizzes yet. Add quizzes to assess student learning.</Text>
         </Card>
-    );
+    )
 }
 
 function StudentsContent() {
@@ -500,7 +695,7 @@ function StudentsContent() {
         { id: "1", name: "John Doe", email: "john@example.com", progress: 75, enrolled: "2 weeks ago" },
         { id: "2", name: "Jane Smith", email: "jane@example.com", progress: 50, enrolled: "1 week ago" },
         { id: "3", name: "Bob Johnson", email: "bob@example.com", progress: 90, enrolled: "3 weeks ago" },
-    ];
+    ]
 
     return (
         <Stack gap="sm">
@@ -510,8 +705,17 @@ function StudentsContent() {
                     padding="md"
                     radius="md"
                     style={{
-                        background: "#f8fafc",
-                        border: "1px solid #e5e7eb",
+                        background: "rgba(34, 34, 34, 0.6)",
+                        border: "1px solid rgba(189, 240, 82, 0.1)",
+                        transition: "all 0.2s ease",
+                    }}
+                    onMouseEnter={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.3)"
+                        e.currentTarget.style.background = "rgba(189, 240, 82, 0.05)"
+                    }}
+                    onMouseLeave={(e) => {
+                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.1)"
+                        e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)"
                     }}
                 >
                     <Group justify="space-between" wrap="nowrap">
@@ -521,19 +725,22 @@ function StudentsContent() {
                                     width: 40,
                                     height: 40,
                                     borderRadius: "50%",
-                                    background: "linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)",
+                                    background: "linear-gradient(135deg, #b3a1ff 0%, #9b89e6 100%)",
                                     display: "flex",
                                     alignItems: "center",
                                     justifyContent: "center",
-                                    color: "white",
-                                    fontWeight: 600,
+                                    color: "#1a1a1a",
+                                    fontWeight: 700,
                                     fontSize: 14,
                                 }}
                             >
-                                {student.name.split(" ").map(n => n[0]).join("")}
+                                {student.name
+                                    .split(" ")
+                                    .map((n) => n[0])
+                                    .join("")}
                             </Box>
                             <Box>
-                                <Text fw={600} size="sm" mb={2}>
+                                <Text fw={600} size="sm" mb={2} c="#e9eeea">
                                     {student.name}
                                 </Text>
                                 <Text size="xs" c="dimmed">
@@ -546,7 +753,23 @@ function StudentsContent() {
                                 <Text size="xs" c="dimmed" mb={4}>
                                     Progress
                                 </Text>
-                                <Badge color={student.progress > 70 ? "green" : student.progress > 40 ? "yellow" : "red"}>
+                                <Badge
+                                    style={{
+                                        background:
+                                            student.progress > 70
+                                                ? "rgba(189, 240, 82, 0.2)"
+                                                : student.progress > 40
+                                                    ? "rgba(246, 172, 174, 0.2)"
+                                                    : "rgba(246, 172, 174, 0.3)",
+                                        color: student.progress > 70 ? "#bdf052" : student.progress > 40 ? "#f6acae" : "#f6acae",
+                                        border: `1px solid ${student.progress > 70
+                                            ? "rgba(189, 240, 82, 0.3)"
+                                            : student.progress > 40
+                                                ? "rgba(246, 172, 174, 0.3)"
+                                                : "rgba(246, 172, 174, 0.4)"
+                                            }`,
+                                    }}
+                                >
                                     {student.progress}%
                                 </Badge>
                             </Box>
@@ -558,6 +781,5 @@ function StudentsContent() {
                 </Card>
             ))}
         </Stack>
-    );
+    )
 }
-

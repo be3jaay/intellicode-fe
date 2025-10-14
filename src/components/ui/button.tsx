@@ -38,48 +38,48 @@ const getVariantStyles = (variant: ButtonVariant, isHovered: boolean, isActive: 
             return {
                 ...baseStyles,
                 background: isActive
-                    ? 'linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%)'
+                    ? 'linear-gradient(135deg, #8bc232 0%, #a3d742 100%)'
                     : isHovered
-                        ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
-                        : 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-                color: 'white',
+                        ? 'linear-gradient(135deg, #a3d742 0%, #8bc232 100%)'
+                        : 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)',
+                color: '#222222',
                 boxShadow: isActive
-                    ? '0 2px 4px rgba(37, 99, 235, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4)'
+                    ? '0 2px 4px rgba(189, 240, 82, 0.5), 0 1px 2px rgba(0, 0, 0, 0.4)'
                     : isHovered
-                        ? '0 8px 16px rgba(37, 99, 235, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                        : '0 4px 12px rgba(37, 99, 235, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15)',
+                        ? '0 8px 16px rgba(189, 240, 82, 0.4), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                        : '0 4px 12px rgba(189, 240, 82, 0.3), 0 2px 4px rgba(0, 0, 0, 0.15)',
                 transform: isActive ? 'translateY(0px) scale(0.98)' : isHovered ? 'translateY(-2px) scale(1.02)' : 'translateY(0px) scale(1)',
             };
         case 'secondary':
             return {
                 ...baseStyles,
                 background: isActive
-                    ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                    ? 'linear-gradient(135deg, #9585e6 0%, #8573d9 100%)'
                     : isHovered
-                        ? 'linear-gradient(135deg, #818cf8 0%, #6366f1 100%)'
-                        : 'linear-gradient(135deg, #a5b4fc 0%, #818cf8 100%)',
-                color: 'white',
+                        ? 'linear-gradient(135deg, #a694f2 0%, #9585e6 100%)'
+                        : 'linear-gradient(135deg, #b3a1ff 0%, #a694f2 100%)',
+                color: '#222222',
                 boxShadow: isActive
-                    ? '0 2px 4px rgba(99, 102, 241, 0.4), 0 1px 2px rgba(0, 0, 0, 0.4)'
+                    ? '0 2px 4px rgba(179, 161, 255, 0.4), 0 1px 2px rgba(0, 0, 0, 0.4)'
                     : isHovered
-                        ? '0 8px 16px rgba(99, 102, 241, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2)'
-                        : '0 4px 12px rgba(99, 102, 241, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15)',
+                        ? '0 8px 16px rgba(179, 161, 255, 0.35), 0 4px 8px rgba(0, 0, 0, 0.2)'
+                        : '0 4px 12px rgba(179, 161, 255, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15)',
                 transform: isActive ? 'translateY(0px) scale(0.98)' : isHovered ? 'translateY(-2px) scale(1.02)' : 'translateY(0px) scale(1)',
             };
         case 'outline':
             return {
                 ...baseStyles,
                 background: isActive
-                    ? 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)'
+                    ? 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)'
                     : isHovered
-                        ? 'linear-gradient(135deg, rgba(37, 99, 235, 0.1) 0%, rgba(37, 99, 235, 0.05) 100%)'
+                        ? 'linear-gradient(135deg, rgba(189, 240, 82, 0.1) 0%, rgba(189, 240, 82, 0.05) 100%)'
                         : 'transparent',
-                color: isActive || isHovered ? (isActive ? 'white' : '#2563eb') : '#2563eb',
-                border: '2px solid #2563eb',
+                color: isActive || isHovered ? (isActive ? '#222222' : '#8bc232') : '#8bc232',
+                border: '2px solid #bdf052',
                 boxShadow: isActive
-                    ? '0 2px 4px rgba(37, 99, 235, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)'
+                    ? '0 2px 4px rgba(189, 240, 82, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2)'
                     : isHovered
-                        ? '0 4px 12px rgba(37, 99, 235, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15)'
+                        ? '0 4px 12px rgba(189, 240, 82, 0.25), 0 2px 4px rgba(0, 0, 0, 0.15)'
                         : '0 0 0 rgba(0, 0, 0, 0)',
                 transform: isActive ? 'translateY(0px) scale(0.98)' : isHovered ? 'translateY(-2px) scale(1.02)' : 'translateY(0px) scale(1)',
             };

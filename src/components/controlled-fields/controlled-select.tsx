@@ -1,4 +1,4 @@
-import { ComboboxData, Select } from "@mantine/core";
+import { ComboboxData, Select, rem } from "@mantine/core";
 import React from "react";
 import { Control, Controller, FieldPath, FieldValues } from "react-hook-form"
 
@@ -12,6 +12,8 @@ export type ControlledSelectInputProps<TFieldValues extends FieldValues = FieldV
         rightSection?: React.ReactNode;
         placeholder?: string;
         options: ComboboxData;
+        labelColor?: string;
+        borderColor?: string;
         [key: string]: any;
     }
 
@@ -25,6 +27,8 @@ export function ControlledSelectInput<TFieldValues extends FieldValues = FieldVa
         rightSection,
         placeholder,
         options,
+        labelColor = "#bdf052",
+        borderColor = "#bdf052",
         ...props
     }: ControlledSelectInputProps<TFieldValues, TFieldName>) {
     return (
@@ -46,6 +50,39 @@ export function ControlledSelectInput<TFieldValues extends FieldValues = FieldVa
                         value={value || ""}
                         error={error?.message}
                         suppressHydrationWarning={true}
+                        styles={{
+                            label: {
+                                color: labelColor,
+                                fontWeight: 600,
+                                marginBottom: 8,
+                            },
+                            input: {
+                                background: "#1a1a1a",
+                                borderColor: borderColor,
+                                color: "#ffffff",
+                                fontSize: rem(15),
+                                "&:focus": {
+                                    borderColor: labelColor,
+                                },
+                                "&::placeholder": {
+                                    color: "rgba(255, 255, 255, 0.4)",
+                                },
+                            },
+                            dropdown: {
+                                background: "#1a1a1a",
+                                borderColor: borderColor,
+                            },
+                            option: {
+                                color: "#ffffff",
+                                "&:hover": {
+                                    background: `${borderColor.replace('0.3', '0.1')}`,
+                                },
+                                "&[data-selected]": {
+                                    background: `${borderColor.replace('0.3', '0.2')}`,
+                                    color: labelColor,
+                                },
+                            },
+                        }}
                         {...props}
                     />
                 </React.Fragment>

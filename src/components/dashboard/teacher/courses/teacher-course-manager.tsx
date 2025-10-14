@@ -62,6 +62,7 @@ export function TeacherCourseManager() {
                 created_at: course.created_at,
                 updated_at: course.updated_at,
                 instructor: course.instructor,
+                status: course.status,
             }))
         );
     }, [data]);
@@ -119,27 +120,10 @@ export function TeacherCourseManager() {
             style={{
                 width: "100%",
                 minHeight: "100vh",
-                background: "linear-gradient(to bottom right, #f8fafc 0%, #e5e7eb 100%)",
-                padding: "32px",
                 position: "relative",
             }}
         >
-            {/* Background decorative elements */}
-            <Box
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: 300,
-                    background: "linear-gradient(135deg, rgba(37, 99, 235, 0.05) 0%, rgba(29, 78, 216, 0.05) 100%)",
-                    borderRadius: "0 0 50% 50%",
-                    zIndex: 0,
-                }}
-            />
-
-            {/* Main Content */}
-            <Box style={{ position: "relative", zIndex: 1, maxWidth: 1400, margin: "0 auto" }}>
+            <Box style={{ position: "relative", zIndex: 1, margin: "0 auto" }}>
                 {selectedCourse ? (
                     <CourseContentViewer course={selectedCourse} onBack={handleBackToCourses} />
                 ) : (
@@ -167,7 +151,7 @@ export function TeacherCourseManager() {
                 handleSubmit={handleSubmit}
                 isLoading={courseCreation.isPending}
             />
-        </Box>
+        </Box >
     );
 }
 

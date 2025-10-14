@@ -18,9 +18,9 @@ export function SectionHeader({ badge, title, description, maxWidth = 600 }: Sec
                 variant="light"
                 color="blue"
                 style={{
-                    background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                    border: '1px solid rgba(37, 99, 235, 0.2)',
-                    color: '#2563eb'
+                    background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
+                    border: '1px solid rgba(189, 240, 82, 0.3)',
+                    color: '#8bc232'
                 }}
             >
                 {badge}

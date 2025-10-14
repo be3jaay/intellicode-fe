@@ -36,9 +36,9 @@ export function HeroSection() {
                             color="blue"
                             leftSection={<Brain size={16} />}
                             style={{
-                                background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                border: '1px solid rgba(37, 99, 235, 0.2)',
-                                color: '#2563eb'
+                                background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
+                                border: '1px solid rgba(189, 240, 82, 0.3)',
+                                color: '#8bc232'
                             }}
                         >
                             AI-Powered Learning Platform
@@ -57,7 +57,7 @@ export function HeroSection() {
                                 fw={800}
                                 span
                                 style={{
-                                    background: 'linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%)',
+                                    background: 'linear-gradient(135deg, #bdf052 0%, #8bc232 100%)',
                                     WebkitBackgroundClip: 'text',
                                     WebkitTextFillColor: 'transparent',
                                     backgroundClip: 'text'
@@ -96,8 +96,8 @@ export function HeroSection() {
                                     variant="light"
                                     size="sm"
                                     style={{
-                                        background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                        border: '1px solid rgba(37, 99, 235, 0.2)'
+                                        background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
+                                        border: '1px solid rgba(189, 240, 82, 0.3)'
                                     }}
                                 >
                                     <Check size={14} />
@@ -110,8 +110,8 @@ export function HeroSection() {
                                     variant="light"
                                     size="sm"
                                     style={{
-                                        background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                        border: '1px solid rgba(37, 99, 235, 0.2)'
+                                        background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
+                                        border: '1px solid rgba(189, 240, 82, 0.3)'
                                     }}
                                 >
                                     <Check size={14} />
@@ -124,8 +124,8 @@ export function HeroSection() {
                                     variant="light"
                                     size="sm"
                                     style={{
-                                        background: 'linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%)',
-                                        border: '1px solid rgba(37, 99, 235, 0.2)'
+                                        background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
+                                        border: '1px solid rgba(189, 240, 82, 0.3)'
                                     }}
                                 >
                                     <Check size={14} />
@@ -146,7 +146,7 @@ export function HeroSection() {
                                 style={{
                                     width: 180,
                                     height: 30,
-                                    background: "rgba(37, 99, 235, 0.1)",
+                                    background: "rgba(189, 240, 82, 0.15)",
                                     filter: "blur(6px)",
                                     borderRadius: "50%",
                                     position: "absolute",
