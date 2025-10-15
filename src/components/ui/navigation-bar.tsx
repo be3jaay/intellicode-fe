@@ -15,6 +15,7 @@ import {
     Shield,
     GraduationCap,
 } from 'lucide-react';
+import { IconUserCog } from '@tabler/icons-react';
 
 export function NavigationBar() {
     const { user } = useAuth();
@@ -92,6 +93,11 @@ export function NavigationBar() {
                 icon: Users,
                 label: 'Users',
                 href: `/dashboard/${role}/users`,
+            },
+            {
+                icon: IconUserCog,
+                label: 'User Management',
+                href: `/dashboard/${role}/userManagement`,
             },
             {
                 icon: BookOpen,
