@@ -10,21 +10,16 @@ import {
 } from "@/components/controlled-fields"
 import type { AssignmentFormData, AssignmentType } from "./types"
 import { useState } from "react"
-
+import { GetModuleByCourseResponse } from "@/services/module-service/module.type"
 interface AssignmentInfoStepProps {
     control: Control<AssignmentFormData>
     setValue: UseFormSetValue<AssignmentFormData>
     watch: UseFormWatch<AssignmentFormData>
     onNext: () => void
+    modulesData: GetModuleByCourseResponse['data']
 }
 
-const modules = [
-    { value: "1", label: "Module 1: Introduction to Programming" },
-    { value: "2", label: "Module 2: Variables and Data Types" },
-    { value: "3", label: "Module 3: Control Flow" },
-]
-
-export function AssignmentInfoStep({ control, setValue, watch, onNext }: AssignmentInfoStepProps) {
+export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesData }: AssignmentInfoStepProps) {
     const [dueDate, setDueDate] = useState<Date | null>(null)
     const assignmentType = watch("assignmentType")
 
@@ -106,7 +101,10 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext }: Assignm
                 name="moduleId"
                 label="Select Module"
                 placeholder="Choose a module for this assignment"
-                options={modules}
+                options={modulesData.map((module) => ({
+                    value: module.module_id,
+                    label: module.module_title,
+                }))}
                 isRequired
             />
 

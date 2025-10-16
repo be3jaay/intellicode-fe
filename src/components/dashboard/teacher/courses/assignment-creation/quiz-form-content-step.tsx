@@ -51,6 +51,7 @@ interface QuizFormContentStepProps {
     totalAssignmentPoints: number
     onBack: () => void
     onSubmit: () => void
+    isLoading: boolean
 }
 
 type QuestionType = "multiple_choice" | "enumeration" | "identification" | "true_false"
@@ -71,6 +72,7 @@ export function QuizFormContentStep({
     totalAssignmentPoints,
     onBack,
     onSubmit,
+    isLoading,
 }: QuizFormContentStepProps) {
     const [currentQuestionType, setCurrentQuestionType] = useState<QuestionType>("multiple_choice")
 
@@ -669,6 +671,8 @@ export function QuizFormContentStep({
                                                             size="md"
                                                             onClick={handleSaveWithValidation}
                                                             radius="md"
+                                                            loading={isLoading}
+                                                            disabled={isLoading}
                                                             styles={{
                                                                 root: {
                                                                     background: "linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)",

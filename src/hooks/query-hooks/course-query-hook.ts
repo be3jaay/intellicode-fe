@@ -1,6 +1,6 @@
 import { useMutation, useInfiniteQuery, useQueryClient, useQuery } from '@tanstack/react-query';
 import { CourseService } from '@/services/course-service/course-service';
-import { CourseValue } from '@/services/course-service/course-type';
+import { CourseValue, ErrorResponse } from '@/services/course-service/course-type';
 
 // Query keys
 export const courseKeys = {
@@ -43,12 +43,22 @@ export function useInfiniteCourses(limit: number = 6) {
 export function useJoinCourse() {
     const queryClient = useQueryClient();
 
-    return useMutation({
+    const { mutateAsync, isPending, isError } = useMutation({
         mutationFn: (inviteCode: string) => CourseService.joinCourseByInviteCode(inviteCode),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['enrolled-courses'] });
+            queryClient.invalidateQueries({ queryKey: ['latestEnrollments'] });
         },
-    });
+        onError: (error: ErrorResponse) => {
+            console.error(error.message);
+        },
+    })
+
+    return {
+        joinCourse: mutateAsync,
+        isJoining: isPending,
+        isError: isError,
+    };
 }
 
 export function useCourseDetails(courseId: string) {

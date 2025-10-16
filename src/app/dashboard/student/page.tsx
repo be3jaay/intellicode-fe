@@ -1,8 +1,12 @@
 "use client"
 import { Box, Stack, Grid, Group, Text, Button, rem } from "@mantine/core"
 import { BookOpen, ClipboardList, HelpCircle, Plus, ArrowRight } from "lucide-react"
-import { StatCard, CourseCard, WelcomeBanner, AchievementCard } from "@/components/dashboard/shared"
+import { StatCard, CourseCard, WelcomeBanner, AchievementCard, CourseCardSkeleton } from "@/components/dashboard/shared"
+import { JoinCourseModal } from "@/components/dashboard/student/join-course-modal"
+import { useGetLatestEnrollments } from "@/hooks/query-hooks/enrollment-query"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
+import { format } from "date-fns"
 
 // Mock data
 const studentStats = {
@@ -11,32 +15,7 @@ const studentStats = {
     totalQuizzes: 24,
 }
 
-const enrolledCourses = [
-    {
-        id: "1",
-        title: "Introduction to Python Programming",
-        description: "Learn the fundamentals of Python programming from scratch",
-        progress: 65,
-        lastActivity: "2 days ago",
-        status: "active" as const,
-    },
-    {
-        id: "2",
-        title: "Web Development with React",
-        description: "Build modern web applications using React and TypeScript",
-        progress: 42,
-        lastActivity: "1 week ago",
-        status: "active" as const,
-    },
-    {
-        id: "3",
-        title: "Data Structures and Algorithms",
-        description: "Master essential data structures and algorithmic thinking",
-        progress: 88,
-        lastActivity: "Yesterday",
-        status: "active" as const,
-    },
-]
+// Mock data for stats and achievements (these can be replaced with real data later)
 
 const achievements = [
     {
@@ -64,12 +43,25 @@ const achievements = [
 
 export default function StudentDashboard() {
     const router = useRouter()
+    const [joinModalOpened, setJoinModalOpened] = useState(false)
+    const { data: enrollmentsData, isLoading: isLoadingEnrollments, error } = useGetLatestEnrollments()
+
+    // Transform enrollment data to match CourseCard props
+    const enrolledCourses = enrollmentsData?.data?.map((enrollment) => ({
+        id: enrollment.course.id,
+        title: enrollment.course.title,
+        description: enrollment.course.description,
+        progress: 0, // This would need to be calculated from actual progress data
+        lastActivity: format(new Date(enrollment.enrolled_at), "MMM dd, yyyy"),
+        status: enrollment.status === "active" ? "active" : "draft" as "active" | "completed" | "draft",
+        thumbnail: enrollment.course.thumbnail,
+        instructor: `${enrollment.course.instructor.first_name} ${enrollment.course.instructor.last_name}`,
+    })) || []
 
     return (
         <Box
             style={{
                 minHeight: "100vh",
-                background: "#1a1a1a",
                 padding: rem(24),
             }}
         >
@@ -155,7 +147,7 @@ export default function StudentDashboard() {
                                             },
                                         },
                                     }}
-                                    onClick={() => router.push("/courses/join")}
+                                    onClick={() => setJoinModalOpened(true)}
                                 >
                                     Join Course
                                 </Button>
@@ -179,18 +171,62 @@ export default function StudentDashboard() {
                             </Group>
                         </Group>
                         <Grid>
-                            {enrolledCourses.map((course) => (
-                                <Grid.Col key={course.id} span={{ base: 12, sm: 6, lg: 4 }}>
-                                    <CourseCard
-                                        {...course}
-                                        onClick={() => router.push(`/dashboard/student/courses/${course.id}`)}
-                                    />
+                            {isLoadingEnrollments ? (
+                                // Show skeleton loading for 3 cards
+                                Array.from({ length: 3 }).map((_, index) => (
+                                    <Grid.Col key={index} span={{ base: 12, sm: 6, lg: 4 }}>
+                                        <CourseCardSkeleton />
+                                    </Grid.Col>
+                                ))
+                            ) : error ? (
+                                <Grid.Col span={12}>
+                                    <Box
+                                        style={{
+                                            padding: "2rem",
+                                            textAlign: "center",
+                                            background: "rgba(246, 172, 174, 0.1)",
+                                            border: "1px solid rgba(246, 172, 174, 0.3)",
+                                            borderRadius: "8px",
+                                        }}
+                                    >
+                                        <Text c="#f6acae" size="sm">
+                                            Failed to load your enrolled courses. Please try again.
+                                        </Text>
+                                    </Box>
                                 </Grid.Col>
-                            ))}
+                            ) : enrolledCourses.length === 0 ? (
+                                <Grid.Col span={12}>
+                                    <Box
+                                        style={{
+                                            padding: "2rem",
+                                            textAlign: "center",
+                                            background: "rgba(34, 34, 34, 0.4)",
+                                            border: "1px solid rgba(189, 240, 82, 0.1)",
+                                            borderRadius: "8px",
+                                        }}
+                                    >
+                                        <Text c="dimmed" size="sm">
+                                            You haven't enrolled in any courses yet. Join a course to get started!
+                                        </Text>
+                                    </Box>
+                                </Grid.Col>
+                            ) : (
+                                enrolledCourses.map((course) => (
+                                    <Grid.Col key={course.id} span={{ base: 12, sm: 6, lg: 4 }}>
+                                        <CourseCard
+                                            {...course}
+                                            onClick={() => router.push(`/dashboard/student/courses/${course.id}`)}
+                                        />
+                                    </Grid.Col>
+                                ))
+                            )}
                         </Grid>
                     </Box>
                 </Stack>
             </Box>
+
+            {/* Join Course Modal */}
+            <JoinCourseModal opened={joinModalOpened} onClose={() => setJoinModalOpened(false)} />
         </Box>
     )
 }

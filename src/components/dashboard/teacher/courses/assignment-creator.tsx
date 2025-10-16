@@ -12,14 +12,21 @@ import {
     CodeSandboxContentStep,
     type AssignmentFormData,
 } from "./assignment-creation"
+import { useFetchModuleByCourse } from "@/hooks/query-hooks/module-query"
+import { useCreateAssignment } from "@/hooks/query-hooks/assignment-query"
+import { CreateQuizForm } from "@/services/assignment-service/assignment-type"
+import { notifications } from "@mantine/notifications"
 
 interface AssignmentCreatorProps {
     course: CourseValueResponse
     onBack: () => void
+    moduleId: string
 }
 
-export function AssignmentCreator({ course, onBack }: AssignmentCreatorProps) {
+export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreatorProps) {
     const [activeStep, setActiveStep] = useState(0)
+    const { createAssignment, isCreating } = useCreateAssignment();
+    const { modulesData } = useFetchModuleByCourse(course.id)
 
     const form = useForm<AssignmentFormData>({
         defaultValues: {
@@ -29,7 +36,7 @@ export function AssignmentCreator({ course, onBack }: AssignmentCreatorProps) {
             attachment: null,
             points: 100,
             dueDate: null,
-            moduleId: "",
+            moduleId: moduleId,
             questions: [],
             editingIndex: null,
             isAddingNew: false,
@@ -38,7 +45,7 @@ export function AssignmentCreator({ course, onBack }: AssignmentCreatorProps) {
         },
     })
 
-    const { control, handleSubmit, setValue, watch, register } = form
+    const { control, handleSubmit, setValue, watch, register, reset } = form
     const assignmentType = watch("assignmentType")
 
     // Dynamic field array for quiz questions
@@ -109,27 +116,49 @@ export function AssignmentCreator({ course, onBack }: AssignmentCreatorProps) {
         dynamicFieldArray.handleSave()
     }
 
-    const onSubmit = (data: AssignmentFormData) => {
-        console.log("=== ASSIGNMENT SUBMISSION ===")
-        console.log("Course ID:", course.id)
-        console.log("Assignment Type:", data.assignmentType)
-        console.log("Assignment Data:", {
-            ...data,
-            attachment: data.attachment ? {
-                name: data.attachment.name,
-                size: data.attachment.size,
-                type: data.attachment.type,
-            } : null,
-        })
+    async function onSubmit(data: CreateQuizForm) {
+        try {
+            await createAssignment({
+                value: {
+                    title: data.title,
+                    description: data.description,
+                    assignmentType: data.assignmentType,
+                    points: data.points,
+                    dueDate: data.dueDate,
+                    questions: data.questions,
+                }, moduleId: "fb81a04b-0d36-4311-974a-d9546ec0da26" //problem module id is undefined
+            })
 
-        if (data.assignmentType === "quiz_form") {
-            console.log("Quiz Questions:", data.questions)
-        } else if (data.assignmentType === "code_sandbox") {
-            console.log("Code Sandbox Details:", {
-                starterCode: data.starterCode,
-                testCases: data.testCases,
+            notifications.show({
+                title: "Assignment created successfully",
+                message: "Assignment created successfully",
+                color: "green",
+            })
+
+            setTimeout(() => {
+                reset();
+            }, 1500)
+        } catch (error) {
+            notifications.show({
+                title: "Error",
+                message: error instanceof Error ? error.message : "Failed to create assignment. Please try again.",
+                color: "red",
             })
         }
+
+
+        // if (data.assignmentType === "quiz_form") {
+        //     notifications.show({
+        //         title: "Quiz Questions:",
+        //         message: "Quiz Questions:",
+        //         color: "green",
+        //     })
+        // } else if (data.assignmentType === "code_sandbox") {
+        //     console.log("Code Sandbox Details:", {
+        //         starterCode: data.starterCode,
+        //         testCases: data.testCases,
+        //     })
+        // }
     }
 
     return (
@@ -270,6 +299,7 @@ export function AssignmentCreator({ course, onBack }: AssignmentCreatorProps) {
                                 setValue={setValue}
                                 watch={watch}
                                 onNext={() => setActiveStep(1)}
+                                modulesData={modulesData ?? []}
                             />
                         </Stepper.Step>
 
@@ -313,6 +343,7 @@ export function AssignmentCreator({ course, onBack }: AssignmentCreatorProps) {
                                     totalAssignmentPoints={watch("points")}
                                     onBack={() => setActiveStep(0)}
                                     onSubmit={handleSubmit(onSubmit)}
+                                    isLoading={isCreating}
                                 />
                             ) : (
                                 <CodeSandboxContentStep

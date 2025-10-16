@@ -1,5 +1,5 @@
 "use client"
-import { Box, Card, Group, Stack, Text, Tabs, Badge, ActionIcon, CopyButton, Tooltip } from "@mantine/core"
+import { Box, Card, Group, Stack, Text, Tabs, Badge, ActionIcon, CopyButton, Tooltip, Center, Loader } from "@mantine/core"
 import { Button } from "@/components/ui/button"
 import {
     ArrowLeft,
@@ -15,13 +15,16 @@ import {
     Check,
     Copy,
 } from "lucide-react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import type { CourseValueResponse } from "@/services/course-service/course-type"
+import { ModuleService } from "@/services/module-service/module-service"
 import { BulkModuleCreator } from "./bulk-module-creator"
 import { AssignmentCreator } from "./assignment-creator"
 import { LessonCreator } from "./lesson-creator"
 import { BulkQuizCreator } from "./bulk-quiz-creator"
 import { ActivityCreator } from "./activity-creator"
+import { AssignmentContent } from "./assignment-content"
+import { StudentContent } from "./student-content"
 
 type ContentView = "main" | "modules" | "assignment" | "lesson" | "quiz" | "activity"
 
@@ -33,6 +36,28 @@ interface CourseContentViewerProps {
 export function CourseContentViewer({ course, onBack }: CourseContentViewerProps) {
     const [activeTab, setActiveTab] = useState<string>("modules")
     const [currentView, setCurrentView] = useState<ContentView>("main")
+    const [moduleId, setModuleId] = useState<string>("")
+    const [isLoadingModules, setIsLoadingModules] = useState(false)
+
+    useEffect(() => {
+        const fetchModules = async () => {
+            if (course.id) {
+                setIsLoadingModules(true)
+                try {
+                    const response = await ModuleService.getModuleByCourse(course.id)
+                    if (response.data && response.data.length > 0) {
+                        setModuleId(response.data[0].module_id)
+                    }
+                } catch (error) {
+                    console.error("Failed to fetch modules:", error)
+                } finally {
+                    setIsLoadingModules(false)
+                }
+            }
+        }
+
+        fetchModules()
+    }, [course.id])
 
     const handleAddModule = () => {
         setCurrentView("modules")
@@ -44,10 +69,6 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
 
     const handleAddLesson = () => {
         setCurrentView("lesson")
-    }
-
-    const handleAddQuiz = () => {
-        setCurrentView("quiz")
     }
 
     const handleAddActivity = () => {
@@ -64,16 +85,13 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
     }
 
     if (currentView === "assignment") {
-        return <AssignmentCreator course={course} onBack={handleBackToMain} />
+        return <AssignmentCreator course={course} onBack={handleBackToMain} moduleId={moduleId} />
     }
 
     if (currentView === "lesson") {
         return <LessonCreator course={course} onBack={handleBackToMain} />
     }
 
-    if (currentView === "quiz") {
-        return <BulkQuizCreator course={course} onBack={handleBackToMain} />
-    }
 
     if (currentView === "activity") {
         return <ActivityCreator course={course} onBack={handleBackToMain} />
@@ -376,9 +394,7 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         <Tabs.Tab value="activities" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
                             Activities
                         </Tabs.Tab>
-                        <Tabs.Tab value="quizzes" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
-                            Quizzes
-                        </Tabs.Tab>
+
                         <Tabs.Tab value="students" color="#bdf052" leftSection={<UserCheck size={16} />}>
                             Students
                         </Tabs.Tab>
@@ -462,30 +478,6 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         </Stack>
                     </Tabs.Panel>
 
-                    <Tabs.Panel value="quizzes">
-                        <Stack gap="md">
-                            <Group justify="space-between">
-                                <Text fw={600} c="#e9eeea">
-                                    Course Quizzes
-                                </Text>
-                                <Button
-                                    size="sm"
-                                    onClick={handleAddQuiz}
-                                    style={{
-                                        background: "linear-gradient(135deg, #ffa500 0%, #ff8c00 100%)",
-                                        color: "#222222",
-                                        border: "none",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    <Plus size={16} style={{ marginRight: 8 }} />
-                                    Add Quiz
-                                </Button>
-                            </Group>
-                            <QuizzesContent />
-                        </Stack>
-                    </Tabs.Panel>
-
                     <Tabs.Panel value="assignment">
                         <Stack gap="md">
                             <Group justify="space-between">
@@ -506,30 +498,34 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                     Add Assignment
                                 </Button>
                             </Group>
-                            <QuizzesContent />
+                            {isLoadingModules ? (
+                                <Center py="xl">
+                                    <Stack align="center" gap="md">
+                                        <Loader size="lg" color="#bdf052" />
+                                        <Text c="dimmed">Loading assignments...</Text>
+                                    </Stack>
+                                </Center>
+                            ) : moduleId ? (
+                                <AssignmentContent moduleId={moduleId} />
+                            ) : (
+                                <Card
+                                    padding="xl"
+                                    radius="md"
+                                    style={{
+                                        background: "rgba(34, 34, 34, 0.4)",
+                                        border: "1px solid rgba(189, 240, 82, 0.1)",
+                                        textAlign: "center",
+                                    }}
+                                >
+                                    <Text c="dimmed">No modules found. Create a module first to add assignments.</Text>
+                                </Card>
+                            )}
                         </Stack>
                     </Tabs.Panel>
 
                     {/* Students Tab */}
                     <Tabs.Panel value="students">
-                        <Stack gap="md">
-                            <Group justify="space-between">
-                                <Text fw={600} c="#e9eeea">
-                                    Enrolled Students
-                                </Text>
-                                <Button
-                                    size="sm"
-                                    variant="outline"
-                                    style={{
-                                        borderColor: "rgba(189, 240, 82, 0.3)",
-                                        color: "#bdf052",
-                                    }}
-                                >
-                                    Export List
-                                </Button>
-                            </Group>
-                            <StudentsContent />
-                        </Stack>
+                        <StudentContent courseId={course.id} />
                     </Tabs.Panel>
                 </Tabs>
             </Card>
@@ -690,96 +686,3 @@ function QuizzesContent() {
     )
 }
 
-function StudentsContent() {
-    const students = [
-        { id: "1", name: "John Doe", email: "john@example.com", progress: 75, enrolled: "2 weeks ago" },
-        { id: "2", name: "Jane Smith", email: "jane@example.com", progress: 50, enrolled: "1 week ago" },
-        { id: "3", name: "Bob Johnson", email: "bob@example.com", progress: 90, enrolled: "3 weeks ago" },
-    ]
-
-    return (
-        <Stack gap="sm">
-            {students.map((student) => (
-                <Card
-                    key={student.id}
-                    padding="md"
-                    radius="md"
-                    style={{
-                        background: "rgba(34, 34, 34, 0.6)",
-                        border: "1px solid rgba(189, 240, 82, 0.1)",
-                        transition: "all 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.3)"
-                        e.currentTarget.style.background = "rgba(189, 240, 82, 0.05)"
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.1)"
-                        e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)"
-                    }}
-                >
-                    <Group justify="space-between" wrap="nowrap">
-                        <Group gap="md">
-                            <Box
-                                style={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: "50%",
-                                    background: "linear-gradient(135deg, #b3a1ff 0%, #9b89e6 100%)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "#1a1a1a",
-                                    fontWeight: 700,
-                                    fontSize: 14,
-                                }}
-                            >
-                                {student.name
-                                    .split(" ")
-                                    .map((n) => n[0])
-                                    .join("")}
-                            </Box>
-                            <Box>
-                                <Text fw={600} size="sm" mb={2} c="#e9eeea">
-                                    {student.name}
-                                </Text>
-                                <Text size="xs" c="dimmed">
-                                    {student.email}
-                                </Text>
-                            </Box>
-                        </Group>
-                        <Group gap="lg">
-                            <Box>
-                                <Text size="xs" c="dimmed" mb={4}>
-                                    Progress
-                                </Text>
-                                <Badge
-                                    style={{
-                                        background:
-                                            student.progress > 70
-                                                ? "rgba(189, 240, 82, 0.2)"
-                                                : student.progress > 40
-                                                    ? "rgba(246, 172, 174, 0.2)"
-                                                    : "rgba(246, 172, 174, 0.3)",
-                                        color: student.progress > 70 ? "#bdf052" : student.progress > 40 ? "#f6acae" : "#f6acae",
-                                        border: `1px solid ${student.progress > 70
-                                            ? "rgba(189, 240, 82, 0.3)"
-                                            : student.progress > 40
-                                                ? "rgba(246, 172, 174, 0.3)"
-                                                : "rgba(246, 172, 174, 0.4)"
-                                            }`,
-                                    }}
-                                >
-                                    {student.progress}%
-                                </Badge>
-                            </Box>
-                            <Text size="xs" c="dimmed">
-                                Enrolled {student.enrolled}
-                            </Text>
-                        </Group>
-                    </Group>
-                </Card>
-            ))}
-        </Stack>
-    )
-}
