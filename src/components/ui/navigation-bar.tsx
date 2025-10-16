@@ -104,16 +104,16 @@ export function NavigationBar() {
                 label: 'Courses',
                 href: `/dashboard/${role}/courses`,
             },
-            {
-                icon: GraduationCap,
-                label: 'Instructors',
-                href: `/dashboard/${role}/instructors`,
-            },
-            {
-                icon: Shield,
-                label: 'Permissions',
-                href: `/dashboard/${role}/permissions`,
-            },
+            // {
+            //     icon: GraduationCap,
+            //     label: 'Instructors',
+            //     href: `/dashboard/${role}/instructors`,
+            // },
+            // {
+            //     icon: Shield,
+            //     label: 'Permissions',
+            //     href: `/dashboard/${role}/permissions`,
+            // },
             {
                 icon: BarChart,
                 label: 'Analytics',

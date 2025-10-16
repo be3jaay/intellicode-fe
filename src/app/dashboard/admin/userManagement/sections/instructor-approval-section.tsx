@@ -61,7 +61,12 @@ export function InstructorApprovalSection() {
                 <div className="flex flex-col gap-4">
                   {/* Header with Avatar and Basic Info */}
                   <div className="flex items-start gap-4">
-                    <Avatar size="lg" radius="xl" color="violet" className="shrink-0">
+                    <Avatar
+                      size="lg"
+                      radius="xl"
+                      color="violet"
+                      className="shrink-0"
+                    >
                       {instructor.name
                         .split(" ")
                         .map((n) => n[0])
@@ -77,7 +82,11 @@ export function InstructorApprovalSection() {
                         >
                           {instructor.name}
                         </Text>
-                        <Badge variant="light" size="sm" className="self-start sm:self-center">
+                        <Badge
+                          variant="light"
+                          size="sm"
+                          className="self-start sm:self-center"
+                        >
                           {instructor.specialization}
                         </Badge>
                       </div>
@@ -88,14 +97,16 @@ export function InstructorApprovalSection() {
                       >
                         {instructor.email}
                       </Text>
-                      
+
                       {/* Additional Details */}
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600">
                         <div>
-                          <span className="font-medium">Applied:</span> {instructor.appliedDate}
+                          <span className="font-medium">Applied:</span>{" "}
+                          {instructor.appliedDate}
                         </div>
                         <div>
-                          <span className="font-medium">Experience:</span> {instructor.experience}
+                          <span className="font-medium">Experience:</span>{" "}
+                          {instructor.experience}
                         </div>
                       </div>
                     </div>
@@ -185,105 +196,84 @@ export function InstructorApprovalSection() {
         onClose={() => setIsModalOpen(false)}
         title="Instructor Application Details"
         size="lg"
-        centered
-        overlayProps={{
-          backgroundOpacity: 0.55,
-          blur: 3,
-        }}
       >
         {selectedInstructor && (
-          <div className="flex flex-col gap-6">
-            {/* Header Section */}
-            <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-              <Avatar size="xl" radius="xl" color="violet" className="shrink-0">
+          <div
+            style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
+          >
+            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+              <Avatar size="xl" radius="xl" color="violet">
                 {selectedInstructor.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
               </Avatar>
-              <div className="min-w-0 flex-1">
-                <Text size="xl" fw={600} className="break-words mb-1">
+              <div>
+                <Text size="lg" fw={600}>
                   {selectedInstructor.name}
                 </Text>
-                <Text size="md" c="dimmed" className="break-words">
+                <Text size="sm" c="dimmed">
                   {selectedInstructor.email}
                 </Text>
-                <Badge variant="light" size="md" className="mt-2">
-                  {selectedInstructor.specialization}
-                </Badge>
               </div>
             </div>
 
-            {/* Details Section */}
-            <div className="space-y-4">
-              <Grid>
-                <Grid.Col span={{ base: 12, sm: 6 }}>
-                  <div className="p-3 border rounded-lg">
-                    <Text size="sm" fw={500} c="dimmed" mb={2}>
-                      Experience Level
-                    </Text>
-                    <Text size="md" fw={500}>
-                      {selectedInstructor.experience}
-                    </Text>
-                  </div>
-                </Grid.Col>
-                <Grid.Col span={{ base: 12, sm: 6 }}>
-                  <div className="p-3 border rounded-lg">
-                    <Text size="sm" fw={500} c="dimmed" mb={2}>
-                      Application Date
-                    </Text>
-                    <Text size="md" fw={500}>
-                      {selectedInstructor.appliedDate}
-                    </Text>
-                  </div>
-                </Grid.Col>
-                <Grid.Col span={12}>
-                  <div className="p-3 border rounded-lg">
-                    <Text size="sm" fw={500} c="dimmed" mb={2}>
-                      Qualifications & Background
-                    </Text>
-                    <Text size="sm" className="break-words leading-relaxed">
-                      {selectedInstructor.qualifications}
-                    </Text>
-                  </div>
-                </Grid.Col>
-                <Grid.Col span={{ base: 12, sm: 6 }}>
-                  <div className="p-3 border rounded-lg">
-                    <Text size="sm" fw={500} c="dimmed" mb={2}>
-                      Current Status
-                    </Text>
-                    <Badge variant="light" size="lg">{selectedInstructor.status}</Badge>
-                  </div>
-                </Grid.Col>
-              </Grid>
-            </div>
+            <Grid>
+              <Grid.Col span={6}>
+                <Text size="sm" fw={500} mb={4}>
+                  Specialization
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedInstructor.specialization}
+                </Text>
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Text size="sm" fw={500} mb={4}>
+                  Experience
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedInstructor.experience}
+                </Text>
+              </Grid.Col>
+              <Grid.Col span={12}>
+                <Text size="sm" fw={500} mb={4}>
+                  Qualifications
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedInstructor.qualifications}
+                </Text>
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Text size="sm" fw={500} mb={4}>
+                  Applied Date
+                </Text>
+                <Text size="sm" c="dimmed">
+                  {selectedInstructor.appliedDate}
+                </Text>
+              </Grid.Col>
+              <Grid.Col span={6}>
+                <Text size="sm" fw={500} mb={4}>
+                  Status
+                </Text>
+                <Badge variant="light">{selectedInstructor.status}</Badge>
+              </Grid.Col>
+            </Grid>
 
-            {/* Action Buttons */}
-            <div className="flex gap-3 justify-end pt-4 border-t">
-              <Button
-                variant="default"
-                onClick={() => setIsModalOpen(false)}
-                size="md"
-                className="px-6"
-              >
+            <div
+              style={{
+                display: "flex",
+                gap: "0.5rem",
+                justifyContent: "flex-end",
+                marginTop: "1rem",
+              }}
+            >
+              <Button variant="default" onClick={() => setIsModalOpen(false)}>
                 Close
               </Button>
-              <Button
-                color="red"
-                leftSection={<IconX size={18} />}
-                size="md"
-                className="px-6"
-              >
-                Reject Application
+              <Button color="red" leftSection={<IconX size={16} />}>
+                Reject
               </Button>
-              <Button
-                leftSection={<IconCheck size={18} />}
-                size="md"
-                className="px-6"
-                color="green"
-              >
-                Approve Application
-              </Button>
+              <Button leftSection={<IconCheck size={16} />}>Approve</Button>
             </div>
           </div>
         )}
