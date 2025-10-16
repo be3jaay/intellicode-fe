@@ -1,22 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Box,
-  Tabs,
-  Container,
-  Group,
-  Avatar,
-  Title,
-  Text,
-  Button,
-} from "@mantine/core";
+import { Box, Tabs } from "@mantine/core";
 import { StudentAccountsSection } from "./sections/student-accounts-section";
 import { InstructorApprovalSection } from "./sections/instructor-approval-section";
 import { InstructorAccountsSection } from "./sections/instructor-accounts-section";
-import { LogOut, UserPlus } from "lucide-react";
 import { useAuth } from "@/providers/auth-context";
-import { IconUserPlus } from "@tabler/icons-react";
 
 export default function UserManagementPage() {
   const [activeTab, setActiveTab] = useState<string | null>("students");
@@ -24,64 +13,28 @@ export default function UserManagementPage() {
 
   return (
     <Box style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
-      {/* Header */}
-      <Box
-        style={{
-          background: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)",
-          padding: "2rem",
-          color: "white",
-        }}
-      >
-        <Container size="xl">
-          <Group justify="space-between" align="center">
-            <Group>
-              <Avatar size="lg" radius="xl" color="red">
-                <IconUserPlus size={24} />
-              </Avatar>
-              <Box>
-                <Title order={2}>User Management</Title>
-                <Text size="sm" opacity={0.9}>
-                  {user?.firstName} {user?.lastName} • Administrator
-                </Text>
-              </Box>
-            </Group>
-            <Group>
-              <Button variant="white" leftSection={<UserPlus size={18} />}>
-                Add User
-              </Button>
-              <Button
-                variant="subtle"
-                color="white"
-                leftSection={<LogOut size={18} />}
-                onClick={signOut}
-              >
-                Sign Out
-              </Button>
-            </Group>
-          </Group>
-        </Container>
-      </Box>
+      <main style={{ maxWidth: 1280, margin: "0 auto", padding: "2rem 1rem" }}>
+        <div style={{ marginBottom: "2rem" }}>
+          <h1
+            style={{
+              fontSize: "2.5rem",
+              fontWeight: 700,
+              marginBottom: "0.5rem",
+            }}
+          >
+            User Management
+          </h1>
+          <p style={{ fontSize: "1.125rem", color: "#868e96" }}>
+            Manage student accounts, approve instructor applications, and
+            oversee instructor profiles
+          </p>
+        </div>
 
-      <Container
-        size="xl"
-        component="main"
-        className="p-3 sm:p-4 lg:py-8 lg:px-4"
-      >
-        <Tabs
-          value={activeTab}
-          onChange={setActiveTab}
-          orientation="horizontal"
-        >
-          <Tabs.List className="flex-wrap" grow>
-            <Tabs.Tab value="students" className="text-sm py-3 px-4">
-              Students
-            </Tabs.Tab>
-            <Tabs.Tab value="approval" className="text-sm py-3 px-4">
-              Approvals
-            </Tabs.Tab>
-            <Tabs.Tab value="instructors" className="text-sm py-3 px-4">
-              Instructors
-            </Tabs.Tab>
+        <Tabs value={activeTab} onChange={setActiveTab}>
+          <Tabs.List>
+            <Tabs.Tab value="students">Manage Students</Tabs.Tab>
+            <Tabs.Tab value="approval">Instructor Approvals</Tabs.Tab>
+            <Tabs.Tab value="instructors">Manage Instructors</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="students" pt="xl">
@@ -96,7 +49,7 @@ export default function UserManagementPage() {
             <InstructorAccountsSection />
           </Tabs.Panel>
         </Tabs>
-      </Container>
+      </main>
     </Box>
   );
 }
