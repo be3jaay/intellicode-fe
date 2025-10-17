@@ -453,6 +453,8 @@ export function CourseGridViewer({
                                     overflow: "hidden",
                                     transition: "all 0.3s ease",
                                     cursor: "pointer",
+                                    height: 430,
+
                                 }}
                                 onClick={() => onViewCourse(course)}
                             >
@@ -511,7 +513,7 @@ export function CourseGridViewer({
                                         {course.title}
                                     </Text>
 
-                                    <Text size="sm" c="#d1d5db" mb="md" lineClamp={2}>
+                                    <Text size="sm" c="#d1d5db" mb="md" h={80} lineClamp={2}>
                                         {course.description}
                                     </Text>
 

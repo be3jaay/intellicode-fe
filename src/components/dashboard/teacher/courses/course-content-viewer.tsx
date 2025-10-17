@@ -25,6 +25,7 @@ import { BulkQuizCreator } from "./bulk-quiz-creator"
 import { ActivityCreator } from "./activity-creator"
 import { AssignmentContent } from "./assignment-content"
 import { StudentContent } from "./student-content"
+import { ModuleContent } from "./module-content"
 
 type ContentView = "main" | "modules" | "assignment" | "lesson" | "quiz" | "activity"
 
@@ -424,7 +425,7 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                     Add Module
                                 </Button>
                             </Group>
-                            <ModulesContent />
+                            <ModuleContent courseId={course.id} />
                         </Stack>
                     </Tabs.Panel>
 
@@ -546,97 +547,6 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
     )
 }
 
-function ModulesContent() {
-    const modules = [
-        { id: "1", title: "Introduction to Programming", lessons: 5, duration: "2 hours" },
-        { id: "2", title: "Variables and Data Types", lessons: 8, duration: "3 hours" },
-        { id: "3", title: "Control Flow", lessons: 6, duration: "2.5 hours" },
-    ]
-
-    return (
-        <Stack gap="sm">
-            {modules.map((module, index) => (
-                <Card
-                    key={module.id}
-                    padding="md"
-                    radius="md"
-                    style={{
-                        background: "rgba(34, 34, 34, 0.6)",
-                        border: "1px solid rgba(189, 240, 82, 0.1)",
-                        transition: "all 0.2s ease",
-                        cursor: "pointer",
-                    }}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)"
-                        e.currentTarget.style.background = "rgba(189, 240, 82, 0.05)"
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.1)"
-                        e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)"
-                    }}
-                >
-                    <Group justify="space-between" wrap="nowrap">
-                        <Group gap="md">
-                            <Box
-                                style={{
-                                    width: 40,
-                                    height: 40,
-                                    borderRadius: 8,
-                                    background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    color: "#1a1a1a",
-                                    fontWeight: 700,
-                                    fontSize: 16,
-                                }}
-                            >
-                                {index + 1}
-                            </Box>
-                            <Box>
-                                <Text fw={600} size="sm" mb={4} c="#e9eeea">
-                                    {module.title}
-                                </Text>
-                                <Group gap="md">
-                                    <Text size="xs" c="dimmed">
-                                        {module.lessons} lessons
-                                    </Text>
-                                    <Text size="xs" c="dimmed">
-                                        {module.duration}
-                                    </Text>
-                                </Group>
-                            </Box>
-                        </Group>
-                        <Group gap="xs">
-                            <ActionIcon
-                                variant="light"
-                                size="md"
-                                style={{
-                                    background: "rgba(179, 161, 255, 0.15)",
-                                    color: "#b3a1ff",
-                                    border: "1px solid rgba(179, 161, 255, 0.3)",
-                                }}
-                            >
-                                <Edit size={16} />
-                            </ActionIcon>
-                            <ActionIcon
-                                variant="light"
-                                size="md"
-                                style={{
-                                    background: "rgba(246, 172, 174, 0.15)",
-                                    color: "#f6acae",
-                                    border: "1px solid rgba(246, 172, 174, 0.3)",
-                                }}
-                            >
-                                <Trash2 size={16} />
-                            </ActionIcon>
-                        </Group>
-                    </Group>
-                </Card>
-            ))}
-        </Stack>
-    )
-}
 
 function LessonsContent() {
     return (

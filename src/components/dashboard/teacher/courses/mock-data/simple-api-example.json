@@ -1,0 +1,36 @@
+{
+  "courseId": "course_123",
+  "moduleId": "module_456",
+  "lessons": [
+    {
+      "title": "Introduction to JavaScript Variables",
+      "description": "Learn the fundamentals of JavaScript variables including var, let, and const declarations.",
+      "content": "<h2>What are Variables?</h2><p>Variables are containers for storing data values.</p>",
+      "order": 1,
+      "isPublished": true,
+      "estimatedDuration": 15,
+      "difficulty": "beginner",
+      "tags": ["javascript", "variables", "fundamentals"]
+    },
+    {
+      "title": "Data Types in JavaScript",
+      "description": "Explore JavaScript's dynamic typing system and learn about primitive and reference data types.",
+      "content": "<h2>JavaScript Data Types</h2><p>JavaScript has dynamic typing, meaning variables can hold values of any type.</p>",
+      "order": 2,
+      "isPublished": true,
+      "estimatedDuration": 20,
+      "difficulty": "beginner",
+      "tags": ["javascript", "data-types", "fundamentals"]
+    },
+    {
+      "title": "Functions and Scope",
+      "description": "Master JavaScript functions including function declarations, expressions, and arrow functions.",
+      "content": "<h2>JavaScript Functions</h2><p>Functions are reusable blocks of code that perform specific tasks.</p>",
+      "order": 3,
+      "isPublished": false,
+      "estimatedDuration": 25,
+      "difficulty": "intermediate",
+      "tags": ["javascript", "functions", "scope"]
+    }
+  ]
+}

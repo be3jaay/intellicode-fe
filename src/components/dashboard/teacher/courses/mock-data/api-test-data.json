@@ -1,0 +1,196 @@
+{
+  "bulkLessonCreationRequest": {
+    "courseId": "course_123",
+    "moduleId": "module_456",
+    "lessons": [
+      {
+        "title": "Introduction to JavaScript Variables",
+        "description": "Learn the fundamentals of JavaScript variables including var, let, and const declarations. Understand variable scoping and hoisting concepts.",
+        "content": "<h2>What are Variables?</h2><p>Variables are containers for storing data values. In JavaScript, you can declare variables using three different keywords:</p><h3>1. var Declaration</h3><pre><code>var name = \"John\";\nvar age = 25;</code></pre><h3>2. let Declaration</h3><pre><code>let city = \"New York\";\nlet isActive = true;</code></pre><h3>3. const Declaration</h3><pre><code>const PI = 3.14159;\nconst API_URL = \"https://api.example.com\";</code></pre><h2>Key Differences</h2><ul><li><strong>var</strong>: Function-scoped, can be redeclared</li><li><strong>let</strong>: Block-scoped, cannot be redeclared</li><li><strong>const</strong>: Block-scoped, cannot be reassigned</li></ul><blockquote><p><strong>Best Practice:</strong> Use <code>const</code> by default, <code>let</code> when you need to reassign, and avoid <code>var</code> in modern JavaScript.</p></blockquote>",
+        "order": 1,
+        "isPublished": true,
+        "estimatedDuration": 15,
+        "difficulty": "beginner",
+        "tags": ["javascript", "variables", "fundamentals"]
+      },
+      {
+        "title": "Data Types in JavaScript",
+        "description": "Explore JavaScript's dynamic typing system and learn about primitive and reference data types including strings, numbers, booleans, objects, and arrays.",
+        "content": "<h2>JavaScript Data Types</h2><p>JavaScript has dynamic typing, meaning variables can hold values of any type without explicit declaration.</p><h3>Primitive Data Types</h3><ul><li><strong>String:</strong> Text data enclosed in quotes</li><li><strong>Number:</strong> Numeric values (integers and floats)</li><li><strong>Boolean:</strong> true or false values</li><li><strong>Undefined:</strong> Variable declared but not assigned</li><li><strong>Null:</strong> Intentional absence of value</li><li><strong>Symbol:</strong> Unique identifier (ES6+)</li></ul><h3>Examples</h3><pre><code>// String\nlet message = \"Hello, World!\";\nlet template = `Welcome ${name}!`;\n\n// Number\nlet count = 42;\nlet price = 19.99;\n\n// Boolean\nlet isLoggedIn = true;\nlet hasPermission = false;\n\n// Array\nlet fruits = [\"apple\", \"banana\", \"orange\"];\nlet numbers = [1, 2, 3, 4, 5];\n\n// Object\nlet person = {\n  name: \"Alice\",\n  age: 30,\n  city: \"Boston\"\n};</code></pre>",
+        "order": 2,
+        "isPublished": true,
+        "estimatedDuration": 20,
+        "difficulty": "beginner",
+        "tags": ["javascript", "data-types", "fundamentals"]
+      },
+      {
+        "title": "Functions and Scope",
+        "description": "Master JavaScript functions including function declarations, expressions, arrow functions, and understand the concept of scope and closures.",
+        "content": "<h2>JavaScript Functions</h2><p>Functions are reusable blocks of code that perform specific tasks. They are fundamental to JavaScript programming.</p><h3>Function Declaration</h3><pre><code>function greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet(\"Alice\")); // \"Hello, Alice!\"</code></pre><h3>Function Expression</h3><pre><code>const add = function(a, b) {\n  return a + b;\n};\n\nconsole.log(add(5, 3)); // 8</code></pre><h3>Arrow Functions (ES6+)</h3><pre><code>const multiply = (a, b) => {\n  return a * b;\n};\n\n// Shorthand for single expression\nconst square = x => x * x;\n\n// No parameters\nconst sayHello = () => \"Hello, World!\";</code></pre>",
+        "order": 3,
+        "isPublished": true,
+        "estimatedDuration": 25,
+        "difficulty": "intermediate",
+        "tags": ["javascript", "functions", "scope", "closures"]
+      },
+      {
+        "title": "Arrays and Array Methods",
+        "description": "Learn how to work with arrays in JavaScript, including creation, manipulation, and using powerful array methods like map, filter, and reduce.",
+        "content": "<h2>Working with Arrays</h2><p>Arrays are ordered collections of values that can hold any data type.</p><h3>Creating Arrays</h3><pre><code>// Array literal\nlet fruits = [\"apple\", \"banana\", \"orange\"];\n\n// Array constructor\nlet numbers = new Array(1, 2, 3, 4, 5);\n\n// Empty array\nlet empty = [];\n\n// Array with mixed types\nlet mixed = [\"hello\", 42, true, { name: \"John\" }];</code></pre><h3>Common Array Methods</h3><pre><code>let numbers = [1, 2, 3, 4, 5];\n\n// Map - transform each element\nlet doubled = numbers.map(num => num * 2);\n// [2, 4, 6, 8, 10]\n\n// Filter - keep elements matching condition\nlet evens = numbers.filter(num => num % 2 === 0);\n// [2, 4]\n\n// Reduce - combine elements into single value\nlet sum = numbers.reduce((acc, num) => acc + num, 0);\n// 15</code></pre>",
+        "order": 4,
+        "isPublished": true,
+        "estimatedDuration": 30,
+        "difficulty": "intermediate",
+        "tags": ["javascript", "arrays", "methods", "functional-programming"]
+      },
+      {
+        "title": "Objects and Object-Oriented Programming",
+        "description": "Understand JavaScript objects, properties, methods, and learn about object-oriented programming concepts including classes, inheritance, and prototypes.",
+        "content": "<h2>JavaScript Objects</h2><p>Objects are collections of key-value pairs where keys are strings (or Symbols) and values can be any data type.</p><h3>Creating Objects</h3><pre><code>// Object literal\nlet person = {\n  name: \"Alice\",\n  age: 30,\n  city: \"Boston\",\n  greet: function() {\n    return `Hello, I'm ${this.name}`;\n  }\n};\n\n// Using new Object()\nlet car = new Object();\ncar.brand = \"Toyota\";\ncar.model = \"Camry\";\ncar.year = 2020;</code></pre><h3>ES6 Classes</h3><pre><code>class Animal {\n  constructor(name, species) {\n    this.name = name;\n    this.species = species;\n  }\n  \n  speak() {\n    return `${this.name} makes a sound`;\n  }\n}\n\nclass Dog extends Animal {\n  constructor(name, breed) {\n    super(name, \"dog\");\n    this.breed = breed;\n  }\n  \n  speak() {\n    return `${this.name} barks!`;\n  }\n}</code></pre>",
+        "order": 5,
+        "isPublished": true,
+        "estimatedDuration": 35,
+        "difficulty": "intermediate",
+        "tags": ["javascript", "objects", "oop", "classes", "inheritance"]
+      }
+    ]
+  },
+  "minimalRequest": {
+    "courseId": "course_123",
+    "moduleId": "module_456",
+    "lessons": [
+      {
+        "title": "Quick Test Lesson",
+        "description": "A simple test lesson for quick validation.",
+        "content": "<p>This is a minimal test lesson with basic content.</p>",
+        "order": 1,
+        "isPublished": false,
+        "estimatedDuration": 5,
+        "difficulty": "beginner",
+        "tags": ["test"]
+      }
+    ]
+  },
+  "extensiveRequest": {
+    "courseId": "course_123",
+    "moduleId": "module_456",
+    "lessons": [
+      {
+        "title": "Comprehensive JavaScript Fundamentals: A Complete Guide to Modern Web Development",
+        "description": "This comprehensive lesson covers all essential JavaScript concepts including variables, functions, objects, arrays, DOM manipulation, asynchronous programming, ES6+ features, error handling, testing, and best practices for building scalable web applications.",
+        "content": "<h1>Complete JavaScript Mastery</h1><h2>Table of Contents</h2><ol><li>Variables and Data Types</li><li>Functions and Scope</li><li>Objects and Arrays</li><li>DOM Manipulation</li><li>Asynchronous Programming</li><li>ES6+ Features</li><li>Error Handling</li><li>Testing and Debugging</li><li>Performance Optimization</li><li>Best Practices</li></ol><h2>1. Variables and Data Types</h2><p>JavaScript is a dynamically typed language, which means variables can hold values of any type without explicit declaration.</p><h3>Variable Declarations</h3><pre><code>// var (function-scoped, avoid in modern JS)\nvar oldWay = \"deprecated\";\n\n// let (block-scoped, can be reassigned)\nlet modernWay = \"preferred\";\n\n// const (block-scoped, cannot be reassigned)\nconst constant = \"immutable\";</code></pre><h3>Data Types</h3><ul><li><strong>Primitive Types:</strong> string, number, boolean, undefined, null, symbol, bigint</li><li><strong>Reference Types:</strong> object, array, function</li></ul><h2>2. Functions and Scope</h2><p>Functions are first-class citizens in JavaScript, meaning they can be assigned to variables, passed as arguments, and returned from other functions.</p><h3>Function Types</h3><pre><code>// Function Declaration\nfunction traditionalFunction(param) {\n  return param * 2;\n}\n\n// Function Expression\nconst expressionFunction = function(param) {\n  return param * 2;\n};\n\n// Arrow Function\nconst arrowFunction = (param) => param * 2;\n\n// IIFE (Immediately Invoked Function Expression)\n(function() {\n  console.log(\"Executed immediately\");\n})();</code></pre><h2>3. Objects and Arrays</h2><p>Objects and arrays are the primary data structures in JavaScript for organizing and manipulating data.</p><h3>Object Creation Patterns</h3><pre><code>// Object Literal\nconst person = {\n  name: \"Alice\",\n  age: 30,\n  greet() {\n    return `Hello, I'm ${this.name}`;\n  }\n};\n\n// Constructor Function\nfunction Person(name, age) {\n  this.name = name;\n  this.age = age;\n  this.greet = function() {\n    return `Hello, I'm ${this.name}`;\n  };\n}\n\n// ES6 Class\nclass Person {\n  constructor(name, age) {\n    this.name = name;\n    this.age = age;\n  }\n  \n  greet() {\n    return `Hello, I'm ${this.name}`;\n  }\n}</code></pre><h2>4. DOM Manipulation</h2><p>The Document Object Model (DOM) represents the structure of HTML documents and provides methods to interact with elements.</p><h3>Selecting Elements</h3><pre><code>// By ID\nconst element = document.getElementById('myId');\n\n// By Class\nconst elements = document.getElementsByClassName('myClass');\n\n// By Tag\nconst divs = document.getElementsByTagName('div');\n\n// Modern selectors\nconst modern = document.querySelector('#myId');\nconst all = document.querySelectorAll('.myClass');</code></pre><h2>5. Asynchronous Programming</h2><p>JavaScript handles asynchronous operations through callbacks, promises, and async/await.</p><h3>Promises</h3><pre><code>// Creating a Promise\nconst fetchData = () => {\n  return new Promise((resolve, reject) => {\n    setTimeout(() => {\n      resolve(\"Data fetched successfully\");\n    }, 1000);\n  });\n};\n\n// Using Promises\nfetchData()\n  .then(data => console.log(data))\n  .catch(error => console.error(error));</code></pre><h3>Async/Await</h3><pre><code>// Async function\nasync function getData() {\n  try {\n    const data = await fetchData();\n    console.log(data);\n  } catch (error) {\n    console.error(error);\n  }\n}</code></pre><h2>6. ES6+ Features</h2><p>Modern JavaScript includes many powerful features that make development more efficient and readable.</p><h3>Destructuring</h3><pre><code>// Array Destructuring\nconst [first, second, ...rest] = [1, 2, 3, 4, 5];\n\n// Object Destructuring\nconst { name, age, ...otherProps } = person;</code></pre><h3>Template Literals</h3><pre><code>const name = \"Alice\";\nconst greeting = `Hello, ${name}! Welcome to JavaScript.`;</code></pre><h3>Spread Operator</h3><pre><code>// Array spreading\nconst arr1 = [1, 2, 3];\nconst arr2 = [...arr1, 4, 5]; // [1, 2, 3, 4, 5]\n\n// Object spreading\nconst obj1 = { a: 1, b: 2 };\nconst obj2 = { ...obj1, c: 3 }; // { a: 1, b: 2, c: 3 }</code></pre><h2>7. Error Handling</h2><p>Proper error handling is crucial for building robust applications.</p><pre><code>try {\n  // Risky code\n  const result = riskyOperation();\n  console.log(result);\n} catch (error) {\n  console.error(\"An error occurred:\", error.message);\n} finally {\n  console.log(\"Cleanup code here\");\n}</code></pre><h2>8. Testing and Debugging</h2><p>Testing ensures code quality and helps catch bugs early in development.</p><h3>Console Methods</h3><pre><code>console.log(\"General information\");\nconsole.warn(\"Warning message\");\nconsole.error(\"Error message\");\nconsole.table(data); // Display data in table format\nconsole.group(\"Group Name\");\nconsole.groupEnd();</code></pre><h2>9. Performance Optimization</h2><p>Optimizing JavaScript performance is essential for creating fast, responsive applications.</p><h3>Best Practices</h3><ul><li>Minimize DOM queries</li><li>Use event delegation</li><li>Avoid memory leaks</li><li>Optimize loops and algorithms</li><li>Use appropriate data structures</li></ul><h2>10. Best Practices</h2><p>Following best practices leads to maintainable, readable, and efficient code.</p><h3>Code Organization</h3><ul><li>Use meaningful variable names</li><li>Write small, focused functions</li><li>Comment complex logic</li><li>Follow consistent formatting</li><li>Use version control effectively</li></ul><blockquote><p><strong>Remember:</strong> JavaScript is constantly evolving. Stay updated with the latest features and best practices to write modern, efficient code.</p></blockquote>",
+        "order": 1,
+        "isPublished": true,
+        "estimatedDuration": 120,
+        "difficulty": "advanced",
+        "tags": ["javascript", "comprehensive", "advanced", "best-practices", "performance"]
+      }
+    ]
+  },
+  "edgeCaseRequest": {
+    "courseId": "course_123",
+    "moduleId": "module_456",
+    "lessons": [
+      {
+        "title": "Lesson with Special Characters: @#$%^&*()",
+        "description": "Testing with special characters and unicode: 🚀✨💻",
+        "content": "<p>Content with <strong>HTML</strong> and <em>special</em> characters: @#$%^&*()</p>",
+        "order": 1,
+        "isPublished": false,
+        "estimatedDuration": 5,
+        "difficulty": "beginner",
+        "tags": ["test", "special-chars", "unicode"]
+      },
+      {
+        "title": "Very Long Title That Should Test The UI Layout And See How It Handles Long Text Content That Might Overflow Or Wrap In Unexpected Ways",
+        "description": "A very long description that tests how the UI handles lengthy text content and whether it properly wraps or truncates in the interface. This is designed to test the responsive behavior and text handling capabilities of the form components.",
+        "content": "<p>Very long content with lots of text that should test the rich text editor's ability to handle large amounts of content and maintain proper formatting and readability throughout the editing process.</p>",
+        "order": 2,
+        "isPublished": false,
+        "estimatedDuration": 10,
+        "difficulty": "beginner",
+        "tags": ["test", "long-content", "ui-testing"]
+      },
+      {
+        "title": "",
+        "description": "",
+        "content": "",
+        "order": 3,
+        "isPublished": false,
+        "estimatedDuration": 0,
+        "difficulty": "beginner",
+        "tags": []
+      }
+    ]
+  },
+  "apiEndpoints": {
+    "createBulkLessons": {
+      "method": "POST",
+      "url": "/api/courses/{courseId}/modules/{moduleId}/lessons/bulk",
+      "headers": {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer {token}"
+      },
+      "example": {
+        "courseId": "course_123",
+        "moduleId": "module_456",
+        "lessons": [
+          {
+            "title": "Sample Lesson",
+            "description": "Sample description",
+            "content": "<p>Sample content</p>",
+            "order": 1,
+            "isPublished": true,
+            "estimatedDuration": 15,
+            "difficulty": "beginner",
+            "tags": ["sample"]
+          }
+        ]
+      }
+    }
+  },
+  "responseExamples": {
+    "successResponse": {
+      "success": true,
+      "statusCode": 201,
+      "message": "Lessons created successfully",
+      "data": {
+        "createdLessons": [
+          {
+            "id": "lesson_789",
+            "title": "Introduction to JavaScript Variables",
+            "description": "Learn the fundamentals of JavaScript variables...",
+            "content": "<h2>What are Variables?</h2>...",
+            "order": 1,
+            "isPublished": true,
+            "estimatedDuration": 15,
+            "difficulty": "beginner",
+            "tags": ["javascript", "variables", "fundamentals"],
+            "createdAt": "2024-01-15T10:30:00Z",
+            "updatedAt": "2024-01-15T10:30:00Z"
+          }
+        ],
+        "totalCreated": 5,
+        "moduleId": "module_456",
+        "courseId": "course_123"
+      },
+      "timestamp": "2024-01-15T10:30:00Z"
+    },
+    "errorResponse": {
+      "success": false,
+      "statusCode": 400,
+      "message": "Validation failed",
+      "errors": [
+        {
+          "field": "lessons[0].title",
+          "message": "Title is required"
+        },
+        {
+          "field": "lessons[1].content",
+          "message": "Content cannot be empty"
+        }
+      ],
+      "timestamp": "2024-01-15T10:30:00Z"
+    }
+  }
+}

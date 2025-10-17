@@ -28,6 +28,8 @@ import {
 import { useForm } from "react-hook-form"
 import { useDynamicFieldArray } from "@/hooks/use-dynamic-field-array"
 import type { CourseValueResponse } from "@/services/course-service/course-type"
+import { useBulkModuleCreation } from "@/hooks/query-hooks/module-query"
+import { notifications } from "@mantine/notifications"
 
 interface BulkModuleCreatorProps {
     course: CourseValueResponse
@@ -46,7 +48,7 @@ type ModuleFormData = {
 }
 
 export function BulkModuleCreator({ course, onBack }: BulkModuleCreatorProps) {
-    const theme = useMantineTheme()
+    const { moduleBulkCreation, isCreating, isError } = useBulkModuleCreation(course.id)
     const form = useForm<ModuleFormData>({
         defaultValues: {
             modules: [],
@@ -55,7 +57,7 @@ export function BulkModuleCreator({ course, onBack }: BulkModuleCreatorProps) {
         },
     })
 
-    const { control, handleSubmit, setValue, watch, register } = form
+    const { control, handleSubmit, setValue, watch, register, reset } = form
 
     const {
         fields,
@@ -81,12 +83,30 @@ export function BulkModuleCreator({ course, onBack }: BulkModuleCreatorProps) {
         rules: { minLength: 0, maxLength: 20 },
     })
 
-    const onSubmit = (data: ModuleFormData) => {
-        console.log("=== BULK MODULE SUBMISSION ===")
-        console.log("Course ID:", course.id)
-        console.log("Modules to create:", data.modules)
-        console.log("Total modules:", data.modules.length)
-        console.log("Module details:", JSON.stringify(data.modules, null, 2))
+    async function onSubmit(data: ModuleFormData) {
+        try {
+            await moduleBulkCreation(data.modules.map((module, index) => ({
+                title: module.title,
+                description: module.description,
+                order_index: index,
+                is_published: module.is_published,
+            })),
+            )
+
+            notifications.show({
+                title: "Modules created successfully",
+                message: "Modules created successfully",
+                color: "green",
+            })
+            reset()
+            onBack()
+        } catch (error) {
+            notifications.show({
+                title: "Error",
+                message: error instanceof Error ? error.message : "Failed to create modules. Please try again.",
+                color: "red",
+            })
+        }
     }
 
     const isEditing = editingIndex !== null || isAddingNew
@@ -591,7 +611,8 @@ export function BulkModuleCreator({ course, onBack }: BulkModuleCreatorProps) {
                                         <Button
                                             leftSection={<IconDeviceFloppy size={20} />}
                                             size="lg"
-                                            disabled={isEditing || fields.length === 0}
+                                            disabled={isEditing || fields.length === 0 || isCreating}
+                                            loading={isCreating}
                                             onClick={handleSubmit(onSubmit)}
                                             radius="md"
                                             styles={{

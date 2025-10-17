@@ -57,6 +57,13 @@ function ControlledFileInput<
                         error={error?.message}
                         style={style}
                         suppressHydrationWarning={true}
+                        styles={{
+                            root: {
+                                label: {
+                                    color: "#fff"
+                                }
+                            }
+                        }}
                         {...props}
                     />
                     {helperText && <HelperText>{helperText}</HelperText>}

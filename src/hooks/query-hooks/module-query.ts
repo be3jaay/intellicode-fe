@@ -1,6 +1,7 @@
+import { ErrorResponse } from "@/services/course-service/course-type";
 import { ModuleService } from "@/services/module-service/module-service";
-import { GetModuleByCourseResponse } from "@/services/module-service/module.type";
-import { useQuery } from "@tanstack/react-query";
+import { GetModuleByCourseResponse, ModuleBulkCreationRequest, ModuleListQueryParams } from "@/services/module-service/module.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useFetchModuleByCourse(courseId: string) {
     const { data, isLoading, isError } = useQuery({
@@ -14,4 +15,32 @@ export function useFetchModuleByCourse(courseId: string) {
         isLoading,
         isError,
     }
+}
+
+export function useBulkModuleCreation(courseId: string) {
+    const queryClient = useQueryClient();
+    const { mutateAsync, isPending, isError } = useMutation({
+        mutationFn: (data: ModuleBulkCreationRequest[]) => ModuleService.moduleBulkCreation(courseId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['modules', courseId] });
+        },
+        onError: (error: ErrorResponse) => {
+            console.error(error.message);
+        },
+    })
+
+    return {
+        moduleBulkCreation: mutateAsync,
+        isCreating: isPending,
+        isError: isError,
+    }
+}
+
+export function useGetModulesList(courseId: string, params: ModuleListQueryParams = {}) {
+    return useQuery({
+        queryKey: ['modulesList', courseId, params],
+        queryFn: () => ModuleService.getModulesList(courseId, params),
+        enabled: !!courseId,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
 }

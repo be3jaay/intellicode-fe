@@ -77,12 +77,12 @@ importers:
       axios:
         specifier: ^1.11.0
         version: 1.12.2
-      date-fns:
-        specifier: ^4.1.0
-        version: 4.1.0
       chart.js:
         specifier: ^4.5.1
         version: 4.5.1
+      date-fns:
+        specifier: ^4.1.0
+        version: 4.1.0
       dayjs:
         specifier: ^1.11.18
         version: 1.11.18

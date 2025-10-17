@@ -126,7 +126,7 @@ export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreato
                     points: data.points,
                     dueDate: data.dueDate,
                     questions: data.questions,
-                }, moduleId: "fb81a04b-0d36-4311-974a-d9546ec0da26" //problem module id is undefined
+                }, moduleId: moduleId //problem module id is undefined
             })
 
             notifications.show({

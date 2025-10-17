@@ -18,7 +18,7 @@ interface StudentCoursePageProps {
 export default function StudentCoursePage({ params }: StudentCoursePageProps) {
     const [selectedLesson, setSelectedLesson] = useState<string | null>(null)
     const [selectedModule, setSelectedModule] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<"lessons" | "assignments">("lessons")
+    const [activeTab, setActiveTab] = useState<"lessons" | "assignments" | "progress">("lessons")
 
     const { data, isLoading, isError, error } = useFetchStudentCourse(params.courseId)
 
@@ -27,8 +27,8 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
             <Box style={{ minHeight: "100vh", background: "#222222" }}>
                 <Center h="100vh">
                     <Box ta="center">
-                        <Loader size="xl" color="#4fd1c5" />
-                        <Text size="lg" fw={500} c="#4fd1c5" mt="md">
+                        <Loader size="xl" color="#bdf052" />
+                        <Text size="lg" fw={500} c="#bdf052" mt="md">
                             Loading course...
                         </Text>
                     </Box>
@@ -83,7 +83,7 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                             p="lg"
                             style={{
                                 background: "#1a1a1a",
-                                border: "1px solid #4fd1c5"
+                                border: "1px solid #bdf052"
                             }}
                         >
                             <ModuleSidebar
@@ -104,7 +104,7 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                             p="xl"
                             style={{
                                 background: "#1a1a1a",
-                                border: "1px solid #4fd1c5",
+                                border: "1px solid #bdf052",
                                 minHeight: "600px"
                             }}
                         >
@@ -114,20 +114,17 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                                     selectedLesson={selectedLesson}
                                     selectedModule={selectedModule}
                                 />
-                            ) : (
+                            ) : activeTab === "assignments" ? (
                                 <AssignmentsSection
                                     assignments={courseData.assignments}
                                     courseId={courseData.id}
                                 />
+                            ) : (
+                                <CourseProgress course={courseData} />
                             )}
                         </Paper>
                     </Grid.Col>
                 </Grid>
-
-                {/* Course Progress */}
-                <Box mt="xl">
-                    <CourseProgress course={courseData} />
-                </Box>
             </Container>
         </Box>
     )
