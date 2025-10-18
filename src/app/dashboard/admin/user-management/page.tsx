@@ -185,13 +185,13 @@ export default function UserManagementPage() {
                                     <Group gap="xs">
                                         <UserCheck size={16} color="#0F0F0F" />
                                         <Text style={{ fontSize: "1rem", color: "#0F0F0F", fontWeight: 500 }}>
-                                            {pendingApprovals?.length || 0} Pending Approvals
+                                            {Array.isArray(pendingApprovals) ? pendingApprovals.length : 0} Pending Approvals
                                         </Text>
                                     </Group>
                                     <Group gap="xs">
                                         <UserX size={16} color="#0F0F0F" />
                                         <Text style={{ fontSize: "1rem", color: "#0F0F0F", fontWeight: 500 }}>
-                                            {suspendedUsers?.length || 0} Suspended
+                                            {Array.isArray(suspendedUsers) ? suspendedUsers.length : 0} Suspended
                                         </Text>
                                     </Group>
                                 </Group>
@@ -282,7 +282,7 @@ export default function UserManagementPage() {
                                     marginLeft: "0.5rem",
                                 }}
                             >
-                                {pendingApprovals?.length || 0}
+                                {Array.isArray(pendingApprovals) ? pendingApprovals.length : 0}
                             </Badge>
                         </Tabs.Tab>
                         <Tabs.Tab value="suspended" leftSection={<UserX size={16} />}>
@@ -295,7 +295,7 @@ export default function UserManagementPage() {
                                     marginLeft: "0.5rem",
                                 }}
                             >
-                                {suspendedUsers?.length || 0}
+                                {Array.isArray(suspendedUsers) ? suspendedUsers.length : 0}
                             </Badge>
                         </Tabs.Tab>
                     </Tabs.List>
@@ -321,7 +321,7 @@ export default function UserManagementPage() {
 
                     <Tabs.Panel value="pending">
                         <Stack gap="md">
-                            {pendingApprovals?.map((user) => (
+                            {Array.isArray(pendingApprovals) && pendingApprovals.map((user) => (
                                 <UserProfileCard
                                     key={user.id}
                                     user={user}
@@ -329,7 +329,7 @@ export default function UserManagementPage() {
                                     onAction={handleAction}
                                 />
                             ))}
-                            {(!pendingApprovals || pendingApprovals.length === 0) && !pendingLoading && (
+                            {(!Array.isArray(pendingApprovals) || pendingApprovals.length === 0) && !pendingLoading && (
                                 <Card
                                     style={{
                                         backgroundColor: "#1A1A1A",
@@ -349,7 +349,7 @@ export default function UserManagementPage() {
 
                     <Tabs.Panel value="suspended">
                         <Stack gap="md">
-                            {suspendedUsers?.map((user) => (
+                            {Array.isArray(suspendedUsers) && suspendedUsers.map((user) => (
                                 <UserProfileCard
                                     key={user.id}
                                     user={user}
@@ -357,7 +357,7 @@ export default function UserManagementPage() {
                                     onAction={handleAction}
                                 />
                             ))}
-                            {(!suspendedUsers || suspendedUsers.length === 0) && !suspendedLoading && (
+                            {(!Array.isArray(suspendedUsers) || suspendedUsers.length === 0) && !suspendedLoading && (
                                 <Card
                                     style={{
                                         backgroundColor: "#1A1A1A",

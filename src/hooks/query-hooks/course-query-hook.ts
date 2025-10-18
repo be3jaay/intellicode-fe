@@ -1,6 +1,7 @@
 import { useMutation, useInfiniteQuery, useQueryClient, useQuery } from '@tanstack/react-query';
 import { CourseService } from '@/services/course-service/course-service';
 import { CourseValue, ErrorResponse } from '@/services/course-service/course-type';
+import { courseApprovalKeys } from './course-approval-query';
 
 // Query keys
 export const courseKeys = {
@@ -17,6 +18,20 @@ export function useCourseCreation() {
         onSuccess: () => {
             // Invalidate and refetch courses after creation
             queryClient.invalidateQueries({ queryKey: courseKeys.myCourses() });
+        },
+    });
+}
+
+export function useApproveCourse() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({courseId, status}: {courseId: string, status: "approved" | "rejected"}) => CourseService.approveCourse(courseId, status),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: courseApprovalKeys.pending() });
+        },
+        onError: (error: ErrorResponse) => {
+            console.error(error.message);
         },
     });
 }

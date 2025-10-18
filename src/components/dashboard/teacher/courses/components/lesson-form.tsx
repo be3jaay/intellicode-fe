@@ -100,19 +100,16 @@ export function LessonForm({
     const handleSubmit = async () => {
         try {
             // Transform the form data to match the API format
-            const lessonsData = fields.reduce((acc, lesson, index) => {
-                acc[index.toString()] = {
-                    title: lesson.title,
-                    description: lesson.description,
-                    content: lesson.content,
-                    order: lesson.order,
-                    difficulty: lesson.difficulty,
-                    estimatedDuration: lesson.estimatedDuration,
-                    isPublished: lesson.isPublished,
-                    tags: lesson.tags
-                }
-                return acc
-            }, {} as any)
+            const lessonsData = fields.map((lesson) => ({
+                title: lesson.title,
+                description: lesson.description,
+                content: lesson.content,
+                order_index: lesson.order,
+                difficulty: lesson.difficulty,
+                estimated_duration: lesson.estimatedDuration,
+                is_published: lesson.isPublished,
+                tags: lesson.tags
+            }))
 
             await bulkLessonMutation.mutateAsync({
                 courseId,

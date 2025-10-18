@@ -20,7 +20,7 @@ import type { CourseValueResponse } from "@/services/course-service/course-type"
 import { ModuleSelector } from "./components/module-selector"
 import { LessonForm } from "./components/lesson-form"
 import { LinkModal } from "./components/link-modal"
-import { TestBulkLesson } from "./components/test-bulk-lesson"
+import { useBulkLessonCreation } from "@/hooks/query-hooks/lesson-query"
 
 interface LessonCreatorProps {
     course: CourseValueResponse
@@ -46,6 +46,8 @@ export function LessonCreator({ course, onBack }: LessonCreatorProps) {
     const [linkModalOpen, setLinkModalOpen] = useState(false)
     const [linkType, setLinkType] = useState<"image" | "video">("image")
     const [linkUrl, setLinkUrl] = useState("")
+
+    const bulkLessonMutation = useBulkLessonCreation()
 
     const bulkForm = useForm<BulkLessonFormData>({
         defaultValues: {
@@ -89,15 +91,44 @@ export function LessonCreator({ course, onBack }: LessonCreatorProps) {
         }
     }
 
-    const onBulkSubmit = (data: BulkLessonFormData) => {
-        console.log("=== BULK LESSON SUBMISSION ===")
-        console.log("Course ID:", course.id)
-        console.log("Module ID:", selectedModule)
-        console.log("Lessons Data:", data.lessons)
-        console.log("Bulk lesson details:", JSON.stringify({
-            moduleId: selectedModule,
-            lessons: data.lessons,
-        }, null, 2))
+    const onBulkSubmit = async (data: BulkLessonFormData) => {
+        try {
+            console.log("=== BULK LESSON SUBMISSION ===")
+            console.log("Course ID:", course.id)
+            console.log("Module ID:", selectedModule)
+            console.log("Lessons Data:", data.lessons)
+
+            // Transform the form data to match the API format
+            const lessonsData = data.lessons.map((lesson) => ({
+                title: lesson.title,
+                description: lesson.description,
+                content: lesson.content,
+                order_index: lesson.order,
+                difficulty: lesson.difficulty,
+                estimated_duration: lesson.estimatedDuration,
+                is_published: lesson.isPublished,
+                tags: lesson.tags
+            }))
+
+            console.log("Transformed lessons data:", JSON.stringify({
+                courseId: course.id,
+                moduleId: selectedModule,
+                lessons: { lessons: lessonsData },
+            }, null, 2))
+
+            // Call the API
+            await bulkLessonMutation.mutateAsync({
+                courseId: course.id,
+                moduleId: selectedModule,
+                lessons: { lessons: lessonsData }
+            })
+
+            // Reset form and go back to module selector on success
+            bulkForm.reset()
+            setShowModuleSelector(true)
+        } catch (error) {
+            console.error("Failed to create lessons:", error)
+        }
     }
 
     // Show module selector first
@@ -235,9 +266,6 @@ export function LessonCreator({ course, onBack }: LessonCreatorProps) {
                     />
                 </Paper>
 
-                {/* Test Component - Remove in production */}
-                <TestBulkLesson />
-
                 {/* Submit Button */}
                 <Paper
                     shadow="lg"
@@ -262,10 +290,11 @@ export function LessonCreator({ course, onBack }: LessonCreatorProps) {
                             </Text>
                         </Box>
                         <Button
-                            leftSection={<IconDeviceFloppy size={20} />}
+                            leftSection={bulkLessonMutation.isPending ? undefined : <IconDeviceFloppy size={20} />}
                             size="lg"
                             onClick={bulkHandleSubmit(onBulkSubmit)}
                             radius="md"
+                            disabled={bulkLessonMutation.isPending}
                             styles={{
                                 root: {
                                     background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
@@ -280,10 +309,17 @@ export function LessonCreator({ course, onBack }: LessonCreatorProps) {
                                         transform: "translateY(-2px)",
                                         boxShadow: "0 12px 24px rgba(79, 209, 197, 0.4)",
                                     },
+                                    "&:disabled": {
+                                        opacity: 0.7,
+                                        cursor: "not-allowed",
+                                    },
                                 },
                             }}
                         >
-                            Create {fields.length} Lesson{fields.length > 1 ? 's' : ''}
+                            {bulkLessonMutation.isPending
+                                ? "Creating Lessons..."
+                                : `Create ${fields.length} Lesson${fields.length > 1 ? 's' : ''}`
+                            }
                         </Button>
                     </Group>
                 </Paper>

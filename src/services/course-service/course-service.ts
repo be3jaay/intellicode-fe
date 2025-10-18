@@ -54,6 +54,14 @@ export class CourseService {
         }
     }
 
+    public static async approveCourse(courseId: string, status: "approved" | "rejected"): Promise<void> {
+        try {
+            await apiClient.patch<void>(`/course/admin/${courseId}/approve`, { status: status });
+        } catch (error) {
+            throw error;
+        }
+    }
+
     public static async getCourseByInviteCode(inviteCode: string): Promise<CourseValueResponse> {
         try {
             const response = await apiClient.get<{

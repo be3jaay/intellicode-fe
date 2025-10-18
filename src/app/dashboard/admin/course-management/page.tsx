@@ -45,9 +45,9 @@ function CourseManagementPage() {
 
         try {
             if (selectedAction === "approve") {
-                await approveCourseMutation.mutateAsync(selectedCourse.id);
+                await approveCourseMutation.mutateAsync({ courseId: selectedCourse.id, status: "approved" });
             } else {
-                await rejectCourseMutation.mutateAsync(selectedCourse.id);
+                await approveCourseMutation.mutateAsync({ courseId: selectedCourse.id, status: "rejected" });
             }
             setModalOpened(false);
             setSelectedCourse(null);

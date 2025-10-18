@@ -11,12 +11,30 @@ export type Course = {
     description: string;
     category: string;
     thumbnail: string;
-    created_at: string;
-    updated_at: string;
-    course_invite_code: string;
-    instructor_id: string;
-    status: "waiting_for_approval" | "approved" | "rejected";
     instructor: Instructor;
+}
+
+export type Enrollment = {
+    id: string;
+    student_id: string;
+    course_id: string;
+    enrolled_at: string;
+    status: "active" | "inactive";
+    course: Course;
+}
+
+export type EnrollmentsResponse = {
+    success: boolean;
+    statusCode: number;
+    data: {
+        data: Enrollment[];
+        total: number;
+        offset: number;
+        limit: number;
+        totalPages: number;
+        currentPage: number;
+    };
+    timestamp: string;
 }
 
 export type LatestEnrollment = {

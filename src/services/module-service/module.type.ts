@@ -5,6 +5,19 @@ export type GetModuleByCourseResponse = {
     timestamp: string;
 }
 
+export type Lesson = {
+    id: string;
+    title: string;
+    description: string;
+    order_index: number;
+    is_published: boolean;
+    difficulty: 'beginner' | 'intermediate' | 'advanced';
+    estimated_duration: number | null;
+    tags: string[];
+    created_at: string;
+    updated_at: string;
+}
+
 export type Module = {
     id: string;
     title: string;
@@ -13,6 +26,7 @@ export type Module = {
     updated_at: string;
     lessons_count: number;
     activities_count: number;
+    lessons?: Lesson[];
 }
 
 export type ModuleListResponse = {

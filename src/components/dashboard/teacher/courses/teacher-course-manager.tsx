@@ -54,8 +54,8 @@ export function TeacherCourseManager() {
                 description: course.description,
                 category: course.category,
                 thumbnail: course.thumbnail || undefined,
-                students: 0, // Mock data for now
-                modules: 0, // Mock data for now
+                students_count: course.students_count,
+                modules_count: course.modules_count,
                 lastUpdated: new Date(course.updated_at).toLocaleDateString(),
                 course_invite_code: course.course_invite_code,
                 instructor_id: course.instructor_id,
@@ -63,6 +63,7 @@ export function TeacherCourseManager() {
                 updated_at: course.updated_at,
                 instructor: course.instructor,
                 status: course.status,
+                _count: course._count,
             }))
         );
     }, [data]);

@@ -13,10 +13,11 @@ export class CourseApprovalService {
         }
     }
 
-    public static async approveCourse(courseId: string): Promise<CourseApprovalActionResponse> {
+    public static async approveCourse(courseId: string, status: "approved" | "rejected"): Promise<CourseApprovalActionResponse> {
         try {
             const response = await apiClient.patch<CourseApprovalActionResponse>(
-                `/course/admin/${courseId}/approve`
+                `/course/admin/${courseId}/approve`,
+                { status: status }
             );
             return response;
         } catch (error) {

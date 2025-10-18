@@ -521,13 +521,13 @@ export function CourseGridViewer({
                                         <Group gap={6}>
                                             <Users size={16} color="#9ca3af" />
                                             <Text size="xs" c="#9ca3af">
-                                                {course.students || 0} students
+                                                {course.students_count || 0} students
                                             </Text>
                                         </Group>
                                         <Group gap={6}>
                                             <BookOpen size={16} color="#9ca3af" />
                                             <Text size="xs" c="#9ca3af">
-                                                {course.modules || 0} modules
+                                                {course.modules_count || 0} modules
                                             </Text>
                                         </Group>
                                     </Group>

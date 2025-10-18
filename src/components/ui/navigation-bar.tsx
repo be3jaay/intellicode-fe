@@ -65,26 +65,6 @@ export function NavigationBar() {
                 label: 'My Courses',
                 href: `/dashboard/${role}/courses`,
             },
-            {
-                icon: Users,
-                label: 'Students',
-                href: `/dashboard/${role}/students`,
-            },
-            {
-                icon: FileText,
-                label: 'Assignments',
-                href: `/dashboard/${role}/assignments`,
-            },
-            {
-                icon: BarChart,
-                label: 'Analytics',
-                href: `/dashboard/${role}/analytics`,
-            },
-            {
-                icon: Calendar,
-                label: 'Schedule',
-                href: `/dashboard/${role}/schedule`,
-            },
         ];
 
         const adminItems = [

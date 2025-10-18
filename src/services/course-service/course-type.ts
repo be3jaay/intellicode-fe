@@ -31,8 +31,12 @@ export type CourseValueResponse = {
     created_at: string;
     updated_at: string;
     instructor: Instructor;
-    students: number;
-    modules: number;
+    _count: {
+        enrollments: number;
+        modules: number;
+    }
+    students_count: number;
+    modules_count: number;
     status: "waiting_for_approval" | "approved" | "rejected";
 }
 

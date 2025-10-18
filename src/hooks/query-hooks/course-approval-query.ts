@@ -30,7 +30,7 @@ export function useApproveCourse() {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (courseId: string) => CourseApprovalService.approveCourse(courseId),
+        mutationFn: ({courseId, status}: {courseId: string, status: "approved" | "rejected"}) => CourseApprovalService.approveCourse(courseId, status),
         onSuccess: () => {
             // Invalidate and refetch pending courses after approval
             queryClient.invalidateQueries({ queryKey: courseApprovalKeys.pending() });

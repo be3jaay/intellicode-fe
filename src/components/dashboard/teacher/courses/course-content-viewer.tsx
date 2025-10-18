@@ -246,7 +246,7 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 }}
                                 leftSection={<Users size={14} />}
                             >
-                                {course.students || 0} students
+                                {course.students_count || 0} students
                             </Badge>
                             <Badge
                                 size="lg"
@@ -259,7 +259,8 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 }}
                                 leftSection={<BookOpen size={14} />}
                             >
-                                {course.modules || 0} modules
+                                {course.modules_count || 0} modules
+
                             </Badge>
                         </Group>
                         <Text
@@ -389,13 +390,9 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         <Tabs.Tab value="modules" color="#bdf052" leftSection={<BookOpen size={16} />}>
                             Modules
                         </Tabs.Tab>
-                        <Tabs.Tab value="lessons" color="#bdf052" leftSection={<FileText size={16} />}>
-                            Lessons
-                        </Tabs.Tab>
                         <Tabs.Tab value="activities" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
                             Activities
                         </Tabs.Tab>
-
                         <Tabs.Tab value="students" color="#bdf052" leftSection={<UserCheck size={16} />}>
                             Students
                         </Tabs.Tab>
@@ -411,48 +408,39 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                 <Text fw={600} c="#e9eeea">
                                     Course Modules
                                 </Text>
-                                <Button
-                                    size="sm"
-                                    onClick={handleAddModule}
-                                    style={{
-                                        background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
-                                        color: "#1a1a1a",
-                                        border: "none",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    <Plus size={16} style={{ marginRight: 8 }} />
-                                    Add Module
-                                </Button>
+                                <Group gap="sm">
+                                    <Button
+                                        size="sm"
+                                        onClick={handleAddLesson}
+                                        style={{
+                                            background: "linear-gradient(135deg, #b3a1ff 0%, #9b87e8 100%)",
+                                            color: "#fff",
+                                            border: "none",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        <FileText size={16} style={{ marginRight: 8 }} />
+                                        Add Lesson
+                                    </Button>
+                                    <Button
+                                        size="sm"
+                                        onClick={handleAddModule}
+                                        style={{
+                                            background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
+                                            color: "#1a1a1a",
+                                            border: "none",
+                                            fontWeight: 600,
+                                        }}
+                                    >
+                                        <Plus size={16} style={{ marginRight: 8 }} />
+                                        Add Module
+                                    </Button>
+                                </Group>
                             </Group>
                             <ModuleContent courseId={course.id} />
                         </Stack>
                     </Tabs.Panel>
 
-                    {/* Lessons Tab */}
-                    <Tabs.Panel value="lessons">
-                        <Stack gap="md">
-                            <Group justify="space-between">
-                                <Text fw={600} c="#e9eeea">
-                                    Course Lessons
-                                </Text>
-                                <Button
-                                    size="sm"
-                                    onClick={handleAddLesson}
-                                    style={{
-                                        background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
-                                        color: "#1a1a1a",
-                                        border: "none",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    <Plus size={16} style={{ marginRight: 8 }} />
-                                    Add Lesson
-                                </Button>
-                            </Group>
-                            <LessonsContent />
-                        </Stack>
-                    </Tabs.Panel>
 
                     {/* Activities Tab */}
                     <Tabs.Panel value="activities">
@@ -548,21 +536,6 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
 }
 
 
-function LessonsContent() {
-    return (
-        <Card
-            padding="xl"
-            radius="md"
-            style={{
-                background: "rgba(34, 34, 34, 0.4)",
-                border: "1px solid rgba(189, 240, 82, 0.1)",
-                textAlign: "center",
-            }}
-        >
-            <Text c="dimmed">No lessons yet. Start by adding your first lesson.</Text>
-        </Card>
-    )
-}
 
 function ActivitiesContent() {
     return (

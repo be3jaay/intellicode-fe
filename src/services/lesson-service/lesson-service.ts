@@ -1,18 +1,18 @@
 import { apiClient } from "../api-client"
 
+export interface LessonData {
+  title: string
+  description: string
+  content: string
+  order_index: number
+  is_published: boolean
+  difficulty: 'beginner' | 'intermediate' | 'advanced'
+  estimated_duration: number
+  tags: string[]
+}
+
 export interface BulkLessonRequest {
-  lessons: {
-    [key: string]: {
-      title: string
-      description: string
-      content: string
-      order: number
-      difficulty: 'beginner' | 'intermediate' | 'advanced'
-      estimatedDuration: number
-      isPublished: boolean
-      tags: string[]
-    }
-  }
+  lessons: LessonData[]
 }
 
 export interface BulkLessonResponse {

@@ -28,7 +28,8 @@ export class UserManagementService {
       const queryString = queryParams.toString();
       const url = `/users?${queryString}`;
       
-      return await apiClient.get<UsersResponse>(url);
+      const response = await apiClient.get<{ success: boolean; data: UsersResponse }>(url);
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -52,7 +53,8 @@ export class UserManagementService {
 
   public static async getPendingApprovals(): Promise<UserProfile[]> {
     try {
-      return await apiClient.get<UserProfile[]>('/users/pending-approval');
+      const response = await apiClient.get<{ success: boolean; data: UserProfile[] }>('/users/pending-approval');
+      return response.data;
     } catch (error) {
       throw error;
     }
@@ -60,7 +62,8 @@ export class UserManagementService {
 
   public static async getSuspendedUsers(): Promise<UserProfile[]> {
     try {
-      return await apiClient.get<UserProfile[]>('/users/suspended');
+      const response = await apiClient.get<{ success: boolean; data: UserProfile[] }>('/users/suspended');
+      return response.data;
     } catch (error) {
       throw error;
     }
