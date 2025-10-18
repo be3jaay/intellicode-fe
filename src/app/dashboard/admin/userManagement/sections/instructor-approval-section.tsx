@@ -25,29 +25,44 @@ export function InstructorApprovalSection() {
   };
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <div className="flex items-center gap-2 mb-6">
-          <IconClock size={20} color="#868e96" />
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <Card
+        shadow="md"
+        padding="lg"
+        radius="md"
+        withBorder
+        style={{ backgroundColor: "#2a2a2a", borderColor: "#BDF052" }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <IconClock size={20} color="#BDF052" />
           <div>
-            <Text size="xl" fw={700}>
+            <Text size="xl" fw={700} style={{ color: "#FFFFFF" }}>
               Pending Instructor Approvals
             </Text>
-            <Text size="sm" c="dimmed">
+            <Text size="sm" style={{ color: "#E9EEEA" }}>
               Review and approve instructor applications
             </Text>
           </div>
         </div>
 
-        <div className="flex flex-col gap-3">
+        <div
+          style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}
+        >
           {mockPendingInstructors.length === 0 ? (
-            <div className="text-center py-12">
+            <div style={{ textAlign: "center", padding: "3rem 0" }}>
               <IconAlertCircle
                 size={48}
-                color="#868e96"
-                className="mx-auto mb-4"
+                color="#BDF052"
+                style={{ margin: "0 auto 1rem" }}
               />
-              <Text c="dimmed">No pending approvals</Text>
+              <Text style={{ color: "#E9EEEA" }}>No pending approvals</Text>
             </div>
           ) : (
             mockPendingInstructors.map((instructor) => (
@@ -57,87 +72,90 @@ export function InstructorApprovalSection() {
                 padding="lg"
                 radius="md"
                 withBorder
+                style={{ backgroundColor: "#333333", borderColor: "#B3A1FF" }}
               >
-                <div className="flex flex-col gap-4">
-                  {/* Header with Avatar and Basic Info */}
-                  <div className="flex items-start gap-4">
-                    <Avatar
-                      size="lg"
-                      radius="xl"
-                      color="violet"
-                      className="shrink-0"
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <Avatar
+                    size="lg"
+                    radius="xl"
+                    style={{ backgroundColor: "#B3A1FF" }}
+                  >
+                    {instructor.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")}
+                  </Avatar>
+
+                  <div style={{ flex: 1, minWidth: 200 }}>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.5rem",
+                        flexWrap: "wrap",
+                        marginBottom: "0.25rem",
+                      }}
                     >
-                      {instructor.name
-                        .split(" ")
-                        .map((n) => n[0])
-                        .join("")}
-                    </Avatar>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 mb-2">
-                        <Text
-                          fw={600}
-                          size="lg"
-                          className="overflow-hidden text-ellipsis whitespace-nowrap"
-                        >
-                          {instructor.name}
-                        </Text>
-                        <Badge
-                          variant="light"
-                          size="sm"
-                          className="self-start sm:self-center"
-                        >
-                          {instructor.specialization}
-                        </Badge>
-                      </div>
-                      <Text
-                        size="sm"
-                        c="dimmed"
-                        className="overflow-hidden text-ellipsis whitespace-nowrap mb-3"
-                      >
-                        {instructor.email}
+                      <Text fw={600} style={{ color: "#FFFFFF" }}>
+                        {instructor.name}
                       </Text>
-
-                      {/* Additional Details */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-gray-600">
-                        <div>
-                          <span className="font-medium">Applied:</span>{" "}
-                          {instructor.appliedDate}
-                        </div>
-                        <div>
-                          <span className="font-medium">Experience:</span>{" "}
-                          {instructor.experience}
-                        </div>
-                      </div>
+                      <Badge
+                        style={{ backgroundColor: "#B3A1FF", color: "#222222" }}
+                      >
+                        {instructor.specialization}
+                      </Badge>
+                    </div>
+                    <Text size="sm" style={{ color: "#E9EEEA" }}>
+                      {instructor.email}
+                    </Text>
+                    <div
+                      style={{
+                        display: "flex",
+                        gap: "1rem",
+                        marginTop: "0.25rem",
+                      }}
+                    >
+                      <Text size="xs" style={{ color: "#E9EEEA" }}>
+                        Applied: {instructor.appliedDate}
+                      </Text>
+                      <Text size="xs" style={{ color: "#E9EEEA" }}>
+                        Experience: {instructor.experience}
+                      </Text>
                     </div>
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className="flex gap-2 flex-wrap sm:justify-end justify-stretch">
+                  <div
+                    style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}
+                  >
                     <Button
                       variant="default"
                       size="sm"
                       leftSection={<IconEye size={16} />}
                       onClick={() => handleViewDetails(instructor)}
-                      className="flex-1 sm:flex-initial min-w-0"
+                      style={{ backgroundColor: "#444444", color: "#FFFFFF" }}
                     >
-                      View Details
+                      View
                     </Button>
                     <Button
                       variant="filled"
                       size="sm"
                       leftSection={<IconCheck size={16} />}
-                      className="flex-1 sm:flex-initial min-w-0"
-                      color="green"
+                      style={{ backgroundColor: "#BDF052", color: "#222222" }}
                     >
                       Approve
                     </Button>
                     <Button
                       variant="filled"
-                      color="red"
                       size="sm"
                       leftSection={<IconX size={16} />}
-                      className="flex-1 sm:flex-initial min-w-0"
+                      style={{ backgroundColor: "#F6ACAE", color: "#222222" }}
                     >
                       Reject
                     </Button>
@@ -151,40 +169,58 @@ export function InstructorApprovalSection() {
 
       <Grid>
         <Grid.Col span={{ base: 12, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text size="sm" c="dimmed" mb="xs">
+          <Card
+            shadow="md"
+            padding="lg"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: "#2a2a2a", borderColor: "#BDF052" }}
+          >
+            <Text size="sm" style={{ color: "#E9EEEA" }} mb="xs">
               Pending Approvals
             </Text>
-            <Text size="2rem" fw={700}>
+            <Text size="2rem" fw={700} style={{ color: "#BDF052" }}>
               {mockPendingInstructors.length}
             </Text>
-            <Text size="xs" c="dimmed" mt="xs">
+            <Text size="xs" style={{ color: "#E9EEEA" }} mt="xs">
               Requires immediate attention
             </Text>
           </Card>
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text size="sm" c="dimmed" mb="xs">
+          <Card
+            shadow="md"
+            padding="lg"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: "#2a2a2a", borderColor: "#B3A1FF" }}
+          >
+            <Text size="sm" style={{ color: "#E9EEEA" }} mb="xs">
               Approved This Month
             </Text>
-            <Text size="2rem" fw={700}>
+            <Text size="2rem" fw={700} style={{ color: "#B3A1FF" }}>
               12
             </Text>
-            <Text size="xs" c="dimmed" mt="xs">
+            <Text size="xs" style={{ color: "#E9EEEA" }} mt="xs">
               +3 from last month
             </Text>
           </Card>
         </Grid.Col>
         <Grid.Col span={{ base: 12, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text size="sm" c="dimmed" mb="xs">
+          <Card
+            shadow="md"
+            padding="lg"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: "#2a2a2a", borderColor: "#F6ACAE" }}
+          >
+            <Text size="sm" style={{ color: "#E9EEEA" }} mb="xs">
               Rejection Rate
             </Text>
-            <Text size="2rem" fw={700}>
+            <Text size="2rem" fw={700} style={{ color: "#F6ACAE" }}>
               8%
             </Text>
-            <Text size="xs" c="dimmed" mt="xs">
+            <Text size="xs" style={{ color: "#E9EEEA" }} mt="xs">
               -2% from last month
             </Text>
           </Card>
@@ -196,23 +232,32 @@ export function InstructorApprovalSection() {
         onClose={() => setIsModalOpen(false)}
         title="Instructor Application Details"
         size="lg"
+        styles={{
+          content: { backgroundColor: "#2a2a2a" },
+          header: { backgroundColor: "#2a2a2a", borderColor: "#BDF052" },
+          title: { color: "#FFFFFF" },
+        }}
       >
         {selectedInstructor && (
           <div
             style={{ display: "flex", flexDirection: "column", gap: "1rem" }}
           >
             <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-              <Avatar size="xl" radius="xl" color="violet">
+              <Avatar
+                size="xl"
+                radius="xl"
+                style={{ backgroundColor: "#B3A1FF" }}
+              >
                 {selectedInstructor.name
                   .split(" ")
                   .map((n) => n[0])
                   .join("")}
               </Avatar>
               <div>
-                <Text size="lg" fw={600}>
+                <Text size="lg" fw={600} style={{ color: "#FFFFFF" }}>
                   {selectedInstructor.name}
                 </Text>
-                <Text size="sm" c="dimmed">
+                <Text size="sm" style={{ color: "#E9EEEA" }}>
                   {selectedInstructor.email}
                 </Text>
               </div>
@@ -220,42 +265,44 @@ export function InstructorApprovalSection() {
 
             <Grid>
               <Grid.Col span={6}>
-                <Text size="sm" fw={500} mb={4}>
+                <Text size="sm" fw={500} mb={4} style={{ color: "#BDF052" }}>
                   Specialization
                 </Text>
-                <Text size="sm" c="dimmed">
+                <Text size="sm" style={{ color: "#E9EEEA" }}>
                   {selectedInstructor.specialization}
                 </Text>
               </Grid.Col>
               <Grid.Col span={6}>
-                <Text size="sm" fw={500} mb={4}>
+                <Text size="sm" fw={500} mb={4} style={{ color: "#BDF052" }}>
                   Experience
                 </Text>
-                <Text size="sm" c="dimmed">
+                <Text size="sm" style={{ color: "#E9EEEA" }}>
                   {selectedInstructor.experience}
                 </Text>
               </Grid.Col>
               <Grid.Col span={12}>
-                <Text size="sm" fw={500} mb={4}>
+                <Text size="sm" fw={500} mb={4} style={{ color: "#BDF052" }}>
                   Qualifications
                 </Text>
-                <Text size="sm" c="dimmed">
+                <Text size="sm" style={{ color: "#E9EEEA" }}>
                   {selectedInstructor.qualifications}
                 </Text>
               </Grid.Col>
               <Grid.Col span={6}>
-                <Text size="sm" fw={500} mb={4}>
+                <Text size="sm" fw={500} mb={4} style={{ color: "#BDF052" }}>
                   Applied Date
                 </Text>
-                <Text size="sm" c="dimmed">
+                <Text size="sm" style={{ color: "#E9EEEA" }}>
                   {selectedInstructor.appliedDate}
                 </Text>
               </Grid.Col>
               <Grid.Col span={6}>
-                <Text size="sm" fw={500} mb={4}>
+                <Text size="sm" fw={500} mb={4} style={{ color: "#BDF052" }}>
                   Status
                 </Text>
-                <Badge variant="light">{selectedInstructor.status}</Badge>
+                <Badge style={{ backgroundColor: "#B3A1FF", color: "#222222" }}>
+                  {selectedInstructor.status}
+                </Badge>
               </Grid.Col>
             </Grid>
 
@@ -267,13 +314,25 @@ export function InstructorApprovalSection() {
                 marginTop: "1rem",
               }}
             >
-              <Button variant="default" onClick={() => setIsModalOpen(false)}>
+              <Button
+                variant="default"
+                onClick={() => setIsModalOpen(false)}
+                style={{ backgroundColor: "#444444", color: "#FFFFFF" }}
+              >
                 Close
               </Button>
-              <Button color="red" leftSection={<IconX size={16} />}>
+              <Button
+                leftSection={<IconX size={16} />}
+                style={{ backgroundColor: "#F6ACAE", color: "#222222" }}
+              >
                 Reject
               </Button>
-              <Button leftSection={<IconCheck size={16} />}>Approve</Button>
+              <Button
+                leftSection={<IconCheck size={16} />}
+                style={{ backgroundColor: "#BDF052", color: "#222222" }}
+              >
+                Approve
+              </Button>
             </div>
           </div>
         )}

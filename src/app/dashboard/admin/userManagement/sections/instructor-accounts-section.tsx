@@ -34,159 +34,255 @@ export function InstructorAccountsSection() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <Card shadow="sm" padding="lg" radius="md" withBorder>
-        <div className="mb-6">
-          <Text size="xl" fw={700}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+      <Card
+        shadow="md"
+        padding="lg"
+        radius="md"
+        withBorder
+        style={{ backgroundColor: "#2a2a2a", borderColor: "#444444" }}
+      >
+        <div style={{ marginBottom: "1.5rem" }}>
+          <Text size="xl" fw={700} style={{ color: "#FFFFFF" }}>
             Instructor Accounts
           </Text>
-          <Text size="sm" c="dimmed">
+          <Text size="sm" style={{ color: "#E9EEEA" }}>
             Manage approved instructor accounts and performance
           </Text>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
           <TextInput
             placeholder="Search instructors by name, email, or specialization..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.currentTarget.value)}
             leftSection={<IconSearch size={16} />}
+            styles={{
+              input: {
+                backgroundColor: "#333333",
+                borderColor: "#444444",
+                color: "#FFFFFF",
+              },
+            }}
           />
 
-          <div className="overflow-auto border border-gray-300 rounded-lg">
-            <Table striped highlightOnHover className="min-w-[800px]">
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th className="min-w-[250px]">Instructor</Table.Th>
-                  <Table.Th className="min-w-[140px]">Specialization</Table.Th>
-                  <Table.Th className="min-w-[80px]">Courses</Table.Th>
-                  <Table.Th className="min-w-[80px]">Students</Table.Th>
-                  <Table.Th className="min-w-[80px]">Status</Table.Th>
-                  <Table.Th className="min-w-[60px] text-center">
-                    Actions
-                  </Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {filteredInstructors.map((instructor) => (
-                  <Table.Tr key={instructor.id}>
-                    <Table.Td>
-                      <div className="flex items-center gap-3 min-w-[250px]">
-                        <Avatar size="sm" radius="xl" color="violet">
-                          {instructor.name
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")}
-                        </Avatar>
-                        <div className="min-w-0 flex-1">
-                          <Text
-                            fw={500}
-                            size="sm"
-                            className="whitespace-nowrap overflow-hidden text-ellipsis"
-                          >
-                            {instructor.name}
-                          </Text>
-                          <Text
-                            size="xs"
-                            c="dimmed"
-                            className="whitespace-nowrap overflow-hidden text-ellipsis"
-                          >
-                            {instructor.email}
-                          </Text>
-                        </div>
-                      </div>
-                    </Table.Td>
-                    <Table.Td>
-                      <Badge variant="outline" size="sm">
-                        {instructor.specialization}
-                      </Badge>
-                    </Table.Td>
-                    <Table.Td className="text-center">
-                      {instructor.courses}
-                    </Table.Td>
-                    <Table.Td className="text-center">
-                      {instructor.students}
-                    </Table.Td>
-                    <Table.Td>
-                      <Badge
-                        color={instructor.status === "active" ? "blue" : "gray"}
-                        variant="light"
+          <Table striped highlightOnHover>
+            <Table.Thead
+              style={{
+                backgroundColor: "#1a1a1a",
+                borderBottom: "1px solid #444444",
+              }}
+            >
+              <Table.Tr>
+                <Table.Th
+                  style={{
+                    color: "#BDF052",
+                    borderBottom: "1px solid #444444",
+                  }}
+                >
+                  Instructor
+                </Table.Th>
+                <Table.Th
+                  style={{
+                    color: "#BDF052",
+                    borderBottom: "1px solid #444444",
+                  }}
+                >
+                  Specialization
+                </Table.Th>
+                <Table.Th
+                  style={{
+                    color: "#BDF052",
+                    borderBottom: "1px solid #444444",
+                  }}
+                >
+                  Courses
+                </Table.Th>
+                <Table.Th
+                  style={{
+                    color: "#BDF052",
+                    borderBottom: "1px solid #444444",
+                  }}
+                >
+                  Students
+                </Table.Th>
+                <Table.Th
+                  style={{
+                    color: "#BDF052",
+                    borderBottom: "1px solid #444444",
+                  }}
+                >
+                  Status
+                </Table.Th>
+                <Table.Th
+                  style={{
+                    color: "#BDF052",
+                    borderBottom: "1px solid #444444",
+                  }}
+                ></Table.Th>
+              </Table.Tr>
+            </Table.Thead>
+            <Table.Tbody>
+              {filteredInstructors.map((instructor, index) => (
+                <Table.Tr
+                  key={instructor.id}
+                  style={{
+                    backgroundColor: index % 2 === 0 ? "#2a2a2a" : "#333333",
+                    borderBottom: "1px solid #3a3a3a",
+                  }}
+                >
+                  <Table.Td>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.75rem",
+                      }}
+                    >
+                      <Avatar
                         size="sm"
+                        radius="xl"
+                        style={{ backgroundColor: "#B3A1FF" }}
                       >
-                        {instructor.status}
-                      </Badge>
-                    </Table.Td>
-                    <Table.Td className="text-center">
-                      <Menu shadow="md" width={200} position="bottom-end">
-                        <Menu.Target>
-                          <ActionIcon variant="subtle" size="sm">
-                            <IconDots size={16} />
-                          </ActionIcon>
-                        </Menu.Target>
-                        <Menu.Dropdown>
-                          <Menu.Label>Actions</Menu.Label>
-                          <Menu.Item
-                            leftSection={<IconCircleCheck size={14} />}
-                          >
-                            View Profile
-                          </Menu.Item>
-                          <Menu.Item leftSection={<IconMail size={14} />}>
-                            Send Email
-                          </Menu.Item>
-                          <Menu.Divider />
-                          <Menu.Item
-                            color="red"
-                            leftSection={<IconBan size={14} />}
-                          >
-                            Suspend Account
-                          </Menu.Item>
-                        </Menu.Dropdown>
-                      </Menu>
-                    </Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-          </div>
+                        {instructor.name
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("")}
+                      </Avatar>
+                      <div>
+                        <Text fw={500} size="sm" style={{ color: "#FFFFFF" }}>
+                          {instructor.name}
+                        </Text>
+                        <Text size="xs" style={{ color: "#E9EEEA" }}>
+                          {instructor.email}
+                        </Text>
+                      </div>
+                    </div>
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge
+                      style={{ backgroundColor: "#B3A1FF", color: "#222222" }}
+                    >
+                      {instructor.specialization}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td style={{ color: "#FFFFFF" }}>
+                    {instructor.courses}
+                  </Table.Td>
+                  <Table.Td style={{ color: "#FFFFFF" }}>
+                    {instructor.students}
+                  </Table.Td>
+                  <Table.Td>
+                    <Badge
+                      style={{
+                        backgroundColor:
+                          instructor.status === "active"
+                            ? "#BDF052"
+                            : "#E9EEEA",
+                        color: "#222222",
+                      }}
+                    >
+                      {instructor.status}
+                    </Badge>
+                  </Table.Td>
+                  <Table.Td>
+                    <Menu shadow="md" width={200}>
+                      <Menu.Target>
+                        <ActionIcon
+                          variant="subtle"
+                          style={{ color: "#BDF052" }}
+                        >
+                          <IconDots size={16} />
+                        </ActionIcon>
+                      </Menu.Target>
+                      <Menu.Dropdown style={{ backgroundColor: "#333333" }}>
+                        <Menu.Label style={{ color: "#BDF052" }}>
+                          Actions
+                        </Menu.Label>
+                        <Menu.Item
+                          leftSection={<IconCircleCheck size={14} />}
+                          style={{ color: "#FFFFFF" }}
+                        >
+                          View Profile
+                        </Menu.Item>
+                        <Menu.Item
+                          leftSection={<IconMail size={14} />}
+                          style={{ color: "#FFFFFF" }}
+                        >
+                          Send Email
+                        </Menu.Item>
+                        <Menu.Divider />
+                        <Menu.Item
+                          color="red"
+                          leftSection={<IconBan size={14} />}
+                          style={{ color: "#F6ACAE" }}
+                        >
+                          Suspend Account
+                        </Menu.Item>
+                      </Menu.Dropdown>
+                    </Menu>
+                  </Table.Td>
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
         </div>
       </Card>
 
       <Grid>
-        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text size="sm" c="dimmed" mb="xs">
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+          <Card
+            shadow="md"
+            padding="lg"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: "#2a2a2a", borderColor: "#BDF052" }}
+          >
+            <Text size="sm" style={{ color: "#E9EEEA" }} mb="xs">
               Total Instructors
             </Text>
-            <Text size="2rem" fw={700}>
+            <Text size="2rem" fw={700} style={{ color: "#BDF052" }}>
               87
             </Text>
-            <Text size="xs" c="dimmed" mt="xs">
+            <Text size="xs" style={{ color: "#E9EEEA" }} mt="xs">
               +5 from last month
             </Text>
           </Card>
         </Grid.Col>
-        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text size="sm" c="dimmed" mb="xs">
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+          <Card
+            shadow="md"
+            padding="lg"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: "#2a2a2a", borderColor: "#B3A1FF" }}
+          >
+            <Text size="sm" style={{ color: "#E9EEEA" }} mb="xs">
               Active Instructors
             </Text>
-            <Text size="2rem" fw={700}>
+            <Text size="2rem" fw={700} style={{ color: "#B3A1FF" }}>
               82
             </Text>
-            <Text size="xs" c="dimmed" mt="xs">
+            <Text size="xs" style={{ color: "#E9EEEA" }} mt="xs">
               94.3% active rate
             </Text>
           </Card>
         </Grid.Col>
-        <Grid.Col span={{ base: 12, sm: 6, md: 4 }}>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Text size="sm" c="dimmed" mb="xs">
+        <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
+          <Card
+            shadow="md"
+            padding="lg"
+            radius="md"
+            withBorder
+            style={{ backgroundColor: "#2a2a2a", borderColor: "#F6ACAE" }}
+          >
+            <Text size="sm" style={{ color: "#E9EEEA" }} mb="xs">
               Total Courses
             </Text>
-            <Text size="2rem" fw={700}>
+            <Text size="2rem" fw={700} style={{ color: "#F6ACAE" }}>
               342
             </Text>
-            <Text size="xs" c="dimmed" mt="xs">
+            <Text size="xs" style={{ color: "#E9EEEA" }} mt="xs">
               +18 from last month
             </Text>
           </Card>
