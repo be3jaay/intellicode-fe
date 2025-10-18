@@ -1,0 +1,84 @@
+import { apiClient } from "../api-client";
+import { 
+  UsersResponse, 
+  UserManagementQuery, 
+  SuspendUserRequest, 
+  ApproveInstructorRequest, 
+  UserProfile,
+  SignupRequest,
+  SignupResponse 
+} from "./user-management-types";
+
+export class UserManagementService {
+  public static async getUsers(query: UserManagementQuery = {}): Promise<UsersResponse> {
+    try {
+      const queryParams = new URLSearchParams();
+      
+      // Always include page and limit with defaults
+      const page = query.page || 1;
+      const limit = query.limit || 10;
+      
+      queryParams.append('page', page.toString());
+      queryParams.append('limit', limit.toString());
+      
+      if (query.role) queryParams.append('role', query.role);
+      if (query.search) queryParams.append('search', query.search);
+      if (query.isSuspended !== undefined) queryParams.append('isSuspended', query.isSuspended.toString());
+
+      const queryString = queryParams.toString();
+      const url = `/users?${queryString}`;
+      
+      return await apiClient.get<UsersResponse>(url);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async suspendUser(userId: string, data: SuspendUserRequest): Promise<void> {
+    try {
+      await apiClient.put(`/users/${userId}/suspend`, data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async approveInstructor(userId: string, data: ApproveInstructorRequest): Promise<void> {
+    try {
+      await apiClient.put(`/users/${userId}/approve`, data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async getPendingApprovals(): Promise<UserProfile[]> {
+    try {
+      return await apiClient.get<UserProfile[]>('/users/pending-approval');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async getSuspendedUsers(): Promise<UserProfile[]> {
+    try {
+      return await apiClient.get<UserProfile[]>('/users/suspended');
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async deleteUser(userId: string): Promise<void> {
+    try {
+      await apiClient.delete(`/users/${userId}`);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async registerUser(data: SignupRequest): Promise<SignupResponse> {
+    try {
+      return await apiClient.post<SignupResponse>('/auth/register', data);
+    } catch (error) {
+      throw error;
+    }
+  }
+}

@@ -20,6 +20,8 @@ import {
   UserPlus,
   Shield,
   LogOut,
+  CheckCircle,
+  Users,
 } from "lucide-react";
 import { recentActivities, stats } from "./dashboard-mock";
 
@@ -297,6 +299,46 @@ function AdminDashboard() {
                     }}
                   >
                     Create Course
+                  </Button>
+                  <Button
+                    fullWidth
+                    leftSection={<CheckCircle size={18} />}
+                    variant="outline"
+                    style={{
+                      borderColor: "#BDF052",
+                      color: "#BDF052",
+                    }}
+                    styles={{
+                      root: {
+                        "&:hover": {
+                          backgroundColor: "rgba(189, 240, 82, 0.1)",
+                        },
+                      },
+                    }}
+                    component="a"
+                    href="/dashboard/admin/course-management"
+                  >
+                    Course Approvals
+                  </Button>
+                  <Button
+                    fullWidth
+                    leftSection={<Users size={18} />}
+                    variant="outline"
+                    style={{
+                      borderColor: "#BDF052",
+                      color: "#BDF052",
+                    }}
+                    styles={{
+                      root: {
+                        "&:hover": {
+                          backgroundColor: "rgba(189, 240, 82, 0.1)",
+                        },
+                      },
+                    }}
+                    component="a"
+                    href="/dashboard/admin/user-management"
+                  >
+                    User Management
                   </Button>
                   <Button
                     fullWidth

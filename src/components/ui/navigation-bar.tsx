@@ -90,39 +90,19 @@ export function NavigationBar() {
         const adminItems = [
             ...commonItems,
             {
-                icon: Users,
-                label: 'Users',
-                href: `/dashboard/${role}/users`,
-            },
-            {
                 icon: IconUserCog,
                 label: 'User Management',
-                href: `/dashboard/${role}/userManagement`,
+                href: `/dashboard/${role}/user-management`,
             },
             {
                 icon: BookOpen,
-                label: 'Courses',
-                href: `/dashboard/${role}/courses`,
+                label: 'Course Management',
+                href: `/dashboard/${role}/course-management`,
             },
-            // {
-            //     icon: GraduationCap,
-            //     label: 'Instructors',
-            //     href: `/dashboard/${role}/instructors`,
-            // },
-            // {
-            //     icon: Shield,
-            //     label: 'Permissions',
-            //     href: `/dashboard/${role}/permissions`,
-            // },
             {
                 icon: BarChart,
                 label: 'Analytics',
                 href: `/dashboard/${role}/analytics`,
-            },
-            {
-                icon: Settings,
-                label: 'Settings',
-                href: `/dashboard/${role}/settings`,
             },
         ];
 
