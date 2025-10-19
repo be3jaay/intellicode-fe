@@ -16,6 +16,12 @@ export interface CodeEditorProps {
    * @default "javascript"
    */
   initialLanguage?: "javascript" | "python" | "cpp" | "java" | "typescript";
+  
+  /**
+   * Starting programming language
+   * @default "light"
+   */
+  initialTheme?: "vs-dark" | "light";
 
   /**
    * Custom code to load on mount
@@ -68,3 +74,4 @@ export interface DefaultCodeMap {
   java: string;
   typescript: string;
 }
+

@@ -61,3 +61,8 @@ function fibonacci(n: number): number {
 
 console.log("Fibonacci(10):", fibonacci(10));`,
 };
+
+export const themeData = [
+  { value: "vs-dark", label: "Dark" },
+  { value: "light", label: "Light" },
+];

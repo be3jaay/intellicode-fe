@@ -1,5 +1,15 @@
 import { CodeEditor } from "@/components/code-sandbox";
-import { Box, Container, Paper, Title, Text, GridCol, Grid } from "@mantine/core";
+import {
+  Box,
+  Container,
+  Paper,
+  Title,
+  Text,
+  GridCol,
+  Grid,
+  List,
+  ListItem,
+} from "@mantine/core";
 
 export default function CodeSandboxPage() {
   return (
@@ -15,14 +25,18 @@ export default function CodeSandboxPage() {
               <Text c="dimmed" mb="md">
                 Write a function that reverses a string.
               </Text>
-              <Text c="dimmed" size="sm" mt="xl">
-                <strong>Hints:</strong>
-                <ul>
-                  <li>You can use string slicing</li>
-                  <li>Or use a loop to build the reversed string</li>
-                  <li>Don't forget to return the result!</li>
-                </ul>
-              </Text>
+              <Box mt="xl">
+                <Text c="dimmed" size="sm" fw={500} mb="xs">
+                  Hints:
+                </Text>
+                <List size="sm" c="dimmed" spacing="xs">
+                  <ListItem>You can use string slicing</ListItem>
+                  <ListItem>
+                    Or use a loop to build the reversed string
+                  </ListItem>
+                  <ListItem>Don't forget to return the result!</ListItem>
+                </List>
+              </Box>
             </Paper>
           </GridCol>
 
