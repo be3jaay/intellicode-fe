@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getSession } from '@/utils/session';
 
-const publicRoutes = ['/sign-in', '/sign-up', '/'];
+// temporarily added code-sandbox
+const publicRoutes = ['/sign-in', '/sign-up', '/', '/code-sandbox'];
 const authRoutes = ['/sign-in', '/sign-up'];
 
 export async function middleware(request: NextRequest) {
