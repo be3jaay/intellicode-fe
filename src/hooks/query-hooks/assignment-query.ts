@@ -1,5 +1,5 @@
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
-import { CreateQuizForm, AssignmentQueryParams } from "@/services/assignment-service/assignment-type";
+import { CreateQuizForm, AssignmentQueryParams, SubmitAssignmentData } from "@/services/assignment-service/assignment-type";
 import { ErrorResponse } from "@/services/course-service/course-type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -38,4 +38,22 @@ export function useFetchAssignment(assignmentId: string) {
         enabled: !!assignmentId,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
+}
+
+export function useSubmitAssignment() {
+    const queryClient = useQueryClient();
+    const { mutateAsync, isPending, isError } = useMutation({
+        mutationFn: ({ assignmentId, data }: { assignmentId: string, data: SubmitAssignmentData }) => AssignmentService.submitAssignment(assignmentId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['assignments'] });
+        },
+        onError: (error: ErrorResponse) => {
+            console.error(error.message);
+        },
+    })
+    return {
+        submitAssignment: mutateAsync,
+        isSubmitting: isPending,
+        isError: isError,
+    }
 }

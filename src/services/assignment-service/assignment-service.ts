@@ -1,6 +1,6 @@
 
 import { apiClient } from "../api-client";
-import { CreateQuizForm, AssignmentResponse, AssignmentQueryParams, CreateAssignmentData } from "./assignment-type";
+import { CreateQuizForm, AssignmentResponse, AssignmentQueryParams, CreateAssignmentData, Assignment, SubmitAssignmentData, SubmitAssignmentResponse } from "./assignment-type";
 
 export class AssignmentService {
     public static async createAssignment(value: CreateQuizForm, moduleId: string, file?: File){
@@ -90,6 +90,15 @@ export class AssignmentService {
     public static async getAssignment(assignmentId: string): Promise<{ data: Assignment }> {
         try {
             return await apiClient.get(`/course/assignments/${assignmentId}`);
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    public static async submitAssignment(assignmentId: string, data: SubmitAssignmentData): Promise<{ data: SubmitAssignmentResponse }> {
+        try {
+            return await apiClient.post(`/course/assignments/${assignmentId}/submit`, data);
         } catch (error) {
             console.error(error);
             throw error;

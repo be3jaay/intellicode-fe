@@ -11,6 +11,7 @@ import {
     Checkbox,
     TextInput,
     Textarea,
+    Modal,
     Progress,
     Alert,
     Divider,
@@ -26,6 +27,10 @@ import {
     IconArrowRight,
 } from "@tabler/icons-react"
 import { useLeaveDetection } from 'react-haiku'
+import { useSubmitAssignment } from "@/hooks/query-hooks/assignment-query"
+import { SubmitAssignmentData } from "@/services/assignment-service/assignment-type"
+import { SubmittedResult } from "@/components/student/submitted-result"
+import { AlreadySubmitted } from "@/components/student/already-submitted"
 
 interface Question {
     id: string
@@ -56,6 +61,7 @@ interface Assignment {
     updated_at: string
     questions: Question[]
     starterCode: string | null
+    already_submitted?: boolean
 }
 
 interface QuizInterfaceProps {
@@ -73,13 +79,32 @@ export function QuizInterface({ assignment, isSecured }: QuizInterfaceProps) {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
     const [answers, setAnswers] = useState<Answer[]>([])
     const [isSubmitted, setIsSubmitted] = useState(false)
+    const [submitScore, setSubmitScore] = useState<{ score: number; finalScore: number } | null>(null)
+    const [hasAutoSubmitted, setHasAutoSubmitted] = useState(false)
+    const [showLeaveModal, setShowLeaveModal] = useState(false)
+
+    const { submitAssignment, isSubmitting } = useSubmitAssignment()
 
     // Leave detection for secured browser
-    useLeaveDetection(() => {
-        if (isSecured) {
-            console.log("failed, user leave page")
-            // In a real implementation, this would submit the quiz with a grade of 0
-            alert("You have left the secured browser. Your quiz will be automatically submitted with a grade of 0.")
+    useLeaveDetection(async () => {
+        if (!isSecured) return
+        if (hasAutoSubmitted) {
+            setShowLeaveModal(true)
+            return
+        }
+        try {
+            await submitAssignment({
+                assignmentId: assignment.id,
+                data: {
+                    answers: answers.map(a => ({
+                        question_id: a.questionId,
+                        answer_text: Array.isArray(a.answer) ? a.answer.join("\n") : (a.answer ?? ""),
+                    }))
+                }
+            })
+        } finally {
+            setHasAutoSubmitted(true)
+            setShowLeaveModal(true)
         }
     })
     const currentQuestion = assignment.questions[currentQuestionIndex]
@@ -108,66 +133,52 @@ export function QuizInterface({ assignment, isSecured }: QuizInterfaceProps) {
         }
     }
 
-    const handlePrevious = () => {
-        if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev - 1)
+    const handleSubmit = async () => {
+        const payload: SubmitAssignmentData = {
+            answers: answers.map(a => ({
+                question_id: a.questionId,
+                answer_text: Array.isArray(a.answer) ? a.answer.join("\n") : (a.answer ?? ""),
+            }))
+        }
+        try {
+            const response = await submitAssignment({ assignmentId: assignment.id, data: payload })
+            // normalize possible response shapes
+            const raw = (response as any)?.data ?? response
+            const score = raw?.score ?? raw?.data?.score ?? 0
+            const finalScore = raw?.final_score ?? raw?.data?.final_score ?? raw?.finalScore ?? assignment.points ?? 0
+            setSubmitScore({ score, finalScore })
+            setIsSubmitted(true)
+        } catch (e) {
+            // keep UI, you may show a toast elsewhere
+            console.error(e)
         }
     }
-
-    const handleSubmit = () => {
-        setIsSubmitted(true)
-        // In a real implementation, this would submit the answers to the backend
-        console.log("Submitting quiz with answers:", answers)
-    }
-
-    const formatTime = (seconds: number) => {
-        const hours = Math.floor(seconds / 3600)
-        const minutes = Math.floor((seconds % 3600) / 60)
-        const secs = seconds % 60
-        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
-    }
-
-    if (isSubmitted) {
+    if (assignment.already_submitted) {
         return (
             <Center h="100vh">
-                <Paper
-                    shadow="xl"
-                    p="xl"
-                    radius="lg"
-                    style={{
-                        maxWidth: "500px",
-                        background: "rgba(34, 197, 94, 0.1)",
-                        border: "1px solid #22c55e",
-                    }}
-                >
-                    <Stack align="center" gap="md">
-                        <Box
-                            style={{
-                                width: 80,
-                                height: 80,
-                                borderRadius: "50%",
-                                background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                            }}
-                        >
-                            <IconCheck size={40} color="#ffffff" />
-                        </Box>
-                        <Text size="xl" fw={700} c="green">
-                            Quiz Submitted Successfully!
-                        </Text>
-                        <Text size="sm" c="dimmed" ta="center">
-                            Your answers have been submitted. Results will be available after review.
-                        </Text>
-                    </Stack>
-                </Paper>
+                <AlreadySubmitted />
+            </Center>
+        )
+    }
+
+    if (isSubmitted && submitScore) {
+        return (
+            <Center h="100vh">
+                <SubmittedResult score={submitScore.score} finalScore={submitScore.finalScore} />
             </Center>
         )
     }
 
     return (
         <Box style={{ maxWidth: "800px", margin: "0 auto", minHeight: "100vh", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", width: "100%" }}>
+            <Modal opened={showLeaveModal} onClose={() => setShowLeaveModal(false)} title="You left the secured quiz" centered size="lg">
+                <Stack gap="md">
+                    <Text size="sm">You&apos;ve left the secured browser. Your attempt was auto-submitted. Please go back to the course.</Text>
+                    <Group justify="flex-end">
+                        <Button component="a" href="/dashboard/student/courses" color="red">Go back to courses</Button>
+                    </Group>
+                </Stack>
+            </Modal>
             {/* Header */}
             <Paper
                 shadow="md"
@@ -306,6 +317,8 @@ export function QuizInterface({ assignment, isSecured }: QuizInterfaceProps) {
                         <Button
                             size="lg"
                             onClick={handleSubmit}
+                            loading={isSubmitting}
+                            disabled={isSubmitting}
                             leftSection={<IconCheck size={16} />}
                             style={{
                                 background: "linear-gradient(135deg, #22c55e 0%, #16a34a 100%)",
@@ -319,6 +332,7 @@ export function QuizInterface({ assignment, isSecured }: QuizInterfaceProps) {
                         <Button
                             size="lg"
                             onClick={handleNext}
+                            disabled={isSubmitting}
                             rightSection={<IconArrowRight size={16} />}
                             style={{
                                 background: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",

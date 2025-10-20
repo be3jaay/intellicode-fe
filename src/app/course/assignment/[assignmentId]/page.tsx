@@ -4,36 +4,9 @@ import { useParams } from "next/navigation"
 import { Box, Text, Stack, Button, Paper, Group, Alert, Center, Loader, List, ThemeIcon } from "@mantine/core"
 import { IconAlertTriangle, IconLock, IconBrain, IconCircleDashed, IconCircleCheck } from "@tabler/icons-react"
 import { QuizInterface } from "../../../../components/student/quiz-interface"
+import { AlreadySubmitted } from "@/components/student/already-submitted"
 import { useFetchAssignment } from "@/hooks/query-hooks/assignment-query"
-
-interface AssignmentData {
-    id: string
-    title: string
-    description: string
-    assignmentType: string
-    assignmentSubtype: string
-    difficulty: string
-    points: number
-    dueDate: string
-    is_published: boolean
-    secured_browser: boolean
-    module_id: string
-    created_at: string
-    updated_at: string
-    questions: Array<{
-        id: string
-        question: string
-        type: "multiple_choice" | "enumeration" | "identification" | "true_false"
-        points: number
-        correct_answer: string
-        correct_answers: string[]
-        options: string[]
-        explanation: string
-        case_sensitive: boolean
-        is_true: boolean
-    }>
-    starterCode: string | null
-}
+import { Assignment } from "@/services/assignment-service/assignment-type"
 
 export default function AssignmentPage() {
     const params = useParams()
@@ -44,6 +17,7 @@ export default function AssignmentPage() {
 
     const { data: assignmentResponse, isLoading, error } = useFetchAssignment(assignmentId)
     const assignment = assignmentResponse?.data
+
 
     // Handle secured browser fullscreen
     useEffect(() => {
@@ -211,6 +185,14 @@ export default function AssignmentPage() {
                     </Paper>
                 </Center >
             </Box >
+        )
+    }
+
+    if (assignment.already_submitted) {
+        return (
+            <Center h="100vh">
+                <AlreadySubmitted />
+            </Center>
         )
     }
 

@@ -13,6 +13,22 @@ export type CreateQuizForm = {
     attachment?: File | null;
 }
 
+export type SubmitAssignmentData = {
+    answers: {
+        question_id: string;
+        answer_text: string;
+    }[];
+}
+
+export type SubmitAssignmentResponse = {
+    score: number;
+    final_score: number;
+    details?: {
+        correct?: number;
+        total?: number;
+    };
+}
+
 export type CreateAssignmentData = {
     title: string;
     description: string;
@@ -67,6 +83,7 @@ export type Assignment = {
     updated_at: string;
     questions: AssignmentQuestion[];
     starterCode: string | null;
+    already_submitted?: boolean;
 }
 
 export type AssignmentResponse = {
