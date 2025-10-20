@@ -29,6 +29,33 @@ export type SubmitAssignmentResponse = {
     };
 }
 
+export type AssignmentQuestionScore = {
+    question_id: string;
+    question_text: string;
+    points_earned: number;
+    max_points: number;
+    is_correct: boolean;
+}
+
+export type AssignmentScoreItem = {
+    student_id: string;
+    student_name: string;
+    student_email: string;
+    student_number: string;
+    score: number;
+    max_score: number;
+    percentage: number;
+    status: string;
+    submitted_at: string;
+    question_scores: AssignmentQuestionScore[];
+}
+
+export type AssignmentScoresResponse = {
+    success: boolean;
+    statusCode: number;
+    data: AssignmentScoreItem[];
+}
+
 export type CreateAssignmentData = {
     title: string;
     description: string;

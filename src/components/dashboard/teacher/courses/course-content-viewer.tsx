@@ -73,11 +73,6 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
     const handleAddLesson = () => {
         setCurrentView("lesson")
     }
-
-    const handleAddActivity = () => {
-        setCurrentView("activity")
-    }
-
     const handleBackToMain = () => {
         setCurrentView("main")
     }
@@ -392,14 +387,11 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         <Tabs.Tab value="modules" color="#bdf052" leftSection={<BookOpen size={16} />}>
                             Modules
                         </Tabs.Tab>
-                        <Tabs.Tab value="activities" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
-                            Activities
+                        <Tabs.Tab value="coursework" color="#bdf052" leftSection={<UserCheck size={16} />}>
+                            Coursework
                         </Tabs.Tab>
                         <Tabs.Tab value="students" color="#bdf052" leftSection={<UserCheck size={16} />}>
                             Students
-                        </Tabs.Tab>
-                        <Tabs.Tab value="assignment" color="#bdf052" leftSection={<UserCheck size={16} />}>
-                            Assignments
                         </Tabs.Tab>
                         <Tabs.Tab value="gradebook" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
                             Gradebook
@@ -450,36 +442,11 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     </Tabs.Panel>
 
 
-                    {/* Activities Tab */}
-                    <Tabs.Panel value="activities">
+                    <Tabs.Panel value="coursework">
                         <Stack gap="md">
                             <Group justify="space-between">
                                 <Text fw={600} c="#e9eeea">
-                                    Course Activities
-                                </Text>
-                                <Button
-                                    size="sm"
-                                    onClick={handleAddActivity}
-                                    style={{
-                                        background: "linear-gradient(135deg, #a78bfa 0%, #8b5cf6 100%)",
-                                        color: "#fff",
-                                        border: "none",
-                                        fontWeight: 600,
-                                    }}
-                                >
-                                    <Plus size={16} style={{ marginRight: 8 }} />
-                                    Add Activity
-                                </Button>
-                            </Group>
-                            <ActivitiesContent />
-                        </Stack>
-                    </Tabs.Panel>
-
-                    <Tabs.Panel value="assignment">
-                        <Stack gap="md">
-                            <Group justify="space-between">
-                                <Text fw={600} c="#e9eeea">
-                                    Course Assignments
+                                    Coursework
                                 </Text>
                                 <Button
                                     size="sm"
@@ -492,14 +459,14 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                     }}
                                 >
                                     <Plus size={16} style={{ marginRight: 8 }} />
-                                    Add Assignment
+                                    Add Coursework
                                 </Button>
                             </Group>
                             {isLoadingModules ? (
                                 <Center py="xl">
                                     <Stack align="center" gap="md">
                                         <Loader size="lg" color="#bdf052" />
-                                        <Text c="dimmed">Loading assignments...</Text>
+                                        <Text c="dimmed">Loading coursework...</Text>
                                     </Stack>
                                 </Center>
                             ) : moduleId ? (
@@ -514,7 +481,7 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                                         textAlign: "center",
                                     }}
                                 >
-                                    <Text c="dimmed">No modules found. Create a module first to add assignments.</Text>
+                                    <Text c="dimmed">No modules found. Create a module first to add coursework.</Text>
                                 </Card>
                             )}
                         </Stack>

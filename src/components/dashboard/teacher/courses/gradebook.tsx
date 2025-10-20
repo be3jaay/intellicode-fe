@@ -22,7 +22,7 @@ export function Gradebook({ courseId }: GradebookProps) {
         search: search || undefined,
         section: section || undefined,
         enrollment_status: (status as any) || undefined,
-        limit: 200,
+        limit: 10,
         offset: 0,
     }
 

@@ -1,5 +1,5 @@
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
-import { CreateQuizForm, AssignmentQueryParams, SubmitAssignmentData } from "@/services/assignment-service/assignment-type";
+import { CreateQuizForm, AssignmentQueryParams, SubmitAssignmentData, AssignmentScoresResponse } from "@/services/assignment-service/assignment-type";
 import { ErrorResponse } from "@/services/course-service/course-type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -56,4 +56,13 @@ export function useSubmitAssignment() {
         isSubmitting: isPending,
         isError: isError,
     }
+}
+
+export function useGetAssignmentScores(assignmentId: string) {
+    return useQuery<AssignmentScoresResponse>({
+        queryKey: ['assignment-scores', assignmentId],
+        queryFn: () => AssignmentService.getAssignmentScores(assignmentId),
+        enabled: !!assignmentId,
+        staleTime: 60 * 1000,
+    })
 }

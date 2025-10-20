@@ -27,7 +27,7 @@ export function CourseCompletion({ courseId }: CourseCompletionProps) {
         search: search || undefined,
         section: section || undefined,
         enrollment_status: (status as any) || undefined,
-        limit: 200,
+        limit: 10,
         offset: 0,
     }
 

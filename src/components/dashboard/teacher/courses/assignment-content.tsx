@@ -338,6 +338,8 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                                             color: "#b3a1ff",
                                             border: "1px solid rgba(179, 161, 255, 0.3)",
                                         }}
+                                        component="a"
+                                        href={`/dashboard/teacher/courses/assignments/${assignment.id}/scores`}
                                     >
                                         <Eye size={16} />
                                     </ActionIcon>
