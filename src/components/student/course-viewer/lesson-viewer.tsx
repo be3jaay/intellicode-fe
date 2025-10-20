@@ -109,11 +109,11 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
         return (
             <Center h={400}>
                 <Stack align="center" gap="md">
-                    <IconBook size={48} color="rgba(79, 209, 197, 0.5)" />
-                    <Text size="lg" fw={500} c="dimmed">
+                    <IconBook size={48} color="#b3a1ff" />
+                    <Text size="xl" fw={500} c="#b3a1ff">
                         Select a lesson to start learning
                     </Text>
-                    <Text size="sm" c="dimmed" ta="center">
+                    <Text size="sm" c="#b3a1ff85" ta="center">
                         Choose a lesson from the sidebar to view its content and begin your learning journey.
                     </Text>
                 </Stack>

@@ -84,7 +84,6 @@ export function UserProfileCard({
                             </Text>
                             <Group gap="xs" align="center" style={{ marginBottom: "0.5rem" }}>
                                 <Badge
-                                    leftSection={roleIcon({ size: 12 })}
                                     style={{
                                         backgroundColor: "#2D2D2D",
                                         color: "#BDF052",

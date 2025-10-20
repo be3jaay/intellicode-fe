@@ -18,14 +18,14 @@ interface StudentCoursePageProps {
 export default function StudentCoursePage({ params }: StudentCoursePageProps) {
     const [selectedLesson, setSelectedLesson] = useState<string | null>(null)
     const [selectedModule, setSelectedModule] = useState<string | null>(null)
-    const [activeTab, setActiveTab] = useState<"lessons" | "assignments">("lessons")
+    const [activeTab, setActiveTab] = useState<"lessons" | "assignments" | "progress">("lessons")
 
     const { data, isLoading, isError, error } = useFetchStudentCourse(params.courseId)
 
     if (isLoading) {
         return (
-            <Box style={{ minHeight: "100vh", background: "#222222" }}>
-                <Center h="100vh">
+            <Box style={{ minHeight: "80vh", background: "#222222" }}>
+                <Center h="80vh">
                     <Box ta="center">
                         <Loader size="xl" color="#4fd1c5" />
                         <Text size="lg" fw={500} c="#4fd1c5" mt="md">
@@ -39,7 +39,7 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
 
     if (isError || !data?.success || !data?.data) {
         return (
-            <Box style={{ minHeight: "100vh", background: "#222222" }}>
+            <Box style={{ minHeight: "80vh", background: "#222222" }}>
                 <Container size="xl" py="xl">
                     <Center h="50vh">
                         <Alert
@@ -73,17 +73,15 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                 activeTab={activeTab}
             />
 
-            <Container size="xl" py="xl">
+            <Container fluid py="xl">
                 <Grid>
                     {/* Sidebar */}
                     <Grid.Col span={{ base: 12, md: 4, lg: 3 }}>
                         <Paper
-                            shadow="md"
-                            radius="lg"
                             p="lg"
                             style={{
-                                background: "#1a1a1a",
-                                border: "1px solid #4fd1c5"
+                                background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                                border: "1px solid #b3a1ff60",
                             }}
                         >
                             <ModuleSidebar
@@ -99,13 +97,10 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                     {/* Main Content */}
                     <Grid.Col span={{ base: 12, md: 8, lg: 9 }}>
                         <Paper
-                            shadow="md"
-                            radius="lg"
                             p="xl"
                             style={{
-                                background: "#1a1a1a",
-                                border: "1px solid #4fd1c5",
-                                minHeight: "600px"
+                                background: "#b3a1ff10",
+                                border: "1px solid #b3a1ff60",
                             }}
                         >
                             {activeTab === "lessons" ? (
@@ -123,11 +118,6 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                         </Paper>
                     </Grid.Col>
                 </Grid>
-
-                {/* Course Progress */}
-                <Box mt="xl">
-                    <CourseProgress course={courseData} />
-                </Box>
             </Container>
         </Box>
     )

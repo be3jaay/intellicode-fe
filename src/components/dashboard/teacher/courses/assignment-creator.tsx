@@ -32,11 +32,14 @@ export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreato
         defaultValues: {
             title: "",
             description: "",
-            assignmentType: "file_upload",
+            assignmentType: "assignment",
+            assignmentSubtype: "file_upload",
+            difficulty: "medium",
             attachment: null,
             points: 100,
             dueDate: null,
             moduleId: moduleId,
+            secured_browser: false,
             questions: [],
             editingIndex: null,
             isAddingNew: false,
@@ -47,6 +50,7 @@ export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreato
 
     const { control, handleSubmit, setValue, watch, register, reset } = form
     const assignmentType = watch("assignmentType")
+    const assignmentSubtype = watch("assignmentSubtype")
 
     // Dynamic field array for quiz questions
     const dynamicFieldArray = useDynamicFieldArray<AssignmentFormData>({
@@ -116,17 +120,72 @@ export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreato
         dynamicFieldArray.handleSave()
     }
 
-    async function onSubmit(data: CreateQuizForm) {
+    async function onSubmit(data: AssignmentFormData) {
         try {
+            // Validate assignment subtype specific requirements
+            if (data.assignmentSubtype === "file_upload") {
+                const file = watch("attachment");
+                if (!file) {
+                    notifications.show({
+                        title: "Validation Error",
+                        message: "File is required for file upload assignments",
+                        color: "red",
+                    });
+                    return;
+                }
+            }
+
+            if (data.assignmentSubtype === "quiz_form" && data.starterCode) {
+                notifications.show({
+                    title: "Validation Error",
+                    message: "Quiz form assignments cannot have starter code",
+                    color: "red",
+                });
+                return;
+            }
+
+            if (data.assignmentSubtype === "file_upload" && data.starterCode) {
+                notifications.show({
+                    title: "Validation Error",
+                    message: "File upload assignments cannot have starter code",
+                    color: "red",
+                });
+                return;
+            }
+
+            // Get the file from form data if it's a file upload assignment
+            const file = data.assignmentSubtype === "file_upload" ? watch("attachment") : undefined;
+
+            // Transform AssignmentFormData to CreateQuizForm
+            const createQuizData: CreateQuizForm = {
+                title: data.title,
+                description: data.description,
+                assignmentType: data.assignmentType,
+                assignmentSubtype: data.assignmentSubtype,
+                difficulty: data.difficulty,
+                isPublished: true,
+                points: data.points,
+                dueDate: data.dueDate,
+                secured_browser: data.secured_browser,
+                questions: data.questions.map(q => ({
+                    question: q.question,
+                    type: q.type,
+                    points: q.points,
+                    correct_answer: q.correct_answer || "",
+                    options: q.options || [],
+                    explanation: q.explanation || "",
+                    correct_answers: q.correct_answers || [],
+                    case_sensitive: q.case_sensitive || false,
+                    is_true: q.is_true || false,
+                })),
+                starterCode: data.starterCode,
+                attachment: data.attachment,
+            };
+
             await createAssignment({
-                value: {
-                    title: data.title,
-                    description: data.description,
-                    assignmentType: data.assignmentType,
-                    points: data.points,
-                    dueDate: data.dueDate,
-                    questions: data.questions,
-                }, moduleId: moduleId //problem module id is undefined
+                value: createQuizData,
+                moduleId: moduleId,
+                file: file || undefined
             })
 
             notifications.show({
@@ -306,9 +365,9 @@ export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreato
                         <Stepper.Step
                             label="Content"
                             description={
-                                assignmentType === "file_upload"
+                                assignmentSubtype === "file_upload"
                                     ? "Add materials"
-                                    : assignmentType === "quiz_form"
+                                    : assignmentSubtype === "quiz_form"
                                         ? "Create questions"
                                         : "Add code"
                             }
@@ -319,13 +378,13 @@ export function AssignmentCreator({ course, onBack, moduleId }: AssignmentCreato
                                 }
                             }}
                         >
-                            {assignmentType === "file_upload" ? (
+                            {assignmentSubtype === "file_upload" ? (
                                 <FileUploadContentStep
                                     setValue={setValue}
                                     onBack={() => setActiveStep(0)}
                                     onSubmit={handleSubmit(onSubmit)}
                                 />
-                            ) : assignmentType === "quiz_form" ? (
+                            ) : assignmentSubtype === "quiz_form" ? (
                                 <QuizFormContentStep
                                     control={control}
                                     register={register}

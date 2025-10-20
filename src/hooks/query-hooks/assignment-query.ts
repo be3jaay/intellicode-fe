@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 export function useCreateAssignment() {
     const queryClient = useQueryClient();
     const { mutateAsync, isPending, isError } = useMutation({
-        mutationFn: ({ value, moduleId }: { value: CreateQuizForm, moduleId: string }) => AssignmentService.createAssignment(value, moduleId),
+        mutationFn: ({ value, moduleId, file }: { value: CreateQuizForm, moduleId: string, file?: File }) => AssignmentService.createAssignment(value, moduleId, file),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['assignments'] });
         },
@@ -27,6 +27,15 @@ export function useGetAssignments(moduleId: string, params: AssignmentQueryParam
         queryKey: ['assignments', moduleId, params],
         queryFn: () => AssignmentService.getAssignments(moduleId, params),
         enabled: !!moduleId,
+        staleTime: 5 * 60 * 1000, // 5 minutes
+    });
+}
+
+export function useFetchAssignment(assignmentId: string) {
+    return useQuery({
+        queryKey: ['assignment', assignmentId],
+        queryFn: () => AssignmentService.getAssignment(assignmentId),
+        enabled: !!assignmentId,
         staleTime: 5 * 60 * 1000, // 5 minutes
     });
 }

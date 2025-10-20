@@ -4,16 +4,15 @@ import {
     Text,
     Group,
     Badge,
-    Button,
     Avatar,
     Stack,
     Progress,
     Tabs,
     rem,
     Flex,
-    Divider,
     Container,
 } from "@mantine/core"
+import { Button } from "@/components/ui"
 import {
     IconBook,
     IconClock,
@@ -71,13 +70,13 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
     return (
         <Box
             style={{
-                background: "linear-gradient(135deg, #bdf052 0%, #a3d742 50%, #8bc232 100%)",
+                background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
                 position: "relative",
                 overflow: "hidden",
-                borderBottom: "1px solid rgba(79, 209, 197, 0.3)",
+                borderBottom: "3px solid #b3a1ff",
             }}
         >
-            {/* Decorative Background Elements */}
+            {/* Decorative Backgroun Elements */}
             <Box
                 style={{
                     position: "absolute",
@@ -103,22 +102,15 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                 }}
             />
 
-            <Container size="xl" py="xl" style={{ position: "relative", zIndex: 1 }}>
+            <Container fluid p="xl" style={{ position: "relative", zIndex: 1 }}>
                 <Stack gap="lg">
                     {/* Navigation */}
                     <Group justify="space-between" align="center">
                         <Button
-                            variant="white"
                             leftSection={<IconArrowLeft size={16} />}
-                            size="sm"
+                            size="md"
                             radius="md"
-                            style={{
-                                background: "rgba(255, 255, 255, 0.2)",
-                                backdropFilter: "blur(10px)",
-                                border: "1px solid rgba(255, 255, 255, 0.3)",
-                                color: "#ffffff",
-                                fontWeight: 600,
-                            }}
+                            variant="primary"
                         >
                             Back to Courses
                         </Button>
@@ -183,7 +175,7 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                                 </Group>
 
                                 {/* Course Stats */}
-                                <Group gap="lg" wrap="wrap">
+                                <Group gap="lg" wrap="wrap" >
                                     <Group gap="xs">
                                         <IconBook size={16} color="rgba(255, 255, 255, 0.8)" />
                                         <Text size="sm" style={{ color: "rgba(255, 255, 255, 0.9)" }}>
@@ -209,20 +201,20 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                         {/* Progress Section */}
                         <Box
                             style={{
-                                background: "rgba(255, 255, 255, 0.1)",
+                                background: "#b3a1ff10",
                                 backdropFilter: "blur(20px)",
                                 borderRadius: rem(16),
                                 padding: rem(24),
-                                border: "1px solid rgba(255, 255, 255, 0.2)",
+                                border: "1px solid #b3a1ff",
                                 minWidth: "280px",
                             }}
                         >
                             <Stack gap="md">
                                 <Group justify="space-between" align="center">
-                                    <Text size="sm" fw={600} style={{ color: "#ffffff" }}>
+                                    <Text size="sm" fw={600} style={{ color: "#b3a1ff" }}>
                                         Course Progress
                                     </Text>
-                                    <Text size="sm" style={{ color: "rgba(255, 255, 255, 0.8)" }}>
+                                    <Text size="sm" style={{ color: "#b3a1ff" }}>
                                         {course.course_completion_percentage}%
                                     </Text>
                                 </Group>
@@ -233,18 +225,18 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                                     radius="md"
                                     styles={{
                                         root: {
-                                            background: "rgba(255, 255, 255, 0.2)",
+                                            background: "#b3a1ff10",
                                         },
                                     }}
                                 />
 
                                 <Group justify="space-between">
-                                    <Text size="xs" style={{ color: "rgba(255, 255, 255, 0.7)" }}>
+                                    <Text size="xs" style={{ color: "#b3a1ff" }}>
                                         {course.completed_lessons} of {course.total_lessons} lessons
                                     </Text>
                                     <Group gap="xs">
-                                        <IconTrophy size={14} color="rgba(255, 255, 255, 0.8)" />
-                                        <Text size="xs" style={{ color: "rgba(255, 255, 255, 0.8)" }}>
+                                        <IconTrophy size={14} color="#b3a1ff" />
+                                        <Text size="xs" style={{ color: "#b3a1ff" }}>
                                             {course.completed_modules} modules
                                         </Text>
                                     </Group>
@@ -258,7 +250,7 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                         value={activeTab}
                         onChange={(value) => onTabChange(value as "lessons" | "assignments" | "progress")}
                         variant="pills"
-                        style={{ marginTop: rem(16) }}
+                        style={{ marginTop: rem(16), borderRadius: rem(12) }}
                     >
                         <Tabs.List
                             style={{
@@ -274,6 +266,7 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                                 leftSection={<IconBook size={16} />}
                                 style={{
                                     color: activeTab === "lessons" ? "#bdf052" : "rgba(255, 255, 255, 0.8)",
+                                    background: activeTab === "lessons" ? "#b3a1ff10" : "transparent",
                                     fontWeight: 600,
                                 }}
                             >
@@ -284,6 +277,7 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                                 leftSection={<IconCheck size={16} />}
                                 style={{
                                     color: activeTab === "assignments" ? "#bdf052" : "rgba(255, 255, 255, 0.8)",
+                                    background: activeTab === "assignments" ? "#b3a1ff10" : "transparent",
                                     fontWeight: 600,
                                 }}
                             >
@@ -294,6 +288,7 @@ export function CourseHeader({ course, onTabChange, activeTab }: CourseHeaderPro
                                 leftSection={<IconTrophy size={16} />}
                                 style={{
                                     color: activeTab === "progress" ? "#bdf052" : "rgba(255, 255, 255, 0.8)",
+                                    background: activeTab === "progress" ? "#b3a1ff10" : "transparent",
                                     fontWeight: 600,
                                 }}
                             >

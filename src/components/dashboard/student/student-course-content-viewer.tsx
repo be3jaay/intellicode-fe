@@ -224,7 +224,7 @@ export function StudentCourseContentViewer({ course, onBack }: StudentCourseCont
                             "&:hover": {
                                 background: "#f8fafc",
                             },
-                            '&[data-active="true"]': {
+                            '&[dataActive]': {
                                 color: "#8bc232",
                                 borderColor: "#8bc232",
                             },

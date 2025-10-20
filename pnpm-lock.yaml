@@ -110,6 +110,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.2.0(react@19.2.0)
+      react-haiku:
+        specifier: ^2.4.1
+        version: 2.4.1(react@19.2.0)
       react-hook-form:
         specifier: ^7.60.0
         version: 7.65.0(react@19.2.0)
@@ -2283,6 +2286,11 @@ packages:
     engines: {node: '>= 10.13'}
     peerDependencies:
       react: '>= 16.8 || 18.0.0'
+
+  react-haiku@2.4.1:
+    resolution: {integrity: sha512-8f3JVL+VvmkHhd3OFQCtY46vmPJuVqNeaYH7aoZsh7mACvsafu3Sh3xvynBciaWi6/cl7ABIe9pR+Ur1kSJ69Q==}
+    peerDependencies:
+      react: '>=16.8.0'
 
   react-hook-form@7.65.0:
     resolution: {integrity: sha512-xtOzDz063WcXvGWaHgLNrNzlsdFgtUWcb32E6WFaGTd7kPZG3EeDusjdZfUsPwKCKVXy1ZlntifaHZ4l8pAsmw==}
@@ -4988,6 +4996,10 @@ snapshots:
       attr-accept: 2.2.5
       file-selector: 2.1.2
       prop-types: 15.8.1
+      react: 19.2.0
+
+  react-haiku@2.4.1(react@19.2.0):
+    dependencies:
       react: 19.2.0
 
   react-hook-form@7.65.0(react@19.2.0):

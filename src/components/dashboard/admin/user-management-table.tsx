@@ -566,7 +566,7 @@ export function UserManagementTable({
                                         backgroundColor: "#BDF052",
                                         color: "#0F0F0F",
                                     },
-                                    "&[data-active]": {
+                                    "&[dataActive]": {
                                         backgroundColor: "#BDF052",
                                         color: "#0F0F0F",
                                     },

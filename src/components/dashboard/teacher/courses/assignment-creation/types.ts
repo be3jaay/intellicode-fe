@@ -1,4 +1,6 @@
-export type AssignmentType = "file_upload" | "quiz_form" | "code_sandbox"
+export type AssignmentType = "assignment" | "activity" | "exam"
+export type AssignmentSubtype = "file_upload" | "quiz_form" | "code_sandbox"
+export type Difficulty = "easy" | "medium" | "hard"
 
 export type QuestionType = "multiple_choice" | "enumeration" | "identification" | "true_false"
 
@@ -23,9 +25,12 @@ export type AssignmentFormData = {
     title: string
     description: string
     assignmentType: AssignmentType
+    assignmentSubtype: AssignmentSubtype
+    difficulty: Difficulty
     points: number
     dueDate: Date | null
     moduleId: string
+    secured_browser: boolean
     
     // For File Upload
     attachment: File | null

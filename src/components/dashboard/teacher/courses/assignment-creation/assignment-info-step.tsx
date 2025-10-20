@@ -8,7 +8,7 @@ import {
     ControlledTextArea,
     ControlledSelectInput,
 } from "@/components/controlled-fields"
-import type { AssignmentFormData, AssignmentType } from "./types"
+import type { AssignmentFormData, AssignmentType, AssignmentSubtype, Difficulty } from "./types"
 import { useState } from "react"
 import { GetModuleByCourseResponse } from "@/services/module-service/module.type"
 interface AssignmentInfoStepProps {
@@ -22,6 +22,7 @@ interface AssignmentInfoStepProps {
 export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesData }: AssignmentInfoStepProps) {
     const [dueDate, setDueDate] = useState<Date | null>(null)
     const assignmentType = watch("assignmentType")
+    const assignmentSubtype = watch("assignmentSubtype")
 
     const handleNext = () => {
         const title = watch("title")
@@ -48,10 +49,14 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesDa
         onNext()
     }
 
-    const handleTypeChange = (value: AssignmentType) => {
+    const handleAssignmentTypeChange = (value: AssignmentType) => {
         setValue("assignmentType", value)
+    }
 
-        // Clear type-specific data when switching types
+    const handleSubtypeChange = (value: AssignmentSubtype) => {
+        setValue("assignmentSubtype", value)
+
+        // Clear type-specific data when switching subtypes
         if (value === "file_upload") {
             // Clear quiz and code sandbox data
             setValue("questions", [])
@@ -108,14 +113,14 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesDa
                 isRequired
             />
 
-            {/* Assignment Type */}
+            {/* Assignment Type Selection */}
             <Box>
                 <Text size="sm" fw={600} mb={8} c="#bdf052">
                     Assignment Type
                 </Text>
                 <Radio.Group
                     value={assignmentType}
-                    onChange={(value) => handleTypeChange(value as AssignmentType)}
+                    onChange={(value) => handleAssignmentTypeChange(value as AssignmentType)}
                 >
                     <Stack gap="sm">
                         <Paper
@@ -123,15 +128,121 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesDa
                             radius="md"
                             style={{
                                 background:
-                                    assignmentType === "file_upload" ? "rgba(135, 206, 235, 0.1)" : "#2a2a2a",
+                                    assignmentType === "assignment" ? "rgba(135, 206, 235, 0.1)" : "#2a2a2a",
                                 border:
-                                    assignmentType === "file_upload"
+                                    assignmentType === "assignment"
                                         ? "2px solid #87ceeb"
                                         : "1px solid rgba(255, 255, 255, 0.1)",
                                 cursor: "pointer",
                                 transition: "all 0.2s ease",
                             }}
-                            onClick={() => handleTypeChange("file_upload")}
+                            onClick={() => handleAssignmentTypeChange("assignment")}
+                        >
+                            <Group>
+                                <Radio value="assignment" color="cyan" />
+                                <Box style={{ flex: 1 }}>
+                                    <Group gap="xs" mb={4}>
+                                        <IconFileText size={18} color="#87ceeb" />
+                                        <Text fw={600} c="#87ceeb">
+                                            Assignment
+                                        </Text>
+                                    </Group>
+                                    <Text size="xs" c="dimmed">
+                                        Regular assignment for students to complete
+                                    </Text>
+                                </Box>
+                            </Group>
+                        </Paper>
+
+                        <Paper
+                            p="md"
+                            radius="md"
+                            style={{
+                                background:
+                                    assignmentType === "activity" ? "rgba(255, 165, 0, 0.1)" : "#2a2a2a",
+                                border:
+                                    assignmentType === "activity"
+                                        ? "2px solid #ffa500"
+                                        : "1px solid rgba(255, 255, 255, 0.1)",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onClick={() => handleAssignmentTypeChange("activity")}
+                        >
+                            <Group>
+                                <Radio value="activity" color="orange" />
+                                <Box style={{ flex: 1 }}>
+                                    <Group gap="xs" mb={4}>
+                                        <IconSparkles size={18} color="#ffa500" />
+                                        <Text fw={600} c="#ffa500">
+                                            Activity
+                                        </Text>
+                                    </Group>
+                                    <Text size="xs" c="dimmed">
+                                        Interactive learning activity
+                                    </Text>
+                                </Box>
+                            </Group>
+                        </Paper>
+
+                        <Paper
+                            p="md"
+                            radius="md"
+                            style={{
+                                background:
+                                    assignmentType === "exam" ? "rgba(255, 0, 0, 0.1)" : "#2a2a2a",
+                                border:
+                                    assignmentType === "exam"
+                                        ? "2px solid #ff0000"
+                                        : "1px solid rgba(255, 255, 255, 0.1)",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onClick={() => handleAssignmentTypeChange("exam")}
+                        >
+                            <Group>
+                                <Radio value="exam" color="red" />
+                                <Box style={{ flex: 1 }}>
+                                    <Group gap="xs" mb={4}>
+                                        <IconTrophy size={18} color="#ff0000" />
+                                        <Text fw={600} c="#ff0000">
+                                            Exam
+                                        </Text>
+                                    </Group>
+                                    <Text size="xs" c="dimmed">
+                                        Formal examination or assessment
+                                    </Text>
+                                </Box>
+                            </Group>
+                        </Paper>
+                    </Stack>
+                </Radio.Group>
+            </Box>
+
+            {/* Assignment Subtype */}
+            <Box>
+                <Text size="sm" fw={600} mb={8} c="#bdf052">
+                    Assignment Format
+                </Text>
+                <Radio.Group
+                    value={assignmentSubtype}
+                    onChange={(value) => handleSubtypeChange(value as AssignmentSubtype)}
+                >
+                    <Stack gap="sm">
+                        <Paper
+                            p="md"
+                            radius="md"
+                            style={{
+                                background:
+                                    assignmentSubtype === "file_upload" ? "rgba(135, 206, 235, 0.1)" : "#2a2a2a",
+                                border:
+                                    assignmentSubtype === "file_upload"
+                                        ? "2px solid #87ceeb"
+                                        : "1px solid rgba(255, 255, 255, 0.1)",
+                                cursor: "pointer",
+                                transition: "all 0.2s ease",
+                            }}
+                            onClick={() => handleSubtypeChange("file_upload")}
                         >
                             <Group>
                                 <Radio value="file_upload" color="cyan" />
@@ -154,15 +265,15 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesDa
                             radius="md"
                             style={{
                                 background:
-                                    assignmentType === "quiz_form" ? "rgba(255, 165, 0, 0.1)" : "#2a2a2a",
+                                    assignmentSubtype === "quiz_form" ? "rgba(255, 165, 0, 0.1)" : "#2a2a2a",
                                 border:
-                                    assignmentType === "quiz_form"
+                                    assignmentSubtype === "quiz_form"
                                         ? "2px solid #ffa500"
                                         : "1px solid rgba(255, 255, 255, 0.1)",
                                 cursor: "pointer",
                                 transition: "all 0.2s ease",
                             }}
-                            onClick={() => handleTypeChange("quiz_form")}
+                            onClick={() => handleSubtypeChange("quiz_form")}
                         >
                             <Group>
                                 <Radio value="quiz_form" color="orange" />
@@ -185,15 +296,15 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesDa
                             radius="md"
                             style={{
                                 background:
-                                    assignmentType === "code_sandbox" ? "rgba(52, 211, 153, 0.1)" : "#2a2a2a",
+                                    assignmentSubtype === "code_sandbox" ? "rgba(52, 211, 153, 0.1)" : "#2a2a2a",
                                 border:
-                                    assignmentType === "code_sandbox"
+                                    assignmentSubtype === "code_sandbox"
                                         ? "2px solid #34d399"
                                         : "1px solid rgba(255, 255, 255, 0.1)",
                                 cursor: "pointer",
                                 transition: "all 0.2s ease",
                             }}
-                            onClick={() => handleTypeChange("code_sandbox")}
+                            onClick={() => handleSubtypeChange("code_sandbox")}
                         >
                             <Group>
                                 <Radio value="code_sandbox" color="green" />
@@ -212,6 +323,40 @@ export function AssignmentInfoStep({ control, setValue, watch, onNext, modulesDa
                         </Paper>
                     </Stack>
                 </Radio.Group>
+            </Box>
+
+            {/* Difficulty Selection */}
+            <ControlledSelectInput
+                control={control}
+                name="difficulty"
+                label="Difficulty Level"
+                placeholder="Select difficulty"
+                options={[
+                    { value: "easy", label: "Easy" },
+                    { value: "medium", label: "Medium" },
+                    { value: "hard", label: "Hard" },
+                ]}
+                isRequired
+            />
+
+            {/* Secured Browser Toggle */}
+            <Box>
+                <Text size="sm" fw={600} mb={8} c="#bdf052">
+                    Security Settings
+                </Text>
+                <Paper p="md" radius="md" style={{ background: "#2a2a2a", border: "1px solid rgba(255, 255, 255, 0.1)" }}>
+                    <Group justify="space-between">
+                        <Box>
+                            <Text fw={600} c="#fff">Secured Browser</Text>
+                            <Text size="xs" c="dimmed">Enable secure browser mode for this assignment</Text>
+                        </Box>
+                        <Radio
+                            checked={watch("secured_browser")}
+                            onChange={(event) => setValue("secured_browser", event.currentTarget.checked)}
+                            color="violet"
+                        />
+                    </Group>
+                </Paper>
             </Box>
 
             {/* Points and Due Date */}

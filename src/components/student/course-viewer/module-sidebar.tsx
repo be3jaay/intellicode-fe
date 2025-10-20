@@ -92,7 +92,7 @@ export function ModuleSidebar({
 
     return (
         <Stack gap="md">
-            <Text size="lg" fw={600} c="#bdf052" mb="sm">
+            <Text size="xl" fw={600} c="#b3a1ff" mb="sm">
                 Course Modules
             </Text>
 
@@ -108,10 +108,10 @@ export function ModuleSidebar({
                         p="md"
                         style={{
                             background: isSelected
-                                ? "rgba(189, 240, 82, 0.1)"
+                                ? "#b3a1ff10"
                                 : "#1a1a1a",
                             border: isSelected
-                                ? "2px solid #bdf052"
+                                ? "1px solid #b3a1ff"
                                 : "1px solid #333",
                             cursor: "pointer",
                             transition: "all 0.2s ease",
@@ -125,13 +125,13 @@ export function ModuleSidebar({
                             {/* Module Header */}
                             <Flex justify="space-between" align="center">
                                 <Group gap="xs">
-                                    <Text size="sm" fw={600} c={isSelected ? "#bdf052" : "#ffffff"}>
+                                    <Text size="sm" fw={600} c={isSelected ? "#b3a1ff" : "#ffffff"}>
                                         Module {index + 1}
                                     </Text>
                                     {isExpanded ? (
-                                        <IconChevronDown size={16} color={isSelected ? "#bdf052" : "#ffffff"} />
+                                        <IconChevronDown size={16} color={isSelected ? "#b3a1ff" : "#ffffff"} />
                                     ) : (
-                                        <IconChevronRight size={16} color={isSelected ? "#bdf052" : "#ffffff"} />
+                                        <IconChevronRight size={16} color={isSelected ? "#b3a1ff" : "#ffffff"} />
                                     )}
                                 </Group>
                                 <Badge
@@ -143,20 +143,20 @@ export function ModuleSidebar({
                                 </Badge>
                             </Flex>
 
-                            <Text size="sm" fw={500} c={isSelected ? "#bdf052" : "#ffffff"}>
+                            <Text size="sm" fw={500} c={isSelected ? "#b3a1ff" : "#ffffff"}>
                                 {module.title}
                             </Text>
 
                             {/* Module Stats */}
                             <Group gap="md" wrap="wrap">
                                 <Group gap="xs">
-                                    <IconBook size={14} color="rgba(255, 255, 255, 0.6)" />
+                                    <IconBook size={14} color="#b3a1ff85" />
                                     <Text size="xs" c="dimmed">
                                         {module.total_lessons} lessons
                                     </Text>
                                 </Group>
                                 <Group gap="xs">
-                                    <IconClock size={14} color="rgba(255, 255, 255, 0.6)" />
+                                    <IconClock size={14} color="#b3a1ff85" />
                                     <Text size="xs" c="dimmed">
                                         {formatDuration(module.total_duration)}
                                     </Text>
@@ -170,7 +170,7 @@ export function ModuleSidebar({
                                 radius="md"
                                 styles={{
                                     root: {
-                                        background: "rgba(189, 240, 82, 0.1)",
+                                        background: "#b3a1ff10",
                                     },
                                 }}
                             />

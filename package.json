@@ -43,6 +43,7 @@
     "react": "^19.0.0",
     "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.0.0",
+    "react-haiku": "^2.4.1",
     "react-hook-form": "^7.60.0",
     "react-lottie": "^1.2.10",
     "react-quill": "^2.0.0",

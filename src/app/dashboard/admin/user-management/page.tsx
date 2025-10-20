@@ -248,7 +248,7 @@ export default function UserManagementPage() {
                     styles={{
                         tab: {
                             color: "#9CA3AF",
-                            "&[data-active]": {
+                            "&[dataActive]": {
                                 color: "#BDF052",
                                 borderColor: "#BDF052",
                             },

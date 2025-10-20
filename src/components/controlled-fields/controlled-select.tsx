@@ -77,7 +77,7 @@ export function ControlledSelectInput<TFieldValues extends FieldValues = FieldVa
                                 "&:hover": {
                                     background: `${borderColor.replace('0.3', '0.1')}`,
                                 },
-                                "&[data-selected]": {
+                                "&[dataSelected]": {
                                     background: `${borderColor.replace('0.3', '0.2')}`,
                                     color: labelColor,
                                 },

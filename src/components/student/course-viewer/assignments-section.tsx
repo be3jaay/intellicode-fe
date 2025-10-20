@@ -14,6 +14,7 @@ import {
     Center,
     Timeline,
 } from "@mantine/core"
+import { useRouter } from "next/navigation"
 import {
     IconCalendar,
     IconClock,
@@ -22,6 +23,7 @@ import {
     IconCheck,
     IconAlertCircle,
     IconArrowRight,
+    IconBrain,
 } from "@tabler/icons-react"
 
 interface AssignmentsSectionProps {
@@ -39,6 +41,7 @@ interface AssignmentsSectionProps {
 }
 
 export function AssignmentsSection({ assignments, courseId }: AssignmentsSectionProps) {
+    const router = useRouter()
     const formatDate = (dateString: string) => {
         const date = new Date(dateString)
         return date.toLocaleDateString("en-US", {
@@ -62,7 +65,7 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
 
     const getAssignmentTypeIcon = (type: string) => {
         switch (type) {
-            case "quiz_form": return <IconFileText size={16} />
+            case "quiz_form": return <IconBrain size={16} />
             case "essay": return <IconFileText size={16} />
             case "project": return <IconTrophy size={16} />
             case "exam": return <IconAlertCircle size={16} />
@@ -208,18 +211,36 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
                                         ) : (
                                             <Button
                                                 size="md"
-                                                leftSection={<IconArrowRight size={16} />}
+                                                leftSection={
+                                                    assignment.assignment_type === "quiz_form"
+                                                        ? <IconBrain size={16} />
+                                                        : <IconArrowRight size={16} />
+                                                }
+                                                onClick={() => {
+                                                    if (assignment.assignment_type === "quiz_form") {
+                                                        router.push(`/course/assignment/${assignment.id}`)
+                                                    } else {
+                                                        // Handle other assignment types
+                                                        router.push(`/course/assignment/${assignment.id}`)
+                                                        console.log("Starting assignment:", assignment.id)
+                                                    }
+                                                }}
                                                 style={{
                                                     background: overdue
                                                         ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
                                                         : dueSoon
                                                             ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
-                                                            : "linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%)",
+                                                            : assignment.assignment_type === "quiz_form"
+                                                                ? "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
+                                                                : "linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%)",
                                                     color: "#ffffff",
                                                     fontWeight: 600,
                                                 }}
                                             >
-                                                {overdue ? "Submit Late" : "Start Assignment"}
+                                                {assignment.assignment_type === "quiz_form"
+                                                    ? (overdue ? "Take Quiz (Late)" : "Take Quiz")
+                                                    : (overdue ? "Submit Late" : "Start Assignment")
+                                                }
                                             </Button>
                                         )}
                                     </Group>

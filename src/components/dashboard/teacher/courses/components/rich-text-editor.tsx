@@ -86,7 +86,7 @@ export function CustomRichTextEditor({ content, onChange, onAddLink, placeholder
                             "&:hover": {
                                 background: "rgba(79, 209, 197, 0.1)",
                             },
-                            "&[data-active]": {
+                            "&[dataActive]": {
                                 background: "rgba(79, 209, 197, 0.2)",
                                 color: "#4fd1c5",
                             },
