@@ -24,6 +24,8 @@ import {
     IconAlertCircle,
     IconArrowRight,
     IconBrain,
+    IconCode,
+    IconUpload,
 } from "@tabler/icons-react"
 
 interface AssignmentsSectionProps {
@@ -31,6 +33,7 @@ interface AssignmentsSectionProps {
         id: string
         title: string
         description: string
+        assignment_subtype: "quiz_form" | "code_sandbox" | "file_upload"
         assignment_type: string
         points: number
         due_date: string
@@ -56,6 +59,8 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
     const getAssignmentTypeColor = (type: string) => {
         switch (type) {
             case "quiz_form": return "blue"
+            case "code_sandbox": return "cyan"
+            case "file_upload": return "green"
             case "essay": return "green"
             case "project": return "purple"
             case "exam": return "red"
@@ -66,10 +71,61 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
     const getAssignmentTypeIcon = (type: string) => {
         switch (type) {
             case "quiz_form": return <IconBrain size={16} />
+            case "code_sandbox": return <IconCode size={16} />
+            case "file_upload": return <IconUpload size={16} />
             case "essay": return <IconFileText size={16} />
             case "project": return <IconTrophy size={16} />
             case "exam": return <IconAlertCircle size={16} />
             default: return <IconFileText size={16} />
+        }
+    }
+
+    const getAssignmentButtonConfig = (type: "quiz_form" | "code_sandbox" | "file_upload" | "essay" | "project" | "exam", overdue: boolean, dueSoon: boolean) => {
+        switch (type) {
+            case "quiz_form":
+                return {
+                    icon: <IconBrain size={16} />,
+                    text: overdue ? "Take Quiz (Late)" : "Take Quiz",
+                    gradient: overdue
+                        ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+                        : dueSoon
+                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                            : "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)",
+                    onClick: () => router.push(`/course/assignment/${assignments.find(a => a.assignment_type === type)?.id}`)
+                }
+            case "code_sandbox":
+                return {
+                    icon: <IconCode size={16} />,
+                    text: overdue ? "Open Sandbox (Late)" : "Open Code Sandbox",
+                    gradient: overdue
+                        ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+                        : dueSoon
+                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                            : "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)",
+                    onClick: () => router.push(`/code-sandbox`)
+                }
+            case "file_upload":
+                return {
+                    icon: <IconUpload size={16} />,
+                    text: overdue ? "Upload File (Late)" : "Upload Assignment",
+                    gradient: overdue
+                        ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+                        : dueSoon
+                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                            : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+                    onClick: () => router.push(`/course/assignment/${assignments.find(a => a.assignment_type === type)?.id}`)
+                }
+            default:
+                return {
+                    icon: <IconArrowRight size={16} />,
+                    text: overdue ? "Submit Late" : "Start Assignment",
+                    gradient: overdue
+                        ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+                        : dueSoon
+                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
+                            : "linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%)",
+                    onClick: () => router.push(`/course/assignment/${assignments.find(a => a.assignment_type === type)?.id}`)
+                }
         }
     }
 
@@ -88,7 +144,7 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
         return (
             <Center h={400}>
                 <Stack align="center" gap="md">
-                    <IconFileText size={48} color="rgba(79, 209, 197, 0.5)" />
+                    <IconFileText size={48} color="#b3a1ff60" />
                     <Text size="lg" fw={500} c="dimmed">
                         No assignments yet
                     </Text>
@@ -103,10 +159,10 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
     return (
         <Stack gap="lg">
             <Group justify="space-between" align="center">
-                <Text size="xl" fw={600} c="#bdf052">
+                <Text size="xl" fw={600} c="#b3a1ff">
                     Course Assignments
                 </Text>
-                <Badge size="lg" variant="light" color="blue">
+                <Badge size="lg" variant="light" color="#b3a1ff">
                     {assignments.length} Assignment{assignments.length > 1 ? 's' : ''}
                 </Badge>
             </Group>
@@ -150,7 +206,7 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
                                                 color={getAssignmentTypeColor(assignment.assignment_type)}
                                                 leftSection={getAssignmentTypeIcon(assignment.assignment_type)}
                                             >
-                                                {assignment.assignment_type.replace('_', ' ').toUpperCase()}
+                                                {assignment.assignment_type.replace(/_/g, ' ').toUpperCase()}
                                             </Badge>
 
                                             {assignment.is_submitted ? (
@@ -208,41 +264,29 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
                                             >
                                                 Submitted
                                             </Button>
-                                        ) : (
-                                            <Button
-                                                size="md"
-                                                leftSection={
-                                                    assignment.assignment_type === "quiz_form"
-                                                        ? <IconBrain size={16} />
-                                                        : <IconArrowRight size={16} />
-                                                }
-                                                onClick={() => {
-                                                    if (assignment.assignment_type === "quiz_form") {
-                                                        router.push(`/course/assignment/${assignment.id}`)
-                                                    } else {
-                                                        // Handle other assignment types
-                                                        router.push(`/course/assignment/${assignment.id}`)
-                                                        console.log("Starting assignment:", assignment.id)
-                                                    }
-                                                }}
-                                                style={{
-                                                    background: overdue
-                                                        ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
-                                                        : dueSoon
-                                                            ? "linear-gradient(135deg, #f59e0b 0%, #d97706 100%)"
-                                                            : assignment.assignment_type === "quiz_form"
-                                                                ? "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)"
-                                                                : "linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%)",
-                                                    color: "#ffffff",
-                                                    fontWeight: 600,
-                                                }}
-                                            >
-                                                {assignment.assignment_type === "quiz_form"
-                                                    ? (overdue ? "Take Quiz (Late)" : "Take Quiz")
-                                                    : (overdue ? "Submit Late" : "Start Assignment")
-                                                }
-                                            </Button>
-                                        )}
+                                        ) : (() => {
+                                            const buttonConfig = getAssignmentButtonConfig(assignment.assignment_subtype as "quiz_form" | "code_sandbox" | "file_upload" | "essay" | "project" | "exam", overdue, dueSoon)
+                                            return (
+                                                <Button
+                                                    size="md"
+                                                    leftSection={buttonConfig.icon}
+                                                    onClick={() => {
+                                                        if (assignment.assignment_type === "code_sandbox") {
+                                                            router.push(`/code-sandbox`)
+                                                        } else {
+                                                            router.push(`/course/assignment/${assignment.id}`)
+                                                        }
+                                                    }}
+                                                    style={{
+                                                        background: buttonConfig.gradient,
+                                                        color: "#ffffff",
+                                                        fontWeight: 600,
+                                                    }}
+                                                >
+                                                    {buttonConfig.text}
+                                                </Button>
+                                            )
+                                        })()}
                                     </Group>
                                 </Flex>
 

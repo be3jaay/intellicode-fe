@@ -46,6 +46,7 @@ export interface StudentCourseResponse {
       title: string
       description: string
       assignment_type: string
+      assignment_subtype: "quiz_form" | "code_sandbox" | "file_upload"
       points: number
       due_date: string
       is_published: boolean

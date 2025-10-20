@@ -129,8 +129,8 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                 radius="md"
                 p="lg"
                 style={{
-                    background: "linear-gradient(135deg, rgba(79, 209, 197, 0.1) 0%, rgba(56, 178, 172, 0.1) 100%)",
-                    border: "1px solid rgba(79, 209, 197, 0.3)",
+                    background: "#b3a1ff10",
+                    border: "1px solid #b3a1ff",
                 }}
             >
                 <Stack gap="md">
@@ -142,20 +142,25 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                                     variant="light"
                                     color={getDifficultyColor(currentLesson.difficulty)}
                                     leftSection={<IconBook size={14} />}
+                                    style={{
+                                        background: "rgba(189, 240, 82, 0.1)",
+                                        color: "#bdf052",
+                                        border: "1px solid rgba(189, 240, 82, 0.2)",
+                                    }}
                                 >
                                     {currentLesson.difficulty}
                                 </Badge>
                                 <Badge
                                     size="lg"
                                     variant="light"
-                                    color="blue"
+                                    color="#b3a1ff"
                                     leftSection={<IconClock size={14} />}
                                 >
                                     {formatDuration(currentLesson.estimated_duration)}
                                 </Badge>
                             </Group>
 
-                            <Text size="xl" fw={700} c="#bdf052" mb="sm">
+                            <Text size="xl" fw={700} c="#b3a1ff" mb="sm">
                                 {currentLesson.title}
                             </Text>
 
@@ -167,7 +172,7 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                             {currentLesson.completion_percentage > 0 && (
                                 <Box mb="md">
                                     <Group justify="space-between" mb="xs">
-                                        <Text size="sm" fw={500} c="#bdf052">
+                                        <Text size="sm" fw={500} c="#b3a1ff">
                                             Progress
                                         </Text>
                                         <Text size="sm" c="dimmed">
@@ -208,33 +213,6 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                                 </Group>
                             )}
                         </Box>
-
-                        {/* Action Buttons */}
-                        <Group gap="sm">
-                            <Button
-                                size="lg"
-                                leftSection={<IconVideo size={20} />}
-                                onClick={() => setIsPlaying(!isPlaying)}
-                                style={{
-                                    background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
-                                    color: "#1a1a1a",
-                                    fontWeight: 600,
-                                }}
-                            >
-                                {isPlaying ? "Pause" : "Start"} Lesson
-                            </Button>
-
-                            {currentLesson.is_completed && (
-                                <Button
-                                    size="lg"
-                                    variant="light"
-                                    leftSection={<IconTrophy size={20} />}
-                                    color="green"
-                                >
-                                    Completed
-                                </Button>
-                            )}
-                        </Group>
                     </Flex>
                 </Stack>
             </Card>
@@ -245,8 +223,8 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                 radius="md"
                 p="xl"
                 style={{
-                    background: "#1a1a1a",
-                    border: "1px solid #4fd1c5",
+                    background: "#b3a1ff10",
+                    border: "1px solid #b3a1ff",
                 }}
             >
                 <Box
@@ -265,8 +243,8 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                 radius="md"
                 p="lg"
                 style={{
-                    background: "#1a1a1a",
-                    border: "1px solid #4fd1c5",
+                    background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
+                    border: "1px solid #b3a1ff",
                 }}
             >
                 <Group justify="space-between" align="center">
@@ -275,9 +253,9 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                         leftSection={<IconArrowLeft size={16} />}
                         disabled={!currentLesson.is_unlocked}
                         style={{
-                            background: "rgba(189, 240, 82, 0.1)",
-                            color: "#bdf052",
-                            border: "1px solid rgba(189, 240, 82, 0.3)",
+                            background: "#b3a1ff10",
+                            color: "#b3a1ff",
+                            border: "1px solid #b3a1ff",
                         }}
                     >
                         Previous Lesson
@@ -294,43 +272,15 @@ export function LessonViewer({ course, selectedLesson, selectedModule }: LessonV
                         rightSection={<IconArrowRight size={16} />}
                         disabled={!currentLesson.is_unlocked}
                         style={{
-                            background: "rgba(189, 240, 82, 0.1)",
-                            color: "#bdf052",
-                            border: "1px solid rgba(189, 240, 82, 0.3)",
+                            background: "#b3a1ff10",
+                            color: "#b3a1ff",
+                            border: "1px solid #b3a1ff",
                         }}
                     >
                         Next Lesson
                     </Button>
                 </Group>
             </Card>
-
-            {/* Completion Actions */}
-            {!currentLesson.is_completed && (
-                <Alert
-                    color="blue"
-                    title="Complete this lesson"
-                    icon={<IconCheck size={16} />}
-                    style={{
-                        background: "rgba(79, 209, 197, 0.1)",
-                        border: "1px solid rgba(79, 209, 197, 0.3)",
-                    }}
-                >
-                    <Text size="sm" c="dimmed">
-                        Mark this lesson as complete to unlock the next lesson and track your progress.
-                    </Text>
-                    <Button
-                        size="sm"
-                        mt="sm"
-                        leftSection={<IconCheck size={16} />}
-                        style={{
-                            background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
-                            color: "#1a1a1a",
-                        }}
-                    >
-                        Mark as Complete
-                    </Button>
-                </Alert>
-            )}
         </Stack>
     )
 }

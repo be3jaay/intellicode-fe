@@ -26,6 +26,8 @@ import { ActivityCreator } from "./activity-creator"
 import { AssignmentContent } from "./assignment-content"
 import { StudentContent } from "./student-content"
 import { ModuleContent } from "./module-content"
+import { Gradebook } from "./gradebook"
+import { CourseCompletion } from "./course-completion"
 
 type ContentView = "main" | "modules" | "assignment" | "lesson" | "quiz" | "activity"
 
@@ -399,6 +401,12 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                         <Tabs.Tab value="assignment" color="#bdf052" leftSection={<UserCheck size={16} />}>
                             Assignments
                         </Tabs.Tab>
+                        <Tabs.Tab value="gradebook" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
+                            Gradebook
+                        </Tabs.Tab>
+                        <Tabs.Tab value="completion" color="#bdf052" leftSection={<ClipboardCheck size={16} />}>
+                            Course Completion
+                        </Tabs.Tab>
                     </Tabs.List>
 
                     {/* Modules Tab */}
@@ -516,21 +524,18 @@ export function CourseContentViewer({ course, onBack }: CourseContentViewerProps
                     <Tabs.Panel value="students">
                         <StudentContent courseId={course.id} />
                     </Tabs.Panel>
+
+                    {/* Gradebook Tab */}
+                    <Tabs.Panel value="gradebook">
+                        <Gradebook courseId={course.id} />
+                    </Tabs.Panel>
+
+                    {/* Course Completion Tab */}
+                    <Tabs.Panel value="completion">
+                        <CourseCompletion courseId={course.id} />
+                    </Tabs.Panel>
                 </Tabs>
             </Card>
-
-            <style jsx global>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-      `}</style>
         </Box>
     )
 }
