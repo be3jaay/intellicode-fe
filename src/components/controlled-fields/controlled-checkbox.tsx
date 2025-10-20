@@ -1,7 +1,7 @@
-'use client';
-import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form';
-import React from 'react';
-import { Checkbox, CheckboxProps } from '@mantine/core';
+"use client";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
+import React from "react";
+import { Checkbox, CheckboxProps } from "@mantine/core";
 
 export type ControlledCheckboxProps<
   TFieldValues extends FieldValues = FieldValues,
@@ -41,15 +41,15 @@ function ControlledCheckbox<
             ref={ref}
             value={value}
             checked={value || false}
-            onChange={e => onChange(e.target.checked)}
+            onChange={(e) => onChange(e.target.checked)}
             onBlur={onBlur}
             required={isRequired}
             icon={icon}
             error={error}
             label={label}
-            labelPosition={labelPosition || 'right'}
-            color={color || 'red.6'}
-            size={size || 'md'}
+            labelPosition={labelPosition || "right"}
+            color={color || "green"}
+            size={size || "md"}
             suppressHydrationWarning={true}
             {...props}
           />

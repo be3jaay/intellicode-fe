@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'admin' | 'teacher';
+export type UserRole = "student" | "admin" | "teacher";
 
 export type SessionPayload = {
   user: {
@@ -16,14 +16,15 @@ export type SessionPayload = {
 };
 
 export type SignUpFormValue = {
+  role: "student" | "teacher";
   firstName: string;
   middleName?: string;
   lastName: string;
   email: string;
   password: string;
   confirmPassword: string;
-  studentNumber: string;
-  section: string;
+  studentNumber?: string;
+  section?: string;
   agreeToTerms: boolean;
 };
 

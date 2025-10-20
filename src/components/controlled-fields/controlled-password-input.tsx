@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import { PasswordInput } from '@mantine/core';
-import { FieldValues, FieldPath, Controller } from 'react-hook-form';
-import { ControlledTextInputProps, HelperText } from './controlled-text-input';
+import { PasswordInput, rem } from "@mantine/core";
+import { FieldValues, FieldPath, Controller } from "react-hook-form";
+import { ControlledTextInputProps, HelperText } from "./controlled-text-input";
 
 function ControlledPasswordInput<
   TFieldValues extends FieldValues = FieldValues,
@@ -17,13 +17,18 @@ function ControlledPasswordInput<
   rightSection,
   placeholder,
   type,
+  labelColor = "#bdf052",
+  borderColor = "#bdf052",
   ...props
 }: ControlledTextInputProps<TFieldValues, TName>) {
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value, ref }, fieldState: { error } }) => (
+      render={({
+        field: { onChange, onBlur, value, ref },
+        fieldState: { error },
+      }) => (
         <>
           <PasswordInput
             id={name}
@@ -34,11 +39,30 @@ function ControlledPasswordInput<
             rightSection={rightSection}
             placeholder={placeholder}
             type={type}
-            onChange={e => onChange(e.target.value)}
-            value={value || ''}
+            onChange={(e) => onChange(e.target.value)}
+            value={value || ""}
             onBlur={onBlur}
             error={error?.message}
             suppressHydrationWarning={true}
+            styles={{
+              label: {
+                color: labelColor,
+                fontWeight: 600,
+                marginBottom: 8,
+              },
+              input: {
+                background: "#1a1a1a",
+                borderColor: borderColor,
+                color: "#ffffff",
+                fontSize: rem(15),
+                "&:focus": {
+                  borderColor: labelColor,
+                },
+                "&::placeholder": {
+                  color: "rgba(255, 255, 255, 0.4)",
+                },
+              },
+            }}
             {...props}
           />
           {helperText && <HelperText>{helperText}</HelperText>}

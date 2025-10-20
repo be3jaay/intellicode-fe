@@ -1,5 +1,5 @@
 "use client";
-import { Text, TextInput, rem } from "@mantine/core";
+import { StylesApiProps, Text, TextInput, rem } from "@mantine/core";
 import React, { HTMLInputTypeAttribute } from "react";
 import { FieldValues, FieldPath, Control, Controller } from "react-hook-form";
 
