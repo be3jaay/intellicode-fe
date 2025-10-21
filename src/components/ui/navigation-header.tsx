@@ -1,8 +1,10 @@
 'use client';
 
 import { useAuth } from '@/providers/auth-context';
-import { Box, Burger, Flex, Group, Text, Avatar, Menu, UnstyledButton } from '@mantine/core';
-import { LogOut, User, Settings, ChevronDown } from 'lucide-react';
+import { useNotifications } from '@/hooks/use-notifications';
+import { Box, Burger, Flex, Group, Text, Avatar, Menu, UnstyledButton, Badge, ScrollArea, ActionIcon, Button, Stack, Divider } from '@mantine/core';
+import { LogOut, User, Settings, ChevronDown, Bell, Check } from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface NavigationHeaderProps {
     opened?: boolean;
@@ -11,6 +13,7 @@ interface NavigationHeaderProps {
 
 export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
     const { user, signOut } = useAuth();
+    const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
     return (
         <Flex
@@ -42,54 +45,159 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
                 </Text>
             </Group>
 
-            <Menu shadow="md" width={200} position="bottom-end">
-                <Menu.Target>
-                    <UnstyledButton>
-                        <Group gap="sm">
-                            <Avatar
-                                color="lime"
-                                radius="xl"
-                                size="md"
-                                style={{
-                                    background: 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)',
-                                    color: '#222222'
-                                }}
+            <Group gap="md">
+                {/* Notifications */}
+                <Menu shadow="md" width={400} position="bottom-end">
+                    <Menu.Target>
+                        <UnstyledButton style={{ position: 'relative' }}>
+                            <ActionIcon
+                                variant="subtle"
+                                color="gray"
+                                size="lg"
+                                style={{ color: '#e9eeea' }}
                             >
-                                {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
-                            </Avatar>
-                            <Box style={{ flex: 1 }} visibleFrom="sm">
-                                <Text size="sm" fw={600} c="#e9eeea">
-                                    {user?.firstName} {user?.lastName}
-                                </Text>
-                                <Text size="xs" c="#9ca3af" tt="capitalize">
-                                    {user?.role}
-                                </Text>
-                            </Box>
-                            <ChevronDown size={16} color="#e9eeea" />
-                        </Group>
-                    </UnstyledButton>
-                </Menu.Target>
+                                <Bell size={20} />
+                            </ActionIcon>
+                            {unreadCount > 0 && (
+                                <Badge
+                                    size="xs"
+                                    color="red"
+                                    style={{
+                                        position: 'absolute',
+                                        top: -2,
+                                        right: -2,
+                                        minWidth: 18,
+                                        height: 18,
+                                        borderRadius: '50%',
+                                        fontSize: '10px',
+                                        fontWeight: 600,
+                                    }}
+                                >
+                                    {unreadCount > 99 ? '99+' : unreadCount}
+                                </Badge>
+                            )}
+                        </UnstyledButton>
+                    </Menu.Target>
 
-                <Menu.Dropdown>
-                    <Menu.Label>Account</Menu.Label>
-                    <Menu.Item leftSection={<User size={14} />}>
-                        Profile
-                    </Menu.Item>
-                    <Menu.Item leftSection={<Settings size={14} />}>
-                        Settings
-                    </Menu.Item>
+                    <Menu.Dropdown>
+                        <Menu.Label>
+                            <Group justify="space-between">
+                                <Text size="sm" fw={600}>Notifications</Text>
+                                {unreadCount > 0 && (
+                                    <Button
+                                        size="xs"
+                                        variant="subtle"
+                                        leftSection={<Check size={12} />}
+                                        onClick={markAllAsRead}
+                                    >
+                                        Mark all read
+                                    </Button>
+                                )}
+                            </Group>
+                        </Menu.Label>
+                        <Menu.Divider />
 
-                    <Menu.Divider />
+                        <ScrollArea.Autosize mah={300}>
+                            {notifications.length === 0 ? (
+                                <Box p="md" ta="center">
+                                    <Text size="sm" c="dimmed">No notifications</Text>
+                                </Box>
+                            ) : (
+                                <Stack gap="xs" p="xs">
+                                    {notifications.map((notification) => (
+                                        <Box
+                                            key={notification.id}
+                                            p="sm"
+                                            style={{
+                                                borderRadius: '4px',
+                                                backgroundColor: notification.is_read ? 'transparent' : '#f8f9fa',
+                                                border: notification.is_read ? 'none' : '1px solid #e9ecef',
+                                                cursor: 'pointer',
+                                            }}
+                                            onClick={() => !notification.is_read && markAsRead(notification.id)}
+                                        >
+                                            <Group justify="space-between" align="flex-start">
+                                                <Box style={{ flex: 1 }}>
+                                                    <Text size="sm" fw={notification.is_read ? 400 : 600}>
+                                                        {notification.title}
+                                                    </Text>
+                                                    <Text size="xs" c="dimmed" mt={4}>
+                                                        {notification.message}
+                                                    </Text>
+                                                    <Text size="xs" c="dimmed" mt={4}>
+                                                        {formatDistanceToNow(new Date(notification.created_at), { addSuffix: true })}
+                                                    </Text>
+                                                </Box>
+                                                {!notification.is_read && (
+                                                    <Box
+                                                        w={8}
+                                                        h={8}
+                                                        style={{
+                                                            borderRadius: '50%',
+                                                            backgroundColor: '#4dabf7',
+                                                            flexShrink: 0,
+                                                        }}
+                                                    />
+                                                )}
+                                            </Group>
+                                        </Box>
+                                    ))}
+                                </Stack>
+                            )}
+                        </ScrollArea.Autosize>
+                    </Menu.Dropdown>
+                </Menu>
 
-                    <Menu.Item
-                        color="red"
-                        leftSection={<LogOut size={14} />}
-                        onClick={() => signOut()}
-                    >
-                        Logout
-                    </Menu.Item>
-                </Menu.Dropdown>
-            </Menu>
+                {/* User Menu */}
+                <Menu shadow="md" width={200} position="bottom-end">
+                    <Menu.Target>
+                        <UnstyledButton>
+                            <Group gap="sm">
+                                <Avatar
+                                    color="lime"
+                                    radius="xl"
+                                    size="md"
+                                    style={{
+                                        background: 'linear-gradient(135deg, #bdf052 0%, #a3d742 100%)',
+                                        color: '#222222'
+                                    }}
+                                >
+                                    {user?.firstName?.charAt(0)}{user?.lastName?.charAt(0)}
+                                </Avatar>
+                                <Box style={{ flex: 1 }} visibleFrom="sm">
+                                    <Text size="sm" fw={600} c="#e9eeea">
+                                        {user?.firstName} {user?.lastName}
+                                    </Text>
+                                    <Text size="xs" c="#9ca3af" tt="capitalize">
+                                        {user?.role}
+                                    </Text>
+                                </Box>
+                                <ChevronDown size={16} color="#e9eeea" />
+                            </Group>
+                        </UnstyledButton>
+                    </Menu.Target>
+
+                    <Menu.Dropdown>
+                        <Menu.Label>Account</Menu.Label>
+                        <Menu.Item leftSection={<User size={14} />}>
+                            Profile
+                        </Menu.Item>
+                        <Menu.Item leftSection={<Settings size={14} />}>
+                            Settings
+                        </Menu.Item>
+
+                        <Menu.Divider />
+
+                        <Menu.Item
+                            color="red"
+                            leftSection={<LogOut size={14} />}
+                            onClick={() => signOut()}
+                        >
+                            Logout
+                        </Menu.Item>
+                    </Menu.Dropdown>
+                </Menu>
+            </Group>
         </Flex>
     );
 }
