@@ -1,0 +1,32 @@
+/* Custom styles for react-medium-image-zoom */
+
+/* Override default white background with blur effect */
+[data-rmiz-modal-overlay] {
+  background-color: rgba(0, 0, 0, 0.75) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+}
+
+/* Ensure the modal content area is transparent */
+[data-rmiz-modal-content] {
+  background-color: transparent !important;
+}
+
+/* Image styling */
+[data-rmiz-modal-img] {
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* Zoom wrapper */
+.rmiz-wrapper {
+  cursor: zoom-in;
+}
+
+.rmiz-wrapper.rmiz-active {
+  cursor: zoom-out;
+}
+
+/* Smooth transitions */
+[data-rmiz] {
+  transition: transform 0.3s ease-in-out !important;
+}

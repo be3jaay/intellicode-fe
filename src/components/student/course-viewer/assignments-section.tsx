@@ -271,8 +271,10 @@ export function AssignmentsSection({ assignments, courseId }: AssignmentsSection
                                                     size="md"
                                                     leftSection={buttonConfig.icon}
                                                     onClick={() => {
-                                                        if (assignment.assignment_type === "code_sandbox") {
+                                                        if (assignment.assignment_subtype === "code_sandbox") {
                                                             router.push(`/code-sandbox`)
+                                                        } else if (assignment.assignment_subtype === "file_upload") {
+                                                            router.push(`/submission/${assignment.id}`)
                                                         } else {
                                                             router.push(`/course/assignment/${assignment.id}`)
                                                         }
