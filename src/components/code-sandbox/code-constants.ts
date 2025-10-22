@@ -1,6 +1,7 @@
 export const languageOptions = [
   { value: "javascript", label: "JavaScript" },
   { value: "python", label: "Python" },
+  { value: "c", label: "C" },
   { value: "cpp", label: "C++" },
   { value: "java", label: "Java" },
   { value: "typescript", label: "TypeScript" },
@@ -25,6 +26,19 @@ def fibonacci(n):
     return fibonacci(n - 1) + fibonacci(n - 2)
 
 print("Fibonacci(10):", fibonacci(10))`,
+  c: `// C Example
+#include <stdio.h>
+
+int fibonacci(int n) {
+    if (n <= 1) return n;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+int main() {
+    printf("Hello, World!\\n");
+    printf("Fibonacci(10): %d\\n", fibonacci(10));
+    return 0;
+}`,
   cpp: `// C++ Example
 #include <iostream>
 using namespace std;

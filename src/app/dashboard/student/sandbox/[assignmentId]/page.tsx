@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Container, Group, Button, Title, Paper, Stack, Grid, Box, Text, rem, Divider, Skeleton, Alert } from "@mantine/core";
-import { IconArrowLeft, IconAlertCircle } from "@tabler/icons-react";
+import { IconArrowLeft, IconAlertCircle, IconSend } from "@tabler/icons-react";
 import { CodeEditor } from "@/components/code-sandbox";
 import { useFetchAssignment } from "@/hooks/query-hooks/assignment-query";
 
@@ -13,6 +14,9 @@ export default function DashboardSandboxPage() {
   
   const assignmentId = params.assignmentId as string;
   const courseId = searchParams.get("courseId");
+
+  const [isRunning, setIsRunning] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Fetch assignment details
   const { data: assignmentResponse, isLoading, isError, error } = useFetchAssignment(assignmentId);
@@ -32,6 +36,20 @@ export default function DashboardSandboxPage() {
       router.push(`/dashboard/student/courses/${courseId}?tab=assignments`);
     } else {
       router.back();
+    }
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      // TODO: Implement submission logic
+      console.log("Submitting assignment:", assignmentId);
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+      // Add your submission API call here
+    } catch (error) {
+      console.error("Submission error:", error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -142,9 +160,9 @@ export default function DashboardSandboxPage() {
                 background: "#161b22",
               }}
             >
-              <Box p="xl" style={{ height: "100%", minHeight: rem(600) }}>
-                <Stack gap="lg">
-                  <Box>
+              <Box p="xl" style={{ height: "100%", minHeight: rem(600), display: "flex", flexDirection: "column" }}>
+                <Stack gap="lg" style={{ flex: 1 }}>
+                  <Box style={{ flex: 1, minHeight: rem(300) }}>
                     <Title order={3} c="#E9EEEA" mb="xs" size="h4">
                       {title}
                     </Title>
@@ -152,6 +170,26 @@ export default function DashboardSandboxPage() {
                     <Text c="#999999" size="sm" style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
                       {description}
                     </Text>
+                  </Box>
+                  
+                  <Box mt="auto">
+                    <Button
+                      fullWidth
+                      size="md"
+                      leftSection={<IconSend size={18} />}
+                      onClick={handleSubmit}
+                      loading={isSubmitting}
+                      disabled={isSubmitting || isRunning}
+                      style={{
+                        background: isSubmitting || isRunning ? "#2a2a2a" : "#BDF052",
+                        color: isSubmitting || isRunning ? "#666666" : "#000000",
+                        "&:hover": {
+                          background: isSubmitting || isRunning ? "#2a2a2a" : "#a5d645",
+                        },
+                      }}
+                    >
+                      {isSubmitting ? "Submitting..." : "Submit Assignment"}
+                    </Button>
                   </Box>
                 </Stack>
               </Box>
@@ -164,9 +202,10 @@ export default function DashboardSandboxPage() {
                   showHeader={true}
                   fullPage={false}
                   useContainer={false}
-                  editorHeight="600px"
+                  editorHeight="500px"
                   initialLanguage="javascript"
                   title="Code Editor"
+                  onRunningStateChange={setIsRunning}
                 />
               </Box>
             </Grid.Col>
