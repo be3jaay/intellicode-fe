@@ -23,7 +23,6 @@ import {
   Download,
   ArrowUpDown,
   TrendingUp,
-  TrendingDown,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -318,9 +317,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                   background: "rgba(26, 26, 26, 0.8)",
                   border: "1px solid rgba(189, 240, 82, 0.2)",
                   color: "#e9eeea",
-                  "&:focus": {
-                    borderColor: "rgba(189, 240, 82, 0.5)",
-                  },
+                  "&:focus": { borderColor: "rgba(189, 240, 82, 0.5)" },
                 },
               }}
             />
@@ -341,9 +338,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                   background: "rgba(26, 26, 26, 0.8)",
                   border: "1px solid rgba(189, 240, 82, 0.2)",
                   color: "#e9eeea",
-                  "&:focus": {
-                    borderColor: "rgba(189, 240, 82, 0.5)",
-                  },
+                  "&:focus": { borderColor: "rgba(189, 240, 82, 0.5)" },
                 },
               }}
             />
@@ -363,9 +358,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                   background: "rgba(26, 26, 26, 0.8)",
                   border: "1px solid rgba(189, 240, 82, 0.2)",
                   color: "#e9eeea",
-                  "&:focus": {
-                    borderColor: "rgba(189, 240, 82, 0.5)",
-                  },
+                  "&:focus": { borderColor: "rgba(189, 240, 82, 0.5)" },
                 },
               }}
             />
@@ -618,9 +611,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                         }
                         size="sm"
                         radius="xl"
-                        style={{
-                          background: "rgba(26, 26, 26, 0.8)",
-                        }}
+                        style={{ background: "rgba(26, 26, 26, 0.8)" }}
                         styles={{
                           section: {
                             background: getGradeColor(student.overall_grade),
@@ -663,9 +654,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                 style={{
                   borderColor: "rgba(189, 240, 82, 0.3)",
                   color: "#bdf052",
-                  "&:hover": {
-                    background: "rgba(189, 240, 82, 0.1)",
-                  },
+                  "&:hover": { background: "rgba(189, 240, 82, 0.1)" },
                 }}
               >
                 View More Students
