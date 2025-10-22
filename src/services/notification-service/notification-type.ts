@@ -32,4 +32,9 @@ export interface MarkAsReadResponse {
   timestamp: string;
 }
 
-
+export interface DeleteNotificationResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  timestamp: string;
+}

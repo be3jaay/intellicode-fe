@@ -26,7 +26,6 @@ import {
   LinkIcon,
   Plus,
   Edit,
-  Trash2,
   Check,
   Copy,
   AlertCircle,
@@ -39,7 +38,6 @@ import { ModuleService } from "@/services/module-service/module-service";
 import { BulkModuleCreator } from "./bulk-module-creator";
 import { AssignmentCreator } from "./assignment-creator";
 import { LessonCreator } from "./lesson-creator";
-import { BulkQuizCreator } from "./bulk-quiz-creator";
 import { ActivityCreator } from "./activity-creator";
 import { AssignmentContent } from "./assignment-content";
 import { StudentContent } from "./student-content";
@@ -57,15 +55,12 @@ type ContentView =
   | "quiz"
   | "activity";
 
-interface CourseContentViewerProps {
+interface CourseDetailViewProps {
   course: CourseValueResponse;
   onBack: () => void;
 }
 
-export function CourseContentViewer({
-  course,
-  onBack,
-}: CourseContentViewerProps) {
+export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
   const [activeTab, setActiveTab] = useState<string>("modules");
   const [currentView, setCurrentView] = useState<ContentView>("main");
   const [moduleId, setModuleId] = useState<string>("");
@@ -73,18 +68,6 @@ export function CourseContentViewer({
   const [rejectionModalOpened, setRejectionModalOpened] = useState(false);
 
   const resubmitCourseMutation = useResubmitCourse();
-
-  // Debug: Log course status and admin_notes
-  useEffect(() => {
-    console.log("========== COURSE DEBUG ==========");
-    console.log("Course Status:", course.status);
-    console.log("Admin Notes:", course.admin_notes);
-    console.log("Admin Notes Type:", typeof course.admin_notes);
-    console.log("Admin Notes Length:", course.admin_notes?.length);
-    console.log("Has Admin Notes:", !!course.admin_notes);
-    console.log("Full Course:", course);
-    console.log("==================================");
-  }, [course]);
 
   useEffect(() => {
     const fetchModules = async () => {
@@ -117,6 +100,7 @@ export function CourseContentViewer({
   const handleAddLesson = () => {
     setCurrentView("lesson");
   };
+
   const handleBackToMain = () => {
     setCurrentView("main");
   };
@@ -388,44 +372,49 @@ export function CourseContentViewer({
       {/* Rejection Alert */}
       {course.status === "rejected" && (
         <Alert
-          icon={<AlertCircle size={20} />}
+          icon={<AlertCircle size={20} color="#DC2626" />}
           title="Course Rejected"
           color="red"
-          variant="filled"
+          variant="light"
           mb="xl"
           styles={{
             root: {
-              backgroundColor: "#7F1D1D",
-              border: "1px solid #991B1B",
+              backgroundColor: "#FEF2F2",
+              border: "2px solid #DC2626",
               borderRadius: "12px",
             },
             title: {
-              color: "#FFFFFF",
+              color: "#991B1B",
               fontSize: "1.125rem",
               fontWeight: 700,
             },
             message: {
-              color: "#FEE2E2",
+              color: "#7F1D1D",
+            },
+            icon: {
+              color: "#DC2626",
             },
           }}
         >
           <Stack gap="md">
-            <Text style={{ color: "#FEE2E2", lineHeight: 1.6 }}>
+            <Text
+              style={{ color: "#7F1D1D", lineHeight: 1.6, fontSize: "0.95rem" }}
+            >
               Your course has been rejected by the administrator.
               {course.admin_notes &&
                 " Please review the feedback below and make necessary changes before resubmitting."}
             </Text>
             <Group gap="sm">
               <Button
-                onClick={() => {
-                  console.log("View Rejection Reason clicked");
-                  console.log("Admin Notes Value:", course.admin_notes);
-                  setRejectionModalOpened(true);
-                }}
+                onClick={() => setRejectionModalOpened(true)}
+                className="rejection-reason-btn"
+                variant="secondary"
                 style={{
-                  backgroundColor: "#DC2626",
                   color: "#FFFFFF",
                   borderRadius: "8px",
+                  border: "none",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease",
                 }}
               >
                 <Info size={16} style={{ marginRight: "0.5rem" }} />
@@ -434,16 +423,22 @@ export function CourseContentViewer({
               <Button
                 onClick={handleResubmit}
                 disabled={resubmitCourseMutation.isPending}
+                className="resubmit-btn"
                 style={{
-                  backgroundColor: "#BDF052",
-                  color: "#0F0F0F",
                   borderRadius: "8px",
+                  border: "none",
+                  fontWeight: 600,
+                  transition: "all 0.2s ease",
+                  opacity: resubmitCourseMutation.isPending ? 0.6 : 1,
+                  cursor: resubmitCourseMutation.isPending
+                    ? "not-allowed"
+                    : "pointer",
                 }}
               >
                 {resubmitCourseMutation.isPending ? (
                   <Loader
                     size="sm"
-                    color="#0F0F0F"
+                    color="#FFFFFF"
                     style={{ marginRight: "0.5rem" }}
                   />
                 ) : (
@@ -452,6 +447,18 @@ export function CourseContentViewer({
                 Resubmit for Approval
               </Button>
             </Group>
+            <style jsx>{`
+              .rejection-reason-btn:hover {
+                background-color: #b91c1c !important;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+              }
+              .resubmit-btn:not(:disabled):hover {
+                background-color: #15803d !important;
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+              }
+            `}</style>
           </Stack>
         </Alert>
       )}
@@ -806,41 +813,5 @@ export function CourseContentViewer({
         </Tabs>
       </Card>
     </Box>
-  );
-}
-
-function ActivitiesContent() {
-  return (
-    <Card
-      padding="xl"
-      radius="md"
-      style={{
-        background: "rgba(34, 34, 34, 0.4)",
-        border: "1px solid rgba(189, 240, 82, 0.1)",
-        textAlign: "center",
-      }}
-    >
-      <Text c="dimmed">
-        No activities yet. Create engaging activities for your students.
-      </Text>
-    </Card>
-  );
-}
-
-function QuizzesContent() {
-  return (
-    <Card
-      padding="xl"
-      radius="md"
-      style={{
-        background: "rgba(34, 34, 34, 0.4)",
-        border: "1px solid rgba(189, 240, 82, 0.1)",
-        textAlign: "center",
-      }}
-    >
-      <Text c="dimmed">
-        No quizzes yet. Add quizzes to assess student learning.
-      </Text>
-    </Card>
   );
 }

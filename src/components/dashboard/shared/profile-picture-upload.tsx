@@ -52,13 +52,7 @@ export function ProfilePictureUpload({
       onUpload(file);
       setUploading(false);
       onClose();
-
-      notifications.show({
-        title: "Success",
-        message: "Profile picture updated successfully",
-        color: "green",
-      });
-    }, 1500);
+    }, 500);
   };
 
   return (

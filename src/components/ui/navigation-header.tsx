@@ -21,7 +21,15 @@ import {
   Skeleton,
   Loader,
 } from "@mantine/core";
-import { LogOut, User, Settings, ChevronDown, Bell, Check } from "lucide-react";
+import {
+  LogOut,
+  User,
+  Settings,
+  ChevronDown,
+  Bell,
+  Check,
+  Trash2,
+} from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface NavigationHeaderProps {
@@ -31,8 +39,13 @@ interface NavigationHeaderProps {
 
 export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
   const { user, signOut } = useAuth();
-  const { notifications, unreadCount, markAsRead, markAllAsRead } =
-    useNotifications();
+  const {
+    notifications,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+  } = useNotifications();
   const { data: userData, isLoading: isLoadingUser } = useCurrentUser();
 
   return (
@@ -136,13 +149,18 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
                           ? "none"
                           : "1px solid #e9ecef",
                         cursor: "pointer",
+                        position: "relative",
                       }}
                       onClick={() =>
                         !notification.is_read && markAsRead(notification.id)
                       }
                     >
-                      <Group justify="space-between" align="flex-start">
-                        <Box style={{ flex: 1 }}>
+                      <Group
+                        justify="space-between"
+                        align="flex-start"
+                        wrap="nowrap"
+                      >
+                        <Box style={{ flex: 1, minWidth: 0 }}>
                           <Text size="sm" fw={notification.is_read ? 400 : 600}>
                             {notification.title}
                           </Text>
@@ -156,17 +174,40 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
                             )}
                           </Text>
                         </Box>
-                        {!notification.is_read && (
-                          <Box
-                            w={8}
-                            h={8}
-                            style={{
-                              borderRadius: "50%",
-                              backgroundColor: "#4dabf7",
-                              flexShrink: 0,
+                        <Group gap={4} align="center" style={{ flexShrink: 0 }}>
+                          <ActionIcon
+                            size="sm"
+                            variant="subtle"
+                            color="red"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteNotification(notification.id);
                             }}
-                          />
-                        )}
+                            style={{
+                              opacity: 0.7,
+                              transition: "opacity 0.2s",
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.opacity = "1";
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.opacity = "0.7";
+                            }}
+                          >
+                            <Trash2 size={14} />
+                          </ActionIcon>
+                          {!notification.is_read && (
+                            <Box
+                              w={8}
+                              h={8}
+                              style={{
+                                borderRadius: "50%",
+                                backgroundColor: "#4dabf7",
+                                flexShrink: 0,
+                              }}
+                            />
+                          )}
+                        </Group>
                       </Group>
                     </Box>
                   ))}

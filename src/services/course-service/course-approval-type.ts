@@ -23,6 +23,7 @@ export type CourseApprovalItem = {
   course_invite_code: string;
   instructor_id: string;
   status: "waiting_for_approval" | "approved" | "rejected";
+  admin_notes?: string;
   instructor: {
     id: string;
     first_name: string;
@@ -34,6 +35,7 @@ export type CourseApprovalItem = {
 export type CourseApprovalAction = {
   courseId: string;
   action: "approve" | "reject";
+  admin_notes?: string;
 };
 
 export type CourseApprovalActionResponse = {
@@ -42,6 +44,19 @@ export type CourseApprovalActionResponse = {
   data: {
     id: string;
     status: "approved" | "rejected";
+    admin_notes?: string;
+  };
+  timestamp: string;
+};
+
+export type CourseResubmitResponse = {
+  success: boolean;
+  statusCode: number;
+  data: {
+    message: string;
+    status: "waiting_for_approval";
+    course_id: string;
+    course_title: string;
   };
   timestamp: string;
 };

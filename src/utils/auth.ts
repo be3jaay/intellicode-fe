@@ -99,8 +99,6 @@ export async function signUp(value: SignUpFormValue, request?: NextRequest) {
       payload.section = value.section;
     }
 
-    console.log("Sign-up payload:", JSON.stringify(payload, null, 2));
-
     const response = await axios.post(`${BASE_API_URL}/auth/signup`, payload, {
       timeout: 10000, // 10 second timeout
       headers: {

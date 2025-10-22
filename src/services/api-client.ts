@@ -3,6 +3,7 @@ import config from "@/config";
 class ApiClient {
   private accessToken: string | null = null;
   private tokenPromise: Promise<string | null> | null = null;
+  private refreshPromise: Promise<boolean> | null = null;
 
   private async getAccessToken(): Promise<string | null> {
     // If we already have a token, return it
@@ -39,13 +40,44 @@ class ApiClient {
     return this.tokenPromise;
   }
 
+  private async refreshAccessToken(): Promise<boolean> {
+    // If a refresh is already in progress, wait for it
+    if (this.refreshPromise) {
+      return this.refreshPromise;
+    }
+
+    this.refreshPromise = (async () => {
+      try {
+        const response = await fetch("/api/auth/refresh", {
+          method: "POST",
+          credentials: "include",
+        });
+
+        if (response.ok) {
+          // Clear the cached token so next request fetches the new one
+          this.clearToken();
+          return true;
+        }
+        return false;
+      } catch (error) {
+        console.error("Failed to refresh token:", error);
+        return false;
+      } finally {
+        this.refreshPromise = null;
+      }
+    })();
+
+    return this.refreshPromise;
+  }
+
   public clearToken() {
     this.accessToken = null;
   }
 
   private async request<T>(
     endpoint: string,
-    options: RequestInit = {}
+    options: RequestInit = {},
+    isRetry: boolean = false
   ): Promise<T> {
     // Use relative URLs for server-side routes, absolute for direct backend calls
     const url = endpoint.startsWith("/api/")
@@ -93,6 +125,27 @@ class ApiClient {
       },
       credentials: "include",
     });
+
+    // Handle 401 Unauthorized - try to refresh token and retry once
+    if (response.status === 401 && !isRetry && !endpoint.startsWith("/api/")) {
+      console.log("🔄 Token expired, attempting to refresh...");
+
+      const refreshed = await this.refreshAccessToken();
+
+      if (refreshed) {
+        console.log("✅ Token refreshed successfully, retrying request...");
+        // Retry the request with the new token
+        return this.request<T>(endpoint, options, true);
+      } else {
+        console.error("❌ Token refresh failed, redirecting to login...");
+        // Clear token and redirect to login
+        this.clearToken();
+        if (typeof window !== "undefined") {
+          window.location.href = "/sign-in";
+        }
+        throw new Error("Session expired. Please login again.");
+      }
+    }
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
