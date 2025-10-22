@@ -12,6 +12,7 @@ import {
   StatusAlert,
   YourWorkCard,
   ErrorState,
+  AttachmentPreviewList,
 } from "./components";
 import { formatDate, getAssignmentStatus, getInstructorName } from "./utils";
 import { styles, colors } from "./styles";
@@ -189,6 +190,13 @@ export default function DashboardSubmissionPage() {
                     {assignment.description}
                   </Text>
                 </Box>
+
+                {assignment.attachments && assignment.attachments.length > 0 && (
+                  <>
+                    <Divider color={colors.border} />
+                    <AttachmentPreviewList attachments={assignment.attachments} />
+                  </>
+                )}
               </Stack>
             </Paper>
           </Grid.Col>
