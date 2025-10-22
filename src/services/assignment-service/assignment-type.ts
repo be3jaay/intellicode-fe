@@ -94,6 +94,14 @@ export type AssignmentQuestion = {
     is_true: boolean | null;
 }
 
+export type AssignmentInstructor = {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    avatar_url?: string | null;
+}
+
 export type Assignment = {
     id: string;
     title: string;
@@ -111,6 +119,7 @@ export type Assignment = {
     questions: AssignmentQuestion[];
     starterCode: string | null;
     already_submitted?: boolean;
+    instructor?: AssignmentInstructor;
 }
 
 export type AssignmentResponse = {
