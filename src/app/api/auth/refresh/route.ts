@@ -17,20 +17,39 @@ export async function POST() {
     const { getConfigValue } = config;
     const { BASE_API_URL } = getConfigValue();
 
+    console.log("🔄 Calling backend refresh endpoint...");
+
     // Call the backend refresh endpoint
     const response = await axios.post(`${BASE_API_URL}/auth/refresh`, {
       refreshToken: session.refresh_token,
     });
 
-    if (response.status === 200 && response.data.success) {
+    console.log("📥 Backend refresh response:", {
+      status: response.status,
+      success: response.data?.success,
+      hasData: !!response.data?.data,
+    });
+
+    if (
+      (response.status === 200 || response.status === 201) &&
+      response.data.success
+    ) {
       const { data } = response.data;
       const { accessToken, refreshToken: newRefreshToken } = data;
+
+      console.log("✅ Updating session with new tokens...", {
+        hasAccessToken: !!accessToken,
+        hasRefreshToken: !!newRefreshToken,
+        accessTokenLength: accessToken?.length,
+      });
 
       // Update session with new tokens
       await updateToken({
         accessToken,
         refreshToken: newRefreshToken,
       });
+
+      console.log("✅ Session updated successfully");
 
       return NextResponse.json({
         success: true,

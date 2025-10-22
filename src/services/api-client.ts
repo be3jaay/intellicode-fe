@@ -48,16 +48,32 @@ class ApiClient {
 
     this.refreshPromise = (async () => {
       try {
+        console.log("🔄 Starting token refresh...");
         const response = await fetch("/api/auth/refresh", {
           method: "POST",
           credentials: "include",
         });
 
         if (response.ok) {
+          const data = await response.json();
+          console.log("✅ Token refresh successful:", {
+            success: data.success,
+            hasAccessToken: !!data.access_token,
+          });
+
           // Clear the cached token so next request fetches the new one
           this.clearToken();
+
+          // Immediately fetch and cache the new token
+          const newToken = await this.getAccessToken();
+          console.log("📝 New token fetched and cached:", {
+            hasToken: !!newToken,
+            tokenLength: newToken?.length,
+          });
+
           return true;
         }
+        console.error("❌ Token refresh failed with status:", response.status);
         return false;
       } catch (error) {
         console.error("Failed to refresh token:", error);
