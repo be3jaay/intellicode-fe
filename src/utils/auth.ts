@@ -1,30 +1,32 @@
-'use server';
+"use server";
 
-import { signInSchema } from '@/app/sign-in/container/schema/sign-in-schema';
-import { signUpSchema } from '@/app/sign-up/container/schema/sign-up-schema';
-import config from '@/config';
-import { SignUpFormValue } from '@/types/auth.type';
-import axios from 'axios';
-import { redirect } from 'next/navigation';
-import { createSession, updateToken, getSession } from './session';
+import { signInSchema } from "@/app/sign-in/container/schema/sign-in-schema";
+import { signUpSchema } from "@/app/sign-up/container/schema/sign-up-schema";
+import config from "@/config";
+import { SignUpFormValue } from "@/types/auth.type";
+import axios from "axios";
+import { redirect } from "next/navigation";
+import { createSession, updateToken, getSession } from "./session";
 
-import { NextRequest } from 'next/server';
-import { 
-  InputSanitizer, 
-  RateLimiter, 
-  AuditLogger, 
-  getClientIP
-} from './security';
+import { NextRequest } from "next/server";
+import {
+  InputSanitizer,
+  RateLimiter,
+  AuditLogger,
+  getClientIP,
+} from "./security";
 
 export async function signUp(value: SignUpFormValue, request?: NextRequest) {
   const { getConfigValue } = config;
   const { BASE_API_URL } = getConfigValue();
-  
+
   // Sanitize inputs
   const sanitizedValue = {
     ...value,
     firstName: InputSanitizer.sanitizeString(value.firstName),
-    middleName: value.middleName ? InputSanitizer.sanitizeString(value.middleName) : undefined,
+    middleName: value.middleName
+      ? InputSanitizer.sanitizeString(value.middleName)
+      : undefined,
     lastName: InputSanitizer.sanitizeString(value.lastName),
     email: InputSanitizer.sanitizeEmail(value.email),
   };
@@ -32,7 +34,7 @@ export async function signUp(value: SignUpFormValue, request?: NextRequest) {
   // Validate email format
   if (!InputSanitizer.validateEmail(sanitizedValue.email)) {
     return {
-      error: 'Invalid email format',
+      error: "Invalid email format",
       status: 400,
     };
   }
@@ -41,7 +43,7 @@ export async function signUp(value: SignUpFormValue, request?: NextRequest) {
   const passwordValidation = InputSanitizer.validatePassword(value.password);
   if (!passwordValidation.valid) {
     return {
-      error: passwordValidation.errors.join(', '),
+      error: passwordValidation.errors.join(", "),
       status: 400,
     };
   }
@@ -50,7 +52,7 @@ export async function signUp(value: SignUpFormValue, request?: NextRequest) {
 
   if (!validationFields.success) {
     return {
-      error: 'Validation failed',
+      error: "Validation failed",
       status: 400,
       details: validationFields.error,
     };
@@ -60,19 +62,19 @@ export async function signUp(value: SignUpFormValue, request?: NextRequest) {
   if (request) {
     const clientIP = getClientIP(request);
     const rateLimitKey = `signup:${clientIP}`;
-    
+
     if (RateLimiter.isRateLimited(rateLimitKey)) {
       AuditLogger.log({
-        action: 'SIGNUP_RATE_LIMITED',
-        resource: '/sign-up',
+        action: "SIGNUP_RATE_LIMITED",
+        resource: "/sign-up",
         ip: clientIP,
-        userAgent: request.headers.get('user-agent') || 'unknown',
+        userAgent: request.headers.get("user-agent") || "unknown",
         success: false,
-        details: { email: sanitizedValue.email }
+        details: { email: sanitizedValue.email },
       });
 
       return {
-        error: 'Too many signup attempts. Please try again later.',
+        error: "Too many signup attempts. Please try again later.",
         status: 429,
       };
     }
@@ -81,118 +83,193 @@ export async function signUp(value: SignUpFormValue, request?: NextRequest) {
   }
 
   try {
-    const response = await axios.post(
-      `${BASE_API_URL}/auth/register`,
-      {
-        firstName: sanitizedValue.firstName,
-        middleName: sanitizedValue.middleName,
-        lastName: sanitizedValue.lastName,
-        email: sanitizedValue.email,
-        password: value.password, // Don't sanitize password for API
-        studentNumber: value.studentNumber,
-        section: value.section,
+    // Build the API payload with only the fields the API expects
+    const payload: Record<string, any> = {
+      firstName: sanitizedValue.firstName,
+      middleName: sanitizedValue.middleName || undefined,
+      lastName: sanitizedValue.lastName,
+      email: sanitizedValue.email,
+      password: value.password, // Don't sanitize password for API
+      userType: sanitizedValue.role, // API expects userType not role
+    };
+
+    // Only add student-specific fields if role is student
+    if (sanitizedValue.role === "student") {
+      payload.studentNumber = value.studentNumber;
+      payload.section = value.section;
+    }
+
+    console.log("Sign-up payload:", JSON.stringify(payload, null, 2));
+
+    const response = await axios.post(`${BASE_API_URL}/auth/signup`, payload, {
+      timeout: 10000, // 10 second timeout
+      headers: {
+        "Content-Type": "application/json",
       },
-      {
-        timeout: 10000, // 10 second timeout
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      }
-    );
+    });
 
     if (response.data.success && response.data.statusCode === 201) {
       const { data } = response.data;
-      
-      // Create session with new structure
-      await createSession({
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          role: data.user.role,
-          firstName: data.user.firstName,
-          middleName: data.user.middleName,
-          lastName: data.user.lastName,
-        },
-        access_token: data.accessToken,
-        refresh_token: data.refreshToken,
-      });
 
-      // Log successful signup
+      // Check if we have tokens (student auto-login) or not (teacher pending approval)
+      const hasTokens = data.accessToken && data.refreshToken;
+
+      if (hasTokens) {
+        // Student registration - create session and redirect
+        await createSession({
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+            role: data.user.role,
+            firstName: data.user.firstName,
+            middleName: data.user.middleName,
+            lastName: data.user.lastName,
+          },
+          access_token: data.accessToken,
+          refresh_token: data.refreshToken,
+        });
+
+        // Log successful signup
+        if (request) {
+          AuditLogger.log({
+            action: "SIGNUP_SUCCESS",
+            resource: "/sign-up",
+            ip: getClientIP(request),
+            userAgent: request.headers.get("user-agent") || "unknown",
+            success: true,
+            details: { email: sanitizedValue.email, role: data.user.role },
+          });
+        }
+
+        return {
+          message: "Registration successful",
+          status: 201,
+          redirect: "/dashboard",
+          user: {
+            id: data.user.id,
+            email: data.user.email,
+            role: data.user.role,
+            firstName: data.user.firstName,
+            middleName: data.user.middleName,
+            lastName: data.user.lastName,
+          },
+        };
+      } else {
+        // Teacher/Instructor registration - pending approval, no session
+        if (request) {
+          AuditLogger.log({
+            action: "SIGNUP_PENDING_APPROVAL",
+            resource: "/sign-up",
+            ip: getClientIP(request),
+            userAgent: request.headers.get("user-agent") || "unknown",
+            success: true,
+            details: { email: sanitizedValue.email, role: sanitizedValue.role },
+          });
+        }
+
+        return {
+          message: "Registration submitted for approval",
+          status: 201,
+          user: {
+            id: data.user?.id,
+            email: data.user?.email || sanitizedValue.email,
+            role: data.user?.role || sanitizedValue.role,
+            firstName: data.user?.firstName || sanitizedValue.firstName,
+            middleName: data.user?.middleName || sanitizedValue.middleName,
+            lastName: data.user?.lastName || sanitizedValue.lastName,
+          },
+        };
+      }
+    }
+
+    return {
+      error: "Registration failed",
+      status: 400,
+    };
+  } catch (error) {
+    console.error("Signup error:", error);
+
+    // Check if it's an axios error with response
+    if (axios.isAxiosError(error) && error.response) {
+      const errorMessage =
+        error.response.data?.message ||
+        error.response.data?.error ||
+        "Registration failed";
+
+      // Log failed signup
       if (request) {
         AuditLogger.log({
-          action: 'SIGNUP_SUCCESS',
-          resource: '/sign-up',
+          action: "SIGNUP_FAILED",
+          resource: "/sign-up",
           ip: getClientIP(request),
-          userAgent: request.headers.get('user-agent') || 'unknown',
-          success: true,
-          details: { email: sanitizedValue.email }
+          userAgent: request.headers.get("user-agent") || "unknown",
+          success: false,
+          details: {
+            email: sanitizedValue.email,
+            error: errorMessage,
+            statusCode: error.response.status,
+          },
         });
       }
 
       return {
-        message: 'Registration successful',
-        status: 201,
-        redirect: '/dashboard',
-        user: {
-          id: data.user.id,
-          email: data.user.email,
-          role: data.user.role,
-          firstName: data.user.firstName,
-          middleName: data.user.middleName,
-          lastName: data.user.lastName,
-        },
+        error: errorMessage,
+        status: error.response.status || 500,
       };
     }
 
-    return {
-      error: 'Registration failed',
-      status: 400,
-    };
-  } catch (error) {
-    console.error('Signup error:', error);
-    
-    // Log failed signup
+    // Log failed signup for network errors
     if (request) {
       AuditLogger.log({
-        action: 'SIGNUP_FAILED',
-        resource: '/sign-up',
+        action: "SIGNUP_FAILED",
+        resource: "/sign-up",
         ip: getClientIP(request),
-        userAgent: request.headers.get('user-agent') || 'unknown',
+        userAgent: request.headers.get("user-agent") || "unknown",
         success: false,
-        details: { 
+        details: {
           email: sanitizedValue.email,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
       });
     }
 
     return {
-      error: 'Signup failed. Please try again.',
+      error:
+        error instanceof Error
+          ? error.message
+          : "Signup failed. Please try again.",
       status: 500,
     };
   }
 }
 
-export async function signIn(email: string, password: string, request?: NextRequest) {
+export async function signIn(
+  email: string,
+  password: string,
+  request?: NextRequest
+) {
   const { getConfigValue } = config;
   const { BASE_API_URL } = getConfigValue();
-  
+
   // Sanitize email
   const sanitizedEmail = InputSanitizer.sanitizeEmail(email);
-  
+
   // Validate email format
   if (!InputSanitizer.validateEmail(sanitizedEmail)) {
     return {
-      message: 'Invalid email format',
+      message: "Invalid email format",
       status: 400,
     };
   }
 
-  const validateFields = signInSchema.safeParse({ email: sanitizedEmail, password });
+  const validateFields = signInSchema.safeParse({
+    email: sanitizedEmail,
+    password,
+  });
 
   if (!validateFields.success) {
     return {
-      message: 'Validation failed',
+      message: "Validation failed",
       status: 400,
       details: validateFields.error,
     };
@@ -202,19 +279,19 @@ export async function signIn(email: string, password: string, request?: NextRequ
   if (request) {
     const clientIP = getClientIP(request);
     const rateLimitKey = `signin:${clientIP}:${sanitizedEmail}`;
-    
+
     if (RateLimiter.isRateLimited(rateLimitKey)) {
       AuditLogger.log({
-        action: 'SIGNIN_RATE_LIMITED',
-        resource: '/sign-in',
+        action: "SIGNIN_RATE_LIMITED",
+        resource: "/sign-in",
         ip: clientIP,
-        userAgent: request.headers.get('user-agent') || 'unknown',
+        userAgent: request.headers.get("user-agent") || "unknown",
         success: false,
-        details: { email: sanitizedEmail }
+        details: { email: sanitizedEmail },
       });
 
       return {
-        message: 'Too many login attempts. Please try again in 15 minutes.',
+        message: "Too many login attempts. Please try again in 15 minutes.",
         status: 429,
       };
     }
@@ -232,7 +309,7 @@ export async function signIn(email: string, password: string, request?: NextRequ
       {
         timeout: 10000, // 10 second timeout
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       }
     );
@@ -241,35 +318,35 @@ export async function signIn(email: string, password: string, request?: NextRequ
       // Log failed login attempt
       if (request) {
         AuditLogger.log({
-          action: 'SIGNIN_FAILED',
-          resource: '/sign-in',
+          action: "SIGNIN_FAILED",
+          resource: "/sign-in",
           ip: getClientIP(request),
-          userAgent: request.headers.get('user-agent') || 'unknown',
+          userAgent: request.headers.get("user-agent") || "unknown",
           success: false,
-          details: { email: sanitizedEmail, reason: 'Invalid credentials' }
+          details: { email: sanitizedEmail, reason: "Invalid credentials" },
         });
       }
 
       return {
-        message: 'Invalid Credentials!',
+        message: "Invalid Credentials!",
         status: 401,
       };
     }
 
     const res = response.data;
-    
-    console.log('Login response:', JSON.stringify(res, null, 2));
-    
+
+    console.log("Login response:", JSON.stringify(res, null, 2));
+
     if (res.success && (res.statusCode === 200 || res.statusCode === 201)) {
       const { data } = res;
-      
-      console.log('Creating session with user data:', {
+
+      console.log("Creating session with user data:", {
         id: data.user.id,
         email: data.user.email,
         role: data.user.role,
         firstName: data.user.firstName,
       });
-      
+
       // Create session with new structure
       try {
         await createSession({
@@ -284,12 +361,12 @@ export async function signIn(email: string, password: string, request?: NextRequ
           access_token: data.accessToken,
           refresh_token: data.refreshToken,
         });
-        
-        console.log('Session created successfully');
+
+        console.log("Session created successfully");
       } catch (sessionError) {
-        console.error('Failed to create session:', sessionError);
+        console.error("Failed to create session:", sessionError);
         return {
-          message: 'Failed to create session',
+          message: "Failed to create session",
           status: 500,
         };
       }
@@ -297,13 +374,13 @@ export async function signIn(email: string, password: string, request?: NextRequ
       // Log successful login
       if (request) {
         AuditLogger.log({
-          action: 'SIGNIN_SUCCESS',
-          resource: '/sign-in',
+          action: "SIGNIN_SUCCESS",
+          resource: "/sign-in",
           ip: getClientIP(request),
-          userAgent: request.headers.get('user-agent') || 'unknown',
+          userAgent: request.headers.get("user-agent") || "unknown",
           success: true,
           userId: data.user.id,
-          details: { email: sanitizedEmail }
+          details: { email: sanitizedEmail },
         });
 
         // Reset rate limiting on successful login
@@ -312,9 +389,9 @@ export async function signIn(email: string, password: string, request?: NextRequ
       }
 
       return {
-        message: 'Login successful',
+        message: "Login successful",
         status: 200,
-        redirect: '/dashboard',
+        redirect: "/dashboard",
         user: {
           id: data.user.id,
           email: data.user.email,
@@ -327,29 +404,29 @@ export async function signIn(email: string, password: string, request?: NextRequ
     }
 
     return {
-      message: 'Login failed',
+      message: "Login failed",
       status: 400,
     };
   } catch (error) {
-    console.error('Signin error:', error);
-    
+    console.error("Signin error:", error);
+
     // Log failed login attempt
     if (request) {
       AuditLogger.log({
-        action: 'SIGNIN_FAILED',
-        resource: '/sign-in',
+        action: "SIGNIN_FAILED",
+        resource: "/sign-in",
         ip: getClientIP(request),
-        userAgent: request.headers.get('user-agent') || 'unknown',
+        userAgent: request.headers.get("user-agent") || "unknown",
         success: false,
-        details: { 
+        details: {
           email: sanitizedEmail,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        }
+          error: error instanceof Error ? error.message : "Unknown error",
+        },
       });
     }
 
     return {
-      message: 'Login failed. Please try again.',
+      message: "Login failed. Please try again.",
       status: 500,
     };
   }
@@ -360,15 +437,12 @@ export async function refreshToken(oldRefreshToken: string) {
   const { BASE_API_URL } = getConfigValue();
 
   try {
-    const response = await axios.post(
-      `${BASE_API_URL}/auth/refresh`,
-      {
-        refreshToken: oldRefreshToken,
-      }
-    );
+    const response = await axios.post(`${BASE_API_URL}/auth/refresh`, {
+      refreshToken: oldRefreshToken,
+    });
 
     if (response.status === 401) {
-      throw new Error('Invalid Refresh Token');
+      throw new Error("Invalid Refresh Token");
     }
 
     const { data } = response.data;
@@ -382,8 +456,8 @@ export async function refreshToken(oldRefreshToken: string) {
 
     return accessToken;
   } catch (error) {
-    console.error('Token refresh failed:', error);
-    throw new Error('Failed to refresh token');
+    console.error("Token refresh failed:", error);
+    throw new Error("Failed to refresh token");
   }
 }
 
@@ -393,23 +467,20 @@ export async function getCurrentUser() {
 
   try {
     const session = await getSession();
-    
+
     if (!session) {
       return null;
     }
 
-    const response = await axios.get(
-      `${BASE_API_URL}/auth/me`,
-      {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-        },
-      }
-    );
+    const response = await axios.get(`${BASE_API_URL}/auth/me`, {
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
 
     return response.data;
   } catch (error) {
-    console.error('Failed to get current user:', error);
+    console.error("Failed to get current user:", error);
     return null;
   }
 }

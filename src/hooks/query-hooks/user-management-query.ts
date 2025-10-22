@@ -1,13 +1,21 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { UserManagementService } from '@/services/user-service/user-management-service';
-import { UserManagementQuery, SuspendUserRequest, ApproveInstructorRequest, SignupRequest } from '@/services/user-service/user-management-types';
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { UserManagementService } from "@/services/user-service/user-management-service";
+import {
+  UserManagementQuery,
+  SuspendUserRequest,
+  ApproveInstructorRequest,
+  SignupRequest,
+} from "@/services/user-service/user-management-types";
 
 // Query keys
 export const userManagementKeys = {
-  all: ['user-management'] as const,
-  users: (query: UserManagementQuery) => [...userManagementKeys.all, 'users', query] as const,
-  pendingApprovals: () => [...userManagementKeys.all, 'pending-approvals'] as const,
-  suspendedUsers: () => [...userManagementKeys.all, 'suspended-users'] as const,
+  all: ["user-management"] as const,
+  users: (query: UserManagementQuery) =>
+    [...userManagementKeys.all, "users", query] as const,
+  pendingApprovals: () =>
+    [...userManagementKeys.all, "pending-approvals"] as const,
+  suspendedUsers: () => [...userManagementKeys.all, "suspended-users"] as const,
+  currentUser: () => [...userManagementKeys.all, "current-user"] as const,
 };
 
 // Hook for fetching users with filters
@@ -42,8 +50,13 @@ export function useSuspendUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, data }: { userId: string; data: SuspendUserRequest }) =>
-      UserManagementService.suspendUser(userId, data),
+    mutationFn: ({
+      userId,
+      data,
+    }: {
+      userId: string;
+      data: SuspendUserRequest;
+    }) => UserManagementService.suspendUser(userId, data),
     onSuccess: () => {
       // Invalidate all user-related queries
       queryClient.invalidateQueries({ queryKey: userManagementKeys.all });
@@ -56,8 +69,13 @@ export function useApproveInstructor() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ userId, data }: { userId: string; data: ApproveInstructorRequest }) =>
-      UserManagementService.approveInstructor(userId, data),
+    mutationFn: ({
+      userId,
+      data,
+    }: {
+      userId: string;
+      data: ApproveInstructorRequest;
+    }) => UserManagementService.approveInstructor(userId, data),
     onSuccess: () => {
       // Invalidate all user-related queries
       queryClient.invalidateQueries({ queryKey: userManagementKeys.all });
@@ -83,9 +101,36 @@ export function useRegistration() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: SignupRequest) => UserManagementService.registerUser(data),
+    mutationFn: (data: SignupRequest) =>
+      UserManagementService.registerUser(data),
     onSuccess: () => {
       // Invalidate all user-related queries
+      queryClient.invalidateQueries({ queryKey: userManagementKeys.all });
+    },
+  });
+}
+
+// Hook for fetching current user profile
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: userManagementKeys.currentUser(),
+    queryFn: () => UserManagementService.getCurrentUser(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
+  });
+}
+
+// Hook for updating user profile
+export function useUpdateUserProfile() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ userId, data }: { userId: string; data: FormData }) =>
+      UserManagementService.updateUserProfile(userId, data),
+    onSuccess: () => {
+      // Invalidate current user and all user-related queries
+      queryClient.invalidateQueries({
+        queryKey: userManagementKeys.currentUser(),
+      });
       queryClient.invalidateQueries({ queryKey: userManagementKeys.all });
     },
   });

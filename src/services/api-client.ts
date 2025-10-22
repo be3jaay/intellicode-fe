@@ -1,4 +1,4 @@
-import config from '@/config';
+import config from "@/config";
 
 class ApiClient {
   private accessToken: string | null = null;
@@ -18,8 +18,8 @@ class ApiClient {
     // Fetch the token
     this.tokenPromise = (async () => {
       try {
-        const response = await fetch('/api/auth/token', {
-          credentials: 'include',
+        const response = await fetch("/api/auth/token", {
+          credentials: "include",
         });
 
         if (response.ok) {
@@ -29,7 +29,7 @@ class ApiClient {
         }
         return null;
       } catch (error) {
-        console.error('Failed to get access token:', error);
+        console.error("Failed to get access token:", error);
         return null;
       } finally {
         this.tokenPromise = null;
@@ -48,35 +48,39 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     // Use relative URLs for server-side routes, absolute for direct backend calls
-    const url = endpoint.startsWith('/api/') ? endpoint : `${this.getBaseURL()}${endpoint}`;
-    
+    const url = endpoint.startsWith("/api/")
+      ? endpoint
+      : `${this.getBaseURL()}${endpoint}`;
+
     const defaultHeaders: Record<string, string> = {};
-    
+
     // Check if body is FormData
     const isFormData = options.body instanceof FormData;
-    
+
     // Only set Content-Type if NOT FormData (browser will set it with boundary)
     if (!isFormData) {
-      const existingHeaders = options.headers as Record<string, string> | undefined;
-      if (!existingHeaders || !('Content-Type' in existingHeaders)) {
-        defaultHeaders['Content-Type'] = 'application/json';
+      const existingHeaders = options.headers as
+        | Record<string, string>
+        | undefined;
+      if (!existingHeaders || !("Content-Type" in existingHeaders)) {
+        defaultHeaders["Content-Type"] = "application/json";
       }
     }
 
     // Add Authorization header for backend API calls (not for Next.js API routes)
-    if (!endpoint.startsWith('/api/')) {
+    if (!endpoint.startsWith("/api/")) {
       const token = await this.getAccessToken();
       if (token) {
-        defaultHeaders['Authorization'] = `Bearer ${token}`;
+        defaultHeaders["Authorization"] = `Bearer ${token}`;
       }
     }
 
     // Debug logging in development
-    if (process.env.NODE_ENV === 'development' && isFormData) {
-      console.log('📤 Sending FormData request:', {
+    if (process.env.NODE_ENV === "development" && isFormData) {
+      console.log("📤 Sending FormData request:", {
         url,
         method: options.method,
-        hasAuthorization: !!defaultHeaders['Authorization'],
+        hasAuthorization: !!defaultHeaders["Authorization"],
         headers: Object.keys(defaultHeaders),
       });
     }
@@ -87,12 +91,14 @@ class ApiClient {
         ...defaultHeaders,
         ...options.headers,
       },
-      credentials: 'include',
+      credentials: "include",
     });
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || `HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(
+        errorData.message || `HTTP ${response.status}: ${response.statusText}`
+      );
     }
 
     // Return the response directly since the backend returns the data directly
@@ -101,41 +107,55 @@ class ApiClient {
 
   private getBaseURL(): string {
     const configValue = config.getConfigValue();
-    return configValue.BASE_API_URL || 'http://localhost:8000';
+    return configValue.BASE_API_URL || "http://localhost:8000";
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'GET' });
+    return this.request<T>(endpoint, { ...options, method: "GET" });
   }
 
-  async post<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async post<T>(
+    endpoint: string,
+    data?: any,
+    options?: RequestInit
+  ): Promise<T> {
     const isFormData = data instanceof FormData;
-    
+
     return this.request<T>(endpoint, {
       ...options,
-      method: 'POST',
-      body: isFormData ? data : (data ? JSON.stringify(data) : undefined),
+      method: "POST",
+      body: isFormData ? data : data ? JSON.stringify(data) : undefined,
     });
   }
 
-  async put<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async put<T>(
+    endpoint: string,
+    data?: any,
+    options?: RequestInit
+  ): Promise<T> {
+    const isFormData = data instanceof FormData;
+
     return this.request<T>(endpoint, {
       ...options,
-      method: 'PUT',
-      body: data ? JSON.stringify(data) : undefined,
+      method: "PUT",
+      body: isFormData ? data : data ? JSON.stringify(data) : undefined,
     });
   }
 
-  async patch<T>(endpoint: string, data?: any, options?: RequestInit): Promise<T> {
+  async patch<T>(
+    endpoint: string,
+    data?: any,
+    options?: RequestInit
+  ): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
-      method: 'PATCH',
+      method: "PATCH",
       body: data ? JSON.stringify(data) : undefined,
     });
   }
 
   async delete<T>(endpoint: string, options?: RequestInit): Promise<T> {
-    return this.request<T>(endpoint, { ...options, method: 'DELETE' });
+    return this.request<T>(endpoint, { ...options, method: "DELETE" });
   }
 }
 

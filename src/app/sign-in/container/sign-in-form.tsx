@@ -1,7 +1,7 @@
 "use client";
 import { GoogleIcon, HiredUpLogo } from "@/icons";
 import { Divider, Flex, Text, Box, Stack, Anchor } from "@mantine/core";
-import { AtSign, LockKeyhole, Brain } from "lucide-react";
+import { AtSign, LockKeyhole, Brain, Code } from "lucide-react";
 import {
   ControlledTextInput,
   ControlledPasswordInput,
@@ -74,7 +74,7 @@ export function SignInForm({
               boxShadow: "0 8px 32px rgba(189, 240, 82, 0.3)",
             }}
           >
-            <Brain size={28} color="#222222" />
+            <Code size={28} color="#222222" />
           </Box>
 
           <Text
