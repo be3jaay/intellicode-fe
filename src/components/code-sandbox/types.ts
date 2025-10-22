@@ -48,6 +48,23 @@ export interface CodeEditorProps {
   enableConsoleLog?: boolean;
 
   /**
+   * Callback when code execution state changes
+   */
+  onRunningStateChange?: (isRunning: boolean) => void;
+
+  /**
+   * Show/hide the submit button
+   * @default false
+   */
+  showSubmitButton?: boolean;
+
+  /**
+   * Callback function when submit button is clicked
+   * Receives the current code and language
+   */
+  onSubmit?: (code: string, language: string) => void | Promise<void>;
+
+  /**
    * Use full-page layout with background and padding
    * Set to false when embedding in other components
    * @default true

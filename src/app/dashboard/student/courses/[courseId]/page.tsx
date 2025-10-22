@@ -1,5 +1,6 @@
 "use client";
-import { useState, use } from "react";
+import { useState, use, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { CourseHeader } from "@/components/student/course-viewer/course-header";
 import {
   Box,
@@ -27,11 +28,20 @@ interface StudentCoursePageProps {
 
 export default function StudentCoursePage({ params }: StudentCoursePageProps) {
   const { courseId } = use(params);
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab") as "lessons" | "assignments" | "progress" | "grades" | null;
+  
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
     "lessons" | "assignments" | "progress" | "grades"
-  >("lessons");
+  >(tabParam || "lessons");
+
+  useEffect(() => {
+    if (tabParam && ["lessons", "assignments", "progress", "grades"].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   const { data, isLoading, isError, error } = useFetchStudentCourse(courseId);
 
@@ -80,7 +90,6 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
 
   return (
     <Box style={{ minHeight: "100vh", background: "#222222" }}>
-      {/* Course Header */}
       <CourseHeader
         course={courseData}
         onTabChange={setActiveTab}
@@ -89,7 +98,6 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
 
       <Container fluid py="xl">
         <Grid>
-          {/* Sidebar - only show for lessons tab */}
           {activeTab === "lessons" && (
             <Grid.Col span={{ base: 12, md: 4, lg: 3 }}>
               <Paper
@@ -111,7 +119,6 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
             </Grid.Col>
           )}
 
-          {/* Main Content */}
           <Grid.Col
             span={activeTab === "lessons" ? { base: 12, md: 8, lg: 9 } : 12}
           >

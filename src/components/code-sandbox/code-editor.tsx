@@ -29,6 +29,7 @@ export function CodeEditor({
   fullPage = true,
   useContainer = true,
   initialTheme = "vs-dark",
+  onRunningStateChange,
 }: CodeEditorProps) {
   const [language, setLanguage] = useState<string>(initialLanguage);
   const [theme, setTheme] = useState<string>(initialTheme);
@@ -58,6 +59,7 @@ export function CodeEditor({
 
   const handleRunCode = async () => {
     setIsRunning(true);
+    onRunningStateChange?.(true);
     setHasError(false);
     setOutput("Running code...");
     setExecutionInfo("");
@@ -100,6 +102,7 @@ export function CodeEditor({
       );
     } finally {
       setIsRunning(false);
+      onRunningStateChange?.(false);
     }
   };
 
@@ -113,10 +116,10 @@ export function CodeEditor({
     <>
       {/* Header */}
       {showHeader && (
-        <Group justify="space-between" mb="xl">
+        <Group justify="space-between" mb="xl" p="md">
           <Group gap="sm">
-            <Code size={32} color="#8bc232" />
-            <Title order={1} c={theme === "light" ? "#24292f" : "white"} size="2rem">
+            <Code size={32} color="#8bc232"  />
+            <Title order={1} c={theme === "light" ? "#24292f" : "white"} size="clamp(1.25rem, 2vw + 0.5rem, 2rem)">
               {title}
             </Title>
           </Group>
