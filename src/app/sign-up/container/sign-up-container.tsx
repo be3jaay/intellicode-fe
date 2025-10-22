@@ -52,9 +52,16 @@ export const SignUpContainer = () => {
     try {
       setIsLoading(true);
 
-      // Filter out student-specific fields for teachers
+      // Create payload without agreeToTerms and with proper field names
       const submitValues: SignUpFormValue = {
-        ...values,
+        role: values.role,
+        firstName: values.firstName,
+        middleName: values.middleName,
+        lastName: values.lastName,
+        email: values.email,
+        password: values.password,
+        confirmPassword: values.confirmPassword,
+        agreeToTerms: values.agreeToTerms,
         studentNumber:
           values.role === "student" ? values.studentNumber || "" : undefined,
         section: values.role === "student" ? values.section || "" : undefined,
@@ -63,19 +70,37 @@ export const SignUpContainer = () => {
       const result = await signUp(submitValues);
 
       if (result.status === 201 && result.redirect) {
+        // Student registration - auto login and redirect
         notifications.show({
           title: "Registration Successful!",
           message: `Welcome, ${
             result.user?.firstName || "User"
           }! Redirecting to dashboard...`,
-          color: "blue",
+          color: "green",
           icon: <CheckCircle size={18} />,
           autoClose: 3000,
         });
         reset();
 
         // Force a hard redirect to ensure clean state
-        window.location.href = result.redirect;
+        setTimeout(() => {
+          window.location.href = result.redirect!;
+        }, 1000);
+      } else if (result.status === 201 && !result.redirect) {
+        // Teacher/Instructor registration - needs approval
+        notifications.show({
+          title: "Registration Submitted!",
+          message: `Thank you for registering! Your account is pending approval. You'll receive an email once approved.`,
+          color: "blue",
+          icon: <CheckCircle size={18} />,
+          autoClose: false, // Don't auto-close
+        });
+        reset();
+
+        // Optionally redirect to sign-in page after a delay
+        setTimeout(() => {
+          window.location.href = "/sign-in";
+        }, 5000);
       } else if (result.status === 429) {
         notifications.show({
           title: "Too Many Attempts",

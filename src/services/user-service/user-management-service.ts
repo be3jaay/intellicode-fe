@@ -1,41 +1,50 @@
 import { apiClient } from "../api-client";
-import { 
-  UsersResponse, 
-  UserManagementQuery, 
-  SuspendUserRequest, 
-  ApproveInstructorRequest, 
+import {
+  UsersResponse,
+  UserManagementQuery,
+  SuspendUserRequest,
+  ApproveInstructorRequest,
   UserProfile,
   SignupRequest,
-  SignupResponse 
+  SignupResponse,
 } from "./user-management-types";
 
 export class UserManagementService {
-  public static async getUsers(query: UserManagementQuery = {}): Promise<UsersResponse> {
+  public static async getUsers(
+    query: UserManagementQuery = {}
+  ): Promise<UsersResponse> {
     try {
       const queryParams = new URLSearchParams();
-      
+
       // Always include page and limit with defaults
       const page = query.page || 1;
       const limit = query.limit || 10;
-      
-      queryParams.append('page', page.toString());
-      queryParams.append('limit', limit.toString());
-      
-      if (query.role) queryParams.append('role', query.role);
-      if (query.search) queryParams.append('search', query.search);
-      if (query.isSuspended !== undefined) queryParams.append('isSuspended', query.isSuspended.toString());
+
+      queryParams.append("page", page.toString());
+      queryParams.append("limit", limit.toString());
+
+      if (query.role) queryParams.append("role", query.role);
+      if (query.search) queryParams.append("search", query.search);
+      if (query.isSuspended !== undefined)
+        queryParams.append("isSuspended", query.isSuspended.toString());
 
       const queryString = queryParams.toString();
       const url = `/users?${queryString}`;
-      
-      const response = await apiClient.get<{ success: boolean; data: UsersResponse }>(url);
+
+      const response = await apiClient.get<{
+        success: boolean;
+        data: UsersResponse;
+      }>(url);
       return response.data;
     } catch (error) {
       throw error;
     }
   }
 
-  public static async suspendUser(userId: string, data: SuspendUserRequest): Promise<void> {
+  public static async suspendUser(
+    userId: string,
+    data: SuspendUserRequest
+  ): Promise<void> {
     try {
       await apiClient.put(`/users/${userId}/suspend`, data);
     } catch (error) {
@@ -43,7 +52,10 @@ export class UserManagementService {
     }
   }
 
-  public static async approveInstructor(userId: string, data: ApproveInstructorRequest): Promise<void> {
+  public static async approveInstructor(
+    userId: string,
+    data: ApproveInstructorRequest
+  ): Promise<void> {
     try {
       await apiClient.put(`/users/${userId}/approve`, data);
     } catch (error) {
@@ -53,7 +65,10 @@ export class UserManagementService {
 
   public static async getPendingApprovals(): Promise<UserProfile[]> {
     try {
-      const response = await apiClient.get<{ success: boolean; data: UserProfile[] }>('/users/pending-approval');
+      const response = await apiClient.get<{
+        success: boolean;
+        data: UserProfile[];
+      }>("/users/pending-approval");
       return response.data;
     } catch (error) {
       throw error;
@@ -62,7 +77,10 @@ export class UserManagementService {
 
   public static async getSuspendedUsers(): Promise<UserProfile[]> {
     try {
-      const response = await apiClient.get<{ success: boolean; data: UserProfile[] }>('/users/suspended');
+      const response = await apiClient.get<{
+        success: boolean;
+        data: UserProfile[];
+      }>("/users/suspended");
       return response.data;
     } catch (error) {
       throw error;
@@ -77,9 +95,38 @@ export class UserManagementService {
     }
   }
 
-  public static async registerUser(data: SignupRequest): Promise<SignupResponse> {
+  public static async registerUser(
+    data: SignupRequest
+  ): Promise<SignupResponse> {
     try {
-      return await apiClient.post<SignupResponse>('/auth/register', data);
+      return await apiClient.post<SignupResponse>("/auth/register", data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async getCurrentUser(): Promise<UserProfile> {
+    try {
+      const response = await apiClient.get<{
+        success: boolean;
+        data: UserProfile;
+      }>("/auth/me");
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public static async updateUserProfile(
+    userId: string,
+    data: FormData
+  ): Promise<UserProfile> {
+    try {
+      const response = await apiClient.put<{
+        success: boolean;
+        data: UserProfile;
+      }>(`/users/${userId}`, data);
+      return response.data;
     } catch (error) {
       throw error;
     }

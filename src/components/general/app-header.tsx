@@ -10,13 +10,15 @@ import {
   Flex,
   Box,
   UnstyledButton,
+  Avatar,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, User, Settings, LogOut } from "lucide-react";
 import { Button } from "../ui";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/providers/auth-context";
+import { useCurrentUser } from "@/hooks/query-hooks/user-management-query";
 
 const links = [
   { link: "/about", label: "Features" },
@@ -62,6 +64,9 @@ export function HeaderMenu() {
     // AuthProvider not available, treat as unauthenticated
     console.warn("AuthProvider not available in HeaderMenu");
   }
+
+  // Fetch current user profile for profile picture
+  const { data: userData } = useCurrentUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -176,9 +181,61 @@ export function HeaderMenu() {
                 >
                   Dashboard
                 </Button>
-                <Button variant="outline" color="red" onClick={logout}>
-                  Sign Out
-                </Button>
+                <Menu shadow="md" width={200}>
+                  <Menu.Target>
+                    <UnstyledButton
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "8px",
+                        padding: "4px 8px",
+                        borderRadius: "8px",
+                        transition: "background-color 0.2s",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "rgba(0, 0, 0, 0.05)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                    >
+                      <Avatar
+                        src={userData?.profile_picture || undefined}
+                        alt={user?.email || "User"}
+                        size={32}
+                        radius="xl"
+                      />
+                      <ChevronDown size={16} />
+                    </UnstyledButton>
+                  </Menu.Target>
+                  <Menu.Dropdown>
+                    <Menu.Label>
+                      {userData?.first_name || user?.email || "User"}
+                    </Menu.Label>
+                    <Menu.Divider />
+                    <Menu.Item
+                      leftSection={<User size={14} />}
+                      onClick={() => router.push("/dashboard")}
+                    >
+                      Profile
+                    </Menu.Item>
+                    <Menu.Item
+                      leftSection={<Settings size={14} />}
+                      onClick={() => router.push("/dashboard")}
+                    >
+                      Settings
+                    </Menu.Item>
+                    <Menu.Divider />
+                    <Menu.Item
+                      color="red"
+                      leftSection={<LogOut size={14} />}
+                      onClick={logout}
+                    >
+                      Sign Out
+                    </Menu.Item>
+                  </Menu.Dropdown>
+                </Menu>
               </>
             ) : (
               <>
