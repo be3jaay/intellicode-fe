@@ -11,6 +11,7 @@ interface YourWorkCardProps {
   onMarkAsDone: () => void;
   onUnmark: () => void;
   onRemoveFile: (index: number) => void;
+  loading?: boolean;
 }
 
 export function YourWorkCard({
@@ -21,6 +22,7 @@ export function YourWorkCard({
   onMarkAsDone,
   onUnmark,
   onRemoveFile,
+  loading = false,
 }: YourWorkCardProps) {
   return (
     <Stack gap="md">
@@ -42,6 +44,7 @@ export function YourWorkCard({
           leftSection={<IconUpload size={18} />}
           onClick={onUploadClick}
           style={styles.uploadButton}
+          disabled={loading}
         >
           Add or Create
         </Button>
@@ -73,6 +76,8 @@ export function YourWorkCard({
           leftSection={<IconCheck size={18} />}
           onClick={onMarkAsDone}
           style={styles.markAsDoneButton}
+          loading={loading}
+          disabled={loading}
         >
           Mark as Done
         </Button>
@@ -112,7 +117,8 @@ export function YourWorkCard({
             </Stack>
           </Box>
           
-          <Button
+          {/* Hide Unmark button since backend doesn't support unsubmit */}
+          {/* <Button
             fullWidth
             variant="outline"
             size="sm"
@@ -130,7 +136,7 @@ export function YourWorkCard({
             }}
           >
             Unmark as Done
-          </Button>
+          </Button> */}
         </Stack>
       )}
     </Stack>

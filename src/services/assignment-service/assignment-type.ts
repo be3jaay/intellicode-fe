@@ -204,3 +204,11 @@ export type GradeSubmissionData = {
   feedback?: string;
   mark_as_graded: boolean;
 };
+// Import submission types
+export type { 
+    Submission, 
+    SubmissionResponse, 
+    SubmissionsListResponse,
+    SubmitAssignmentJsonPayload,
+    Answer,
+} from "@/types/assignment";

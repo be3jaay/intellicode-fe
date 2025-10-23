@@ -8,8 +8,11 @@ import {
   SubmitAssignmentData,
   SubmitAssignmentResponse,
   AssignmentScoresResponse,
-  SubmissionsForGradingResponse,
   GradeSubmissionData,
+  SubmissionResponse,
+  SubmissionsForGradingResponse,
+  SubmissionsListResponse,
+  SubmitAssignmentJsonPayload,
 } from "./assignment-type";
 
 export class AssignmentService {
@@ -184,6 +187,84 @@ export class AssignmentService {
       );
     } catch (error) {
       console.error(error);
+      throw error;
+    }
+  }
+  /**
+   * Submit assignment with JSON payload (for quiz/code assignments)
+   * @param assignmentId - The assignment ID
+   * @param payload - JSON payload with answers
+   * @returns Submission response
+   */
+  public static async submitAssignmentJson(
+    assignmentId: string,
+    payload: SubmitAssignmentJsonPayload
+  ): Promise<SubmissionResponse> {
+    try {
+      return await apiClient.post(
+        `/course/assignments/${assignmentId}/submit`,
+        payload
+      );
+    } catch (error) {
+      console.error("Error submitting assignment (JSON):", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Submit assignment with file uploads (for file_upload assignments)
+   * Maximum 10 files allowed per submission
+   * @param assignmentId - The assignment ID
+   * @param files - Array of files to upload
+   * @returns Submission response
+   * @throws Error if more than 10 files provided
+   */
+  public static async submitAssignmentWithFiles(
+    assignmentId: string,
+    files: File[]
+  ): Promise<SubmissionResponse> {
+    try {
+      // Enforce max 10 files
+      if (files.length > 10) {
+        throw new Error("Maximum 10 files allowed per submission");
+      }
+
+      if (files.length === 0) {
+        throw new Error("At least one file is required");
+      }
+
+      const formData = new FormData();
+
+      // Append each file with the field name "files"
+      files.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      // Let the browser set Content-Type with boundary for multipart/form-data
+      return await apiClient.post(
+        `/course/assignments/${assignmentId}/submit-with-files`,
+        formData
+      );
+    } catch (error) {
+      console.error("Error submitting assignment (files):", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get student submissions for an assignment
+   * @param assignmentId - The assignment ID
+   * @returns List of submissions
+   */
+  public static async getStudentSubmissions(
+    assignmentId: string
+  ): Promise<SubmissionsListResponse> {
+    try {
+      return await apiClient.get(
+        `/course/assignments/${assignmentId}/submissions`
+      );
+    } catch (error) {
+      console.error("Error fetching submissions:", error);
       throw error;
     }
   }

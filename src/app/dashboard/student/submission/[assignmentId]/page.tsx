@@ -1,20 +1,18 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Container, Paper, Text, Stack, Box, Grid, Button, Divider, Skeleton, Group } from "@mantine/core";
-import { IconArrowLeft, IconCheck, IconAlertTriangle } from "@tabler/icons-react";
-import { FileUpload } from "@/components/ui/file-upload";
-import { notifications } from "@mantine/notifications";
+import { IconArrowLeft } from "@tabler/icons-react";
 import { useFetchAssignment } from "@/hooks/query-hooks/assignment-query";
 import {
   AssignmentHeader,
   StatusAlert,
-  YourWorkCard,
+  YourWorkContainer,
   ErrorState,
   AttachmentPreviewList,
 } from "./components";
-import { formatDate, getAssignmentStatus, getInstructorName } from "./utils";
+import { formatDate, getInstructorName } from "./utils";
 import { styles, colors } from "./styles";
 
 export default function DashboardSubmissionPage() {
@@ -24,14 +22,8 @@ export default function DashboardSubmissionPage() {
   const assignmentId = params.assignmentId as string;
   const courseId = searchParams.get("courseId");
 
-  const { data: assignmentResponse, isLoading, isError, error } = useFetchAssignment(assignmentId);
+  const { data: assignmentResponse, isLoading, isError, error, refetch } = useFetchAssignment(assignmentId);
   const assignment = assignmentResponse?.data;
-
-  // Local UI state
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [uploadModalOpened, setUploadModalOpened] = useState(false);
-  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
-  const [isMarkedAsDone, setIsMarkedAsDone] = useState(false);
 
   const dueDate = useMemo(
     () => (assignment?.dueDate ? new Date(assignment.dueDate) : null),
@@ -43,70 +35,24 @@ export default function DashboardSubmissionPage() {
     [assignment?.created_at]
   );
 
-  const status = useMemo(
-    () => getAssignmentStatus(isSubmitted, isMarkedAsDone, assignment?.already_submitted, dueDate),
-    [isSubmitted, isMarkedAsDone, assignment?.already_submitted, dueDate]
-  );
+  const isDueSoon = useMemo(() => {
+    if (!dueDate) return false;
+    const now = new Date();
+    const diffTime = dueDate.getTime() - now.getTime();
+    const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    return diffDays > 0 && diffDays <= 3;
+  }, [dueDate]);
 
-  const isOverdue = status.color === "red";
-  const isDueSoon = status.color === "yellow";
+  const isOverdue = useMemo(() => {
+    if (!dueDate) return false;
+    return new Date() > dueDate;
+  }, [dueDate]);
+
   const instructorName = getInstructorName(assignment?.instructor);
 
-  const handleFileUpload = (files: File[]) => {
-    setUploadedFiles((prev) => [...prev, ...files]);
-    setUploadModalOpened(false);
-
-    notifications.show({
-      title: "Files Added! 📎",
-      message: `${files.length} file(s) added to your submission`,
-      color: "green",
-      icon: <IconCheck size={18} />,
-      autoClose: 3000,
-    });
-  };
-
-  const handleRemoveFile = (index: number) => {
-    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
-    notifications.show({
-      title: "File Removed",
-      message: "File removed from your submission",
-      color: "orange",
-      autoClose: 2000,
-    });
-  };
-
-  const handleMarkAsDone = () => {
-    if (uploadedFiles.length === 0) {
-      notifications.show({
-        title: "No Files Uploaded",
-        message: "Please upload at least one file before marking as done",
-        color: "red",
-        icon: <IconAlertTriangle size={18} />,
-      });
-      return;
-    }
-
-    setIsMarkedAsDone(true);
-    setIsSubmitted(true);
-
-    notifications.show({
-      title: "Marked as Done! 🎉",
-      message: "Your submission has been recorded",
-      color: "green",
-      autoClose: 3000,
-    });
-  };
-
-  const handleUnmarkAsDone = () => {
-    setIsMarkedAsDone(false);
-    setIsSubmitted(false);
-
-    notifications.show({
-      title: "Unmarked",
-      message: "You can continue editing your submission",
-      color: "blue",
-      autoClose: 2000,
-    });
+  const handleSubmissionSuccess = () => {
+    // Refetch assignment data to update already_submitted status
+    refetch();
   };
 
   if (isLoading) {
@@ -204,30 +150,16 @@ export default function DashboardSubmissionPage() {
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Box style={styles.stickyContainer}>
               <Paper p="lg" radius="lg" style={styles.paper}>
-                <YourWorkCard
-                  status={status}
-                  isSubmitted={isSubmitted}
-                  uploadedFiles={uploadedFiles}
-                  onUploadClick={() => setUploadModalOpened(true)}
-                  onMarkAsDone={handleMarkAsDone}
-                  onUnmark={handleUnmarkAsDone}
-                  onRemoveFile={handleRemoveFile}
+                <YourWorkContainer
+                  assignmentId={assignmentId}
+                  assignmentType={assignment?.assignmentSubtype}
+                  onSubmissionSuccess={handleSubmissionSuccess}
                 />
               </Paper>
             </Box>
           </Grid.Col>
         </Grid>
       </Container>
-
-      <FileUpload
-        opened={uploadModalOpened}
-        onClose={() => setUploadModalOpened(false)}
-        onUpload={handleFileUpload}
-        title="Upload Assignment Files"
-        maxFiles={10}
-        maxSizeMB={50}
-        multiple={true}
-      />
     </Box>
   );
 }
