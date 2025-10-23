@@ -51,7 +51,7 @@ export function YourWorkCard({
       {uploadedFiles.length > 0 && (
         <Box>
           <Text size="sm" c={colors.textDimmed} mb="xs" fw={500}>
-            Uploaded Files ({uploadedFiles.length})
+            Uploaded File
           </Text>
           <FilePreviewList
             files={uploadedFiles}

@@ -163,6 +163,22 @@ export function FileUpload({
         color: "orange",
         icon: <IconX size={18} />,
       });
+      // Only keep the first file when multiple is false
+      const [first] = fileArray;
+      if (first && validateFile(first)) {
+        const fileWithPreview = await createFilePreview(first);
+        setFiles([fileWithPreview]);
+      }
+      return;
+    }
+
+    // When multiple is false, replace existing file
+    if (!multiple && files.length > 0) {
+      const [first] = fileArray;
+      if (first && validateFile(first)) {
+        const fileWithPreview = await createFilePreview(first);
+        setFiles([fileWithPreview]);
+      }
       return;
     }
 
@@ -245,8 +261,8 @@ export function FileUpload({
   const handleUpload = () => {
     if (files.length === 0) {
       notifications.show({
-        title: "No files selected",
-        message: "Please select at least one file to upload",
+        title: multiple ? "No files selected" : "No file selected",
+        message: multiple ? "Please select at least one file to upload" : "Please select a file to upload",
         color: "orange",
         icon: <IconX size={18} />,
       });
@@ -373,11 +389,11 @@ export function FileUpload({
             </Button>
 
             <Text size="sm" style={{ color: "#999999", marginBottom: 8 }}>
-              or drag files here
+              or drag {multiple ? "files" : "a file"} here
             </Text>
 
             <Text size="xs" style={{ color: "#666666" }}>
-              Maximum {maxFiles} files • Up to {maxSizeMB}MB each
+              {multiple ? `Maximum ${maxFiles} files • ` : ""}Up to {maxSizeMB}MB{multiple ? " each" : ""}
             </Text>
           </Paper>
         ) : (
@@ -394,7 +410,7 @@ export function FileUpload({
               }}
             >
               <Text size="sm" style={{ color: "#E9EEEA", marginBottom: 12 }}>
-                Selected Files ({files.length}/{maxFiles})
+                {multiple ? `Selected Files (${files.length}/${maxFiles})` : "Selected File"}
               </Text>
 
               <Stack gap="xs">

@@ -53,14 +53,26 @@ export default function DashboardSubmissionPage() {
   const instructorName = getInstructorName(assignment?.instructor);
 
   const handleFileUpload = (files: File[]) => {
-    setUploadedFiles((prev) => [...prev, ...files]);
+    const [first] = files;
+    if (!first) return;
+
+    if (files.length > 1) {
+      notifications.show({
+        title: "Only one file allowed",
+        message: `Using only "${first.name}".`,
+        color: "orange",
+        autoClose: 2500,
+      });
+    }
+
+    // Replace any previously selected file
+    setUploadedFiles([first]);
     setUploadModalOpened(false);
 
     notifications.show({
-      title: "Files Added! 📎",
-      message: `${files.length} file(s) added to your submission`,
+      title: "File added",
+      message: `"${first.name}" added to your submission`,
       color: "green",
-      icon: <IconCheck size={18} />,
       autoClose: 3000,
     });
   };
@@ -76,10 +88,10 @@ export default function DashboardSubmissionPage() {
   };
 
   const handleMarkAsDone = () => {
-    if (uploadedFiles.length === 0) {
+    if (uploadedFiles.length !== 1) {
       notifications.show({
-        title: "No Files Uploaded",
-        message: "Please upload at least one file before marking as done",
+        title: "No file uploaded",
+        message: "Please upload one file before marking as done",
         color: "red",
         icon: <IconAlertTriangle size={18} />,
       });
@@ -223,10 +235,10 @@ export default function DashboardSubmissionPage() {
         opened={uploadModalOpened}
         onClose={() => setUploadModalOpened(false)}
         onUpload={handleFileUpload}
-        title="Upload Assignment Files"
-        maxFiles={10}
+        title="Upload Assignment File"
+        maxFiles={1}
         maxSizeMB={50}
-        multiple={true}
+        multiple={false}
       />
     </Box>
   );
