@@ -1,6 +1,6 @@
 
 import { apiClient } from "../api-client";
-import { CreateQuizForm, AssignmentResponse, AssignmentQueryParams, CreateAssignmentData, Assignment, SubmitAssignmentData, SubmitAssignmentResponse, AssignmentScoresResponse } from "./assignment-type";
+import { CreateQuizForm, AssignmentResponse, AssignmentQueryParams, CreateAssignmentData, Assignment, SubmitAssignmentData, SubmitAssignmentResponse, AssignmentScoresResponse, SubmissionsForGradingResponse, GradeSubmissionData } from "./assignment-type";
 
 export class AssignmentService {
     public static async createAssignment(value: CreateQuizForm, moduleId: string, file?: File){
@@ -108,6 +108,24 @@ export class AssignmentService {
     public static async getAssignmentScores(assignmentId: string): Promise<AssignmentScoresResponse> {
         try {
             return await apiClient.get(`/course/assignments/${assignmentId}/scores`)
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+
+    public static async getSubmissionsForGrading(assignmentId: string): Promise<SubmissionsForGradingResponse> {
+        try {
+            return await apiClient.get(`/course/assignments/${assignmentId}/submissions-for-grading`)
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+
+    public static async gradeSubmission(submissionId: string, data: GradeSubmissionData): Promise<any> {
+        try {
+            return await apiClient.patch(`/course/submissions/${submissionId}/grade`, data)
         } catch (error) {
             console.error(error)
             throw error

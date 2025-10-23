@@ -148,3 +148,57 @@ export type AssignmentQueryParams = {
     is_published?: boolean;
     assignmentType?: "quiz_form" | "code_sandbox" | "file_upload";
 }
+
+export type SubmissionFile = {
+    id: string;
+    filename: string;
+    original_name: string;
+    file_type: string;
+    category: string;
+    mime_type: string;
+    size: number;
+    public_url: string;
+    storage_path: string;
+    course_id: string;
+    module_id: string;
+    lesson_id: string | null;
+    assignment_id: string;
+    submission_id: string;
+    description: string | null;
+    uploaded_at: string;
+    updated_at: string;
+}
+
+export type SubmissionStudent = {
+    id: string;
+    first_name: string;
+    last_name: string;
+    email: string;
+    student_number: string;
+    profile_picture: string | null;
+}
+
+export type SubmissionForGrading = {
+    id: string;
+    assignment_id: string;
+    student_id: string;
+    score: number;
+    max_score: number;
+    status: "submitted" | "graded" | "pending";
+    submitted_at: string;
+    graded_at: string | null;
+    files: SubmissionFile[];
+    student: SubmissionStudent;
+}
+
+export type SubmissionsForGradingResponse = {
+    success: boolean;
+    statusCode: number;
+    data: SubmissionForGrading[];
+    timestamp: string;
+}
+
+export type GradeSubmissionData = {
+    score: number;
+    feedback?: string;
+}

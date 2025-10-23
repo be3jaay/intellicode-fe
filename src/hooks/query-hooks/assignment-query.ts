@@ -1,5 +1,5 @@
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
-import { CreateQuizForm, AssignmentQueryParams, SubmitAssignmentData, AssignmentScoresResponse } from "@/services/assignment-service/assignment-type";
+import { CreateQuizForm, AssignmentQueryParams, SubmitAssignmentData, AssignmentScoresResponse, SubmissionsForGradingResponse, GradeSubmissionData } from "@/services/assignment-service/assignment-type";
 import { ErrorResponse } from "@/services/course-service/course-type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -65,4 +65,33 @@ export function useGetAssignmentScores(assignmentId: string) {
         enabled: !!assignmentId,
         staleTime: 60 * 1000,
     })
+}
+
+export function useGetSubmissionsForGrading(assignmentId: string) {
+    return useQuery<SubmissionsForGradingResponse>({
+        queryKey: ['submissions-for-grading', assignmentId],
+        queryFn: () => AssignmentService.getSubmissionsForGrading(assignmentId),
+        enabled: !!assignmentId,
+        staleTime: 30 * 1000, // 30 seconds
+    })
+}
+
+export function useGradeSubmission() {
+    const queryClient = useQueryClient();
+    const { mutateAsync, isPending, isError } = useMutation({
+        mutationFn: ({ submissionId, data }: { submissionId: string, data: GradeSubmissionData }) => 
+            AssignmentService.gradeSubmission(submissionId, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['submissions-for-grading'] });
+            queryClient.invalidateQueries({ queryKey: ['assignment-scores'] });
+        },
+        onError: (error: ErrorResponse) => {
+            console.error(error.message);
+        },
+    })
+    return {
+        gradeSubmission: mutateAsync,
+        isGrading: isPending,
+        isError: isError,
+    }
 }
