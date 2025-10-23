@@ -36,6 +36,8 @@ export function CodeEditor({
   const [code, setCode] = useState<string>(
     initialCode || defaultCode[initialLanguage as keyof typeof defaultCode]
   );
+
+  console.log("code:", code);
   const [output, setOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -118,8 +120,12 @@ export function CodeEditor({
       {showHeader && (
         <Group justify="space-between" mb="xl" p="md">
           <Group gap="sm">
-            <Code size={32} color="#8bc232"  />
-            <Title order={1} c={theme === "light" ? "#24292f" : "white"} size="clamp(1.25rem, 2vw + 0.5rem, 2rem)">
+            <Code size={32} color="#8bc232" />
+            <Title
+              order={1}
+              c={theme === "light" ? "#24292f" : "white"}
+              size="clamp(1.25rem, 2vw + 0.5rem, 2rem)"
+            >
               {title}
             </Title>
           </Group>
@@ -135,7 +141,10 @@ export function CodeEditor({
               styles={{
                 input: {
                   background: theme === "light" ? "#ffffff" : "#161b22",
-                  border: theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
+                  border:
+                    theme === "light"
+                      ? "1px solid #d0d7de"
+                      : "1px solid #30363d",
                   color: theme === "light" ? "#24292f" : "white",
                 },
               }}
@@ -175,7 +184,8 @@ export function CodeEditor({
             styles={{
               input: {
                 background: theme === "light" ? "#ffffff" : "#161b22",
-                border: theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
+                border:
+                  theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
                 color: theme === "light" ? "#24292f" : "white",
               },
             }}
@@ -219,11 +229,16 @@ export function CodeEditor({
           style={{
             background: theme === "light" ? "#ffffff" : "#0d1117",
             padding: "0.75rem 1rem",
-            borderBottom: theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
+            borderBottom:
+              theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
           }}
         >
           <Group justify="space-between" align="center">
-            <Text size="sm" c={theme === "light" ? "#57606a" : "dimmed"} fw={500}>
+            <Text
+              size="sm"
+              c={theme === "light" ? "#57606a" : "dimmed"}
+              fw={500}
+            >
               Editor -{" "}
               {languageOptions.find((l) => l.value === language)?.label}
             </Text>
@@ -234,7 +249,10 @@ export function CodeEditor({
               styles={{
                 input: {
                   background: theme === "light" ? "#ffffff" : "#161b22",
-                  border: theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
+                  border:
+                    theme === "light"
+                      ? "1px solid #d0d7de"
+                      : "1px solid #30363d",
                   color: theme === "light" ? "#24292f" : "white",
                 },
               }}
@@ -258,7 +276,8 @@ export function CodeEditor({
               wordWrap: "on",
               formatOnPaste: true,
               formatOnType: true,
-              fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
+              fontFamily:
+                "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
               fontLigatures: true,
               cursorBlinking: "smooth",
               cursorSmoothCaretAnimation: "on",
@@ -276,31 +295,48 @@ export function CodeEditor({
         radius="md"
         style={{
           background: theme === "light" ? "#f6f8fa" : "#161b22",
-          border: hasError 
-            ? theme === "light" ? "1px solid #d1242f" : "1px solid #f85149"
-            : theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
+          border: hasError
+            ? theme === "light"
+              ? "1px solid #d1242f"
+              : "1px solid #f85149"
+            : theme === "light"
+            ? "1px solid #d0d7de"
+            : "1px solid #30363d",
           overflow: "hidden",
           minHeight: "200px",
         }}
       >
         <Box
           style={{
-            background: hasError 
-              ? theme === "light" ? "#fff5f5" : "#1a0e0e"
-              : theme === "light" ? "#ffffff" : "#0d1117",
+            background: hasError
+              ? theme === "light"
+                ? "#fff5f5"
+                : "#1a0e0e"
+              : theme === "light"
+              ? "#ffffff"
+              : "#0d1117",
             padding: "0.75rem 1rem",
-            borderBottom: hasError 
-              ? theme === "light" ? "1px solid #d1242f" : "1px solid #f85149"
-              : theme === "light" ? "1px solid #d0d7de" : "1px solid #30363d",
+            borderBottom: hasError
+              ? theme === "light"
+                ? "1px solid #d1242f"
+                : "1px solid #f85149"
+              : theme === "light"
+              ? "1px solid #d0d7de"
+              : "1px solid #30363d",
           }}
         >
           <Group justify="space-between">
-            <Text 
-              size="sm" 
-              c={hasError 
-                ? theme === "light" ? "#d1242f" : "#f85149"
-                : theme === "light" ? "#57606a" : "dimmed"
-              } 
+            <Text
+              size="sm"
+              c={
+                hasError
+                  ? theme === "light"
+                    ? "#d1242f"
+                    : "#f85149"
+                  : theme === "light"
+                  ? "#57606a"
+                  : "dimmed"
+              }
               fw={500}
             >
               {hasError ? "Error Output" : "Program Output"}
@@ -318,19 +354,28 @@ export function CodeEditor({
         <Box
           style={{
             padding: "1rem",
-            fontFamily: "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
+            fontFamily:
+              "'Fira Code', 'Consolas', 'Monaco', 'Courier New', monospace",
             fontSize: "14px",
             whiteSpace: "pre-wrap",
             wordBreak: "break-word",
             minHeight: "150px",
             maxHeight: "400px",
             overflowY: "auto",
-            background: hasError 
-              ? theme === "light" ? "#fff8f8" : "#0d0d0d"
-              : theme === "light" ? "#ffffff" : "#0d1117",
-            color: hasError 
-              ? theme === "light" ? "#d1242f" : "#f85149"
-              : theme === "light" ? "#24292f" : "#c9d1d9",
+            background: hasError
+              ? theme === "light"
+                ? "#fff8f8"
+                : "#0d0d0d"
+              : theme === "light"
+              ? "#ffffff"
+              : "#0d1117",
+            color: hasError
+              ? theme === "light"
+                ? "#d1242f"
+                : "#f85149"
+              : theme === "light"
+              ? "#24292f"
+              : "#c9d1d9",
             lineHeight: "1.6",
           }}
         >
