@@ -34,6 +34,7 @@ export default function DashboardSandboxPage() {
 
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const [code, setCode] = useState<string>(defaultCode.javascript);
   const [language, setLanguage] = useState<string>("javascript");
 
@@ -89,6 +90,9 @@ export default function DashboardSandboxPage() {
         message: "Code submitted successfully!",
         color: "green",
       });
+      
+      // Mark as submitted to gray out the button
+      setIsSubmitted(true);
     } catch (error: any) {
       console.error("Error submitting code assignment:", error);
 
@@ -269,19 +273,29 @@ export default function DashboardSandboxPage() {
                       leftSection={<IconSend size={18} />}
                       onClick={handleSubmit}
                       loading={isSubmitting}
-                      disabled={isSubmitting || isRunning}
+                      disabled={isSubmitting || isRunning || isSubmitted}
                       style={{
                         background:
-                          isSubmitting || isRunning ? "#2a2a2a" : "#BDF052",
+                          isSubmitting || isRunning || isSubmitted
+                            ? "#2a2a2a"
+                            : "#BDF052",
                         color:
-                          isSubmitting || isRunning ? "#666666" : "#000000",
+                          isSubmitting || isRunning || isSubmitted
+                            ? "#666666"
+                            : "#000000",
                         "&:hover": {
                           background:
-                            isSubmitting || isRunning ? "#2a2a2a" : "#a5d645",
+                            isSubmitting || isRunning || isSubmitted
+                              ? "#2a2a2a"
+                              : "#a5d645",
                         },
                       }}
                     >
-                      {isSubmitting ? "Submitting..." : "Submit Assignment"}
+                      {isSubmitting
+                        ? "Submitting..."
+                        : isSubmitted
+                        ? "Submitted ✓"
+                        : "Submit Assignment"}
                     </Button>
                   </Box>
                 </Stack>
