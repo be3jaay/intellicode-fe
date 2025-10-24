@@ -24,18 +24,21 @@ import {
   Code2,
   Trophy,
   AlertCircle,
-  Sparkles,
 } from "lucide-react";
 import { SubmissionForGrading } from "@/services/assignment-service/assignment-type";
 import { format } from "date-fns";
 import { useGradeSubmission } from "@/hooks/query-hooks/assignment-query";
 import { notifications } from "@mantine/notifications";
 import { MonacoEditor } from "@/components/code-sandbox/monaco-editor";
+import { useAIAnalysis } from "@/hooks/use-ai-analysis";
+import { AIAnalysisModal } from "./ai-analysis-modal";
+import { AICheckButton } from "./ai-check-button";
 
 interface CodeReviewInterfaceProps {
   submission: SubmissionForGrading;
   onClose?: () => void;
 }
+
 
 export function CodeReviewInterface({
   submission,
@@ -46,9 +49,25 @@ export function CodeReviewInterface({
   const [code, setCode] = useState<string>(submission.submitted_code || "");
   const [output, setOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [showAIModal, setShowAIModal] = useState(false);
 
   const { gradeSubmission, isGrading } = useGradeSubmission();
+
+  // AI Analysis hook
+  const {
+    aiStatus,
+    aiResult,
+    runAnalysis,
+    isAnalyzing,
+    hasAnalysis,
+  } = useAIAnalysis({
+    submissionId: submission.id,
+    code,
+    language: submission.code_language,
+    maxScore: submission.max_score,
+    onScoreChange: setScore,
+    onFeedbackChange: setFeedback,
+  });
 
   useEffect(() => {
     setScore(submission.score);
@@ -115,16 +134,25 @@ export function CodeReviewInterface({
     }
   };
 
-  const handleAIAnalysis = () => {
-    setIsAnalyzing(true);
-    // TODO: Integrate AI analysis API
-    notifications.show({
-      title: "AI Analysis",
-      message: "AI code analysis feature coming soon!",
-      color: "blue",
-      autoClose: 3000,
-    });
-    setTimeout(() => setIsAnalyzing(false), 1000);
+
+  const handleAICheck = async () => {
+    if (hasAnalysis) {
+      setShowAIModal(true);
+      return;
+    }
+
+    try {
+      await runAnalysis();
+      setShowAIModal(true);
+    } catch (error) {
+    }
+  };
+
+  const handleReRunAnalysis = async () => {
+    try {
+      await runAnalysis();
+    } catch (error) {
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -283,19 +311,11 @@ export function CodeReviewInterface({
                     )}
                   </Group>
                   <Group gap="xs">
-                    <Button
-                      size="sm"
-                      leftSection={<Sparkles size={14} />}
-                      onClick={handleAIAnalysis}
-                      loading={isAnalyzing}
-                      style={{
-                        background: "rgba(168, 85, 247, 0.2)",
-                        color: "#a855f7",
-                        border: "1px solid rgba(168, 85, 247, 0.3)",
-                      }}
-                    >
-                      AI Check
-                    </Button>
+                    <AICheckButton
+                      aiStatus={aiStatus}
+                      hasAnalysis={hasAnalysis}
+                      onClick={handleAICheck}
+                    />
                     <Button
                       size="sm"
                       leftSection={<Play size={14} />}
@@ -553,6 +573,22 @@ export function CodeReviewInterface({
           </Stack>
         </Grid.Col>
       </Grid>
+
+      {/* AI Analysis Modal */}
+      <AIAnalysisModal
+        opened={showAIModal}
+        onClose={() => setShowAIModal(false)}
+        aiResult={aiResult}
+        aiStatus={aiStatus}
+        assignmentTitle={submission.assignment_title}
+        codeLanguage={submission.code_language}
+        score={score}
+        maxScore={submission.max_score}
+        feedback={feedback}
+        onScoreChange={setScore}
+        onFeedbackChange={setFeedback}
+        onReRun={handleReRunAnalysis}
+      />
     </Stack>
   );
 }
