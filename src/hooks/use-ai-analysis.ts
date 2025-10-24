@@ -10,6 +10,7 @@ import {
 interface UseAIAnalysisProps {
   submissionId: string;
   code: string;
+  description?: string;
   language?: string;
   maxScore: number;
   onScoreChange?: (score: number) => void;
@@ -28,6 +29,7 @@ interface UseAIAnalysisReturn {
 export function useAIAnalysis({
   submissionId,
   code,
+  description,
   language,
   maxScore,
   onScoreChange,
@@ -36,7 +38,6 @@ export function useAIAnalysis({
   const [aiStatus, setAiStatus] = useState<AIStatus>("idle");
   const [aiResult, setAiResult] = useState<AIAnalysisResult | null>(null);
 
-  // Load saved analysis on mount or when submission changes
   useEffect(() => {
     const savedAnalysis = AIAnalysisStorage.load(submissionId);
     if (savedAnalysis) {
@@ -48,16 +49,12 @@ export function useAIAnalysis({
     }
   }, [submissionId]);
 
-  // Save analysis result when it changes
   useEffect(() => {
     if (aiResult && submissionId) {
       AIAnalysisStorage.save(submissionId, aiResult);
     }
   }, [aiResult, submissionId]);
 
-  /**
-   * Run AI analysis
-   */
   const runAnalysis = useCallback(async () => {
     try {
       setAiStatus("loading");
@@ -65,11 +62,11 @@ export function useAIAnalysis({
       const result = await AICodeAnalysisService.analyze({
         submissionId,
         code,
+        description,
         language,
         maxScore,
       });
 
-      // Clamp score to valid range
       const clampedScore = AICodeAnalysisService.clampScore(
         result.score,
         0,
@@ -84,7 +81,6 @@ export function useAIAnalysis({
       setAiResult(finalResult);
       setAiStatus("ready");
 
-      // Notify parent components of changes
       if (onScoreChange) {
         onScoreChange(clampedScore);
       }
@@ -99,20 +95,17 @@ export function useAIAnalysis({
         autoClose: 3000,
       });
     } catch (error: any) {
-      setAiStatus("idle");
+      setAiStatus("error");
       notifications.show({
         title: "Analysis Failed",
         message: error.message || "Failed to analyze submission",
         color: "red",
-        autoClose: 3000,
+        autoClose: 5000,
       });
       throw error;
     }
-  }, [submissionId, code, language, maxScore, onScoreChange, onFeedbackChange]);
+  }, [submissionId, code, description, language, maxScore, onScoreChange, onFeedbackChange]);
 
-  /**
-   * Clear analysis result
-   */
   const clearAnalysis = useCallback(() => {
     AIAnalysisStorage.clear(submissionId);
     setAiResult(null);

@@ -63,6 +63,7 @@ export function CodeReviewInterface({
   } = useAIAnalysis({
     submissionId: submission.id,
     code,
+    description: submission.assignment_description,
     language: submission.code_language,
     maxScore: submission.max_score,
     onScoreChange: setScore,
