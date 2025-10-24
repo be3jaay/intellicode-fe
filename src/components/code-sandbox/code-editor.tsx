@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Box,
   Container,
@@ -30,14 +30,42 @@ export function CodeEditor({
   useContainer = true,
   initialTheme = "vs-dark",
   onRunningStateChange,
+  value,
+  onChange,
+  language: controlledLanguage,
+  onLanguageChange,
 }: CodeEditorProps) {
-  const [language, setLanguage] = useState<string>(initialLanguage);
+  const isControlledCode = value !== undefined;
+  const isControlledLanguage = controlledLanguage !== undefined;
+
+  const [internalLanguage, setInternalLanguage] = useState<string>(
+    controlledLanguage || initialLanguage
+  );
   const [theme, setTheme] = useState<string>(initialTheme);
-  const [code, setCode] = useState<string>(
-    initialCode || defaultCode[initialLanguage as keyof typeof defaultCode]
+  const [internalCode, setInternalCode] = useState<string>(
+    value ||
+      initialCode ||
+      defaultCode[initialLanguage as keyof typeof defaultCode]
   );
 
-  console.log("code:", code);
+  const currentLanguage = isControlledLanguage
+    ? controlledLanguage
+    : internalLanguage;
+  const currentCode = isControlledCode ? value : internalCode;
+
+  useEffect(() => {
+    if (isControlledCode) {
+      setInternalCode(value);
+    }
+  }, [isControlledCode, value]);
+
+  useEffect(() => {
+    if (isControlledLanguage) {
+      setInternalLanguage(controlledLanguage);
+    }
+  }, [isControlledLanguage, controlledLanguage]);
+
+  console.log("code:", currentCode);
   const [output, setOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -51,12 +79,33 @@ export function CodeEditor({
 
   const handleLanguageChange = (value: string | null) => {
     if (value) {
-      setLanguage(value);
-      setCode(defaultCode[value as keyof typeof defaultCode] || "");
+      const newLanguage = value;
+      const newCode = defaultCode[value as keyof typeof defaultCode] || "";
+
+      if (!isControlledLanguage) {
+        setInternalLanguage(newLanguage);
+      }
+
+      onLanguageChange?.(newLanguage);
+
+      if (!isControlledCode) {
+        setInternalCode(newCode);
+      }
+
+      onChange?.(newCode);
+
       setOutput("");
       setHasError(false);
       setExecutionInfo("");
     }
+  };
+
+  const handleCodeChange = (newCode: string | undefined) => {
+    const code = newCode || "";
+    if (!isControlledCode) {
+      setInternalCode(code);
+    }
+    onChange?.(code);
   };
 
   const handleRunCode = async () => {
@@ -66,18 +115,17 @@ export function CodeEditor({
     setOutput("Running code...");
     setExecutionInfo("");
 
-    // Log the code being submitted
     if (enableConsoleLog) {
       console.log("🚀 Submitting code for execution:");
-      console.log("Language:", language);
-      console.log("Code:\n", code);
+      console.log("Language:", currentLanguage);
+      console.log("Code:\n", currentCode);
       console.log("─────────────────────────────────────");
     }
 
     try {
       const response = await CodeService.executeCode({
-        code,
-        language,
+        code: currentCode,
+        language: currentLanguage,
       });
 
       if (response.error) {
@@ -116,7 +164,6 @@ export function CodeEditor({
 
   const content = (
     <>
-      {/* Header */}
       {showHeader && (
         <Group justify="space-between" mb="xl" p="md">
           <Group gap="sm">
@@ -129,11 +176,10 @@ export function CodeEditor({
               {title}
             </Title>
           </Group>
-          {/* Action Buttons */}
           <Group>
             <Select
               data={languageOptions}
-              value={language}
+              value={currentLanguage}
               onChange={handleLanguageChange}
               placeholder="Select Language"
               size="md"
@@ -176,7 +222,7 @@ export function CodeEditor({
         <Group justify="space-between" mb="lg">
           <Select
             data={languageOptions}
-            value={language}
+            value={currentLanguage}
             onChange={handleLanguageChange}
             placeholder="Select Language"
             size="md"
@@ -214,7 +260,6 @@ export function CodeEditor({
         </Group>
       )}
 
-      {/* Editor Section */}
       <Paper
         shadow="md"
         radius="md"
@@ -240,7 +285,7 @@ export function CodeEditor({
               fw={500}
             >
               Editor -{" "}
-              {languageOptions.find((l) => l.value === language)?.label}
+              {languageOptions.find((l) => l.value === currentLanguage)?.label}
             </Text>
             <Select
               data={themeData}
@@ -262,9 +307,9 @@ export function CodeEditor({
         <Box style={{ height: editorHeight }}>
           <MonacoEditor
             height={editorHeight}
-            language={language}
-            value={code}
-            onChange={(value) => setCode(value || "")}
+            language={currentLanguage}
+            value={currentCode}
+            onChange={handleCodeChange}
             theme={theme}
             options={{
               minimap: { enabled: false },
@@ -289,7 +334,6 @@ export function CodeEditor({
         </Box>
       </Paper>
 
-      {/* Output Section */}
       <Paper
         shadow="md"
         radius="md"

@@ -2,30 +2,51 @@
 
 import { useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { Container, Group, Button, Title, Paper, Stack, Grid, Box, Text, rem, Divider, Skeleton, Alert } from "@mantine/core";
+import {
+  Container,
+  Group,
+  Button,
+  Title,
+  Paper,
+  Stack,
+  Grid,
+  Box,
+  Text,
+  rem,
+  Divider,
+  Skeleton,
+  Alert,
+} from "@mantine/core";
 import { IconArrowLeft, IconAlertCircle, IconSend } from "@tabler/icons-react";
 import { CodeEditor } from "@/components/code-sandbox";
+import { defaultCode } from "@/components/code-sandbox";
 import { useFetchAssignment } from "@/hooks/query-hooks/assignment-query";
+import { AssignmentService } from "@/services/assignment-service/assignment-service";
+import { notifications } from "@mantine/notifications";
 
 export default function DashboardSandboxPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  
+
   const assignmentId = params.assignmentId as string;
   const courseId = searchParams.get("courseId");
 
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [code, setCode] = useState<string>(defaultCode.javascript);
+  const [language, setLanguage] = useState<string>("javascript");
 
-  // Fetch assignment details
-  const { data: assignmentResponse, isLoading, isError, error } = useFetchAssignment(assignmentId);
+  const {
+    data: assignmentResponse,
+    isLoading,
+    isError,
+    error,
+  } = useFetchAssignment(assignmentId);
   const assignment = assignmentResponse?.data;
 
-  // Safe fallbacks
   const title = assignment?.title ?? "Code Sandbox";
   const description =
-    // Prefer a prompt-like field if present, then fall back to description
     (assignment as any)?.question ??
     (assignment as any)?.content ??
     assignment?.description ??
@@ -40,14 +61,55 @@ export default function DashboardSandboxPage() {
   };
 
   const handleSubmit = async () => {
+    console.log("Submitting assignment code:", code);
+    console.log("Assignment ID:", assignmentId);
+    console.log("Language:", language);
+
+    if (!code.trim()) {
+      console.error("Code is empty. Please write some code before submitting.");
+      notifications.show({
+        title: "Error",
+        message: "Code is empty. Please write some code before submitting.",
+        color: "red",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      // TODO: Implement submission logic
-      console.log("Submitting assignment:", assignmentId);
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
-      // Add your submission API call here
-    } catch (error) {
-      console.error("Submission error:", error);
+      const response = await AssignmentService.submitCodeAssignment(
+        assignmentId,
+        code,
+        language
+      );
+
+      console.log("Code assignment submitted successfully:", response);
+      notifications.show({
+        title: "Success",
+        message: "Code submitted successfully!",
+        color: "green",
+      });
+    } catch (error: any) {
+      console.error("Error submitting code assignment:", error);
+
+      const statusCode = error?.response?.status || error?.statusCode;
+      let errorMessage = "Failed to submit code. Please try again.";
+
+      if (statusCode === 400) {
+        errorMessage =
+          "Submission failed: Already submitted, code is empty, or wrong assignment type.";
+      } else if (statusCode === 404) {
+        errorMessage =
+          "Submission failed: Assignment not found or not published.";
+      } else if (error?.message) {
+        errorMessage = error.message;
+      }
+
+      notifications.show({
+        title: "Submission Failed",
+        message: errorMessage,
+        color: "red",
+      });
     } finally {
       setIsSubmitting(false);
     }
@@ -65,14 +127,24 @@ export default function DashboardSandboxPage() {
 
           <Grid gutter="lg">
             <Grid.Col span={{ base: 12, md: 4 }}>
-              <Paper p="lg" radius="md" withBorder style={{ background: "#1a1a1a", borderColor: "#3a3a3a" }}>
+              <Paper
+                p="lg"
+                radius="md"
+                withBorder
+                style={{ background: "#1a1a1a", borderColor: "#3a3a3a" }}
+              >
                 <Skeleton height={24} mb="sm" />
                 <Divider my="sm" color="#3a3a3a" />
                 <Skeleton height={100} />
               </Paper>
             </Grid.Col>
             <Grid.Col span={{ base: 12, md: 8 }}>
-              <Paper p="md" radius="md" withBorder style={{ background: "#1a1a1a", borderColor: "#3a3a3a" }}>
+              <Paper
+                p="md"
+                radius="md"
+                withBorder
+                style={{ background: "#1a1a1a", borderColor: "#3a3a3a" }}
+              >
                 <Skeleton height={600} />
               </Paper>
             </Grid.Col>
@@ -82,7 +154,6 @@ export default function DashboardSandboxPage() {
     );
   }
 
-  // Error state
   if (isError) {
     return (
       <Box style={{ minHeight: "calc(100vh - 180px)" }}>
@@ -96,7 +167,12 @@ export default function DashboardSandboxPage() {
           >
             Back to Assignments
           </Button>
-          <Alert icon={<IconAlertCircle size={18} />} color="red" title="Failed to load assignment" variant="light">
+          <Alert
+            icon={<IconAlertCircle size={18} />}
+            color="red"
+            title="Failed to load assignment"
+            variant="light"
+          >
             {(error as Error)?.message ?? "Please try again later."}
           </Alert>
         </Container>
@@ -107,8 +183,12 @@ export default function DashboardSandboxPage() {
   return (
     <Box style={{ minHeight: "calc(100vh - 180px)" }}>
       <Container size="xl" py="lg">
-        {/* Header with Back Button */}
-        <Group justify="space-between" mb={{ base: "md", md: "xl" }} gap="xs" wrap="nowrap">
+        <Group
+          justify="space-between"
+          mb={{ base: "md", md: "xl" }}
+          gap="xs"
+          wrap="nowrap"
+        >
           <Button
             variant="subtle"
             leftSection={<IconArrowLeft size={14} />}
@@ -129,11 +209,11 @@ export default function DashboardSandboxPage() {
               Back
             </Text>
           </Button>
-          <Title 
-            order={2} 
+          <Title
+            order={2}
             c="#E9EEEA"
-            style={{ 
-              flexShrink: 1, 
+            style={{
+              flexShrink: 1,
               textAlign: "right",
               fontSize: "clamp(1rem, 3vw, 1.5rem)",
             }}
@@ -142,7 +222,6 @@ export default function DashboardSandboxPage() {
           </Title>
         </Group>
 
-        {/* Main Content */}
         <Paper
           radius="lg"
           style={{
@@ -152,7 +231,6 @@ export default function DashboardSandboxPage() {
           }}
         >
           <Grid gutter={0}>
-            {/* Instructions Column */}
             <Grid.Col
               span={{ base: 12, md: 4 }}
               style={{
@@ -160,18 +238,30 @@ export default function DashboardSandboxPage() {
                 background: "#161b22",
               }}
             >
-              <Box p="xl" style={{ height: "100%", minHeight: rem(600), display: "flex", flexDirection: "column" }}>
+              <Box
+                p="xl"
+                style={{
+                  height: "100%",
+                  minHeight: rem(600),
+                  display: "flex",
+                  flexDirection: "column",
+                }}
+              >
                 <Stack gap="lg" style={{ flex: 1 }}>
                   <Box style={{ flex: 1, minHeight: rem(300) }}>
                     <Title order={3} c="#E9EEEA" mb="xs" size="h4">
                       {title}
                     </Title>
                     <Divider my="sm" color="#3a3a3a" />
-                    <Text c="#999999" size="sm" style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}>
+                    <Text
+                      c="#999999"
+                      size="sm"
+                      style={{ whiteSpace: "pre-wrap", lineHeight: 1.6 }}
+                    >
                       {description}
                     </Text>
                   </Box>
-                  
+
                   <Box mt="auto">
                     <Button
                       fullWidth
@@ -181,10 +271,13 @@ export default function DashboardSandboxPage() {
                       loading={isSubmitting}
                       disabled={isSubmitting || isRunning}
                       style={{
-                        background: isSubmitting || isRunning ? "#2a2a2a" : "#BDF052",
-                        color: isSubmitting || isRunning ? "#666666" : "#000000",
+                        background:
+                          isSubmitting || isRunning ? "#2a2a2a" : "#BDF052",
+                        color:
+                          isSubmitting || isRunning ? "#666666" : "#000000",
                         "&:hover": {
-                          background: isSubmitting || isRunning ? "#2a2a2a" : "#a5d645",
+                          background:
+                            isSubmitting || isRunning ? "#2a2a2a" : "#a5d645",
                         },
                       }}
                     >
@@ -195,7 +288,6 @@ export default function DashboardSandboxPage() {
               </Box>
             </Grid.Col>
 
-            {/* Code Editor Column */}
             <Grid.Col span={{ base: 12, md: 8 }}>
               <Box style={{ background: "#1a1a1a" }}>
                 <CodeEditor
@@ -206,13 +298,16 @@ export default function DashboardSandboxPage() {
                   initialLanguage="javascript"
                   title="Code Editor"
                   onRunningStateChange={setIsRunning}
+                  value={code}
+                  onChange={setCode}
+                  language={language}
+                  onLanguageChange={setLanguage}
                 />
               </Box>
             </Grid.Col>
           </Grid>
         </Paper>
 
-        {/* Assignment Info Footer */}
         <Paper
           p="md"
           mt="md"
@@ -230,7 +325,11 @@ export default function DashboardSandboxPage() {
               {assignmentId}
             </Text>
             <Text size="sm" c="#999999">
-              Press <Text component="span" c="#4fd1c5" fw={600}>Run Code</Text> to test your solution
+              Press{" "}
+              <Text component="span" c="#4fd1c5" fw={600}>
+                Run Code
+              </Text>{" "}
+              to test your solution
             </Text>
           </Group>
         </Paper>

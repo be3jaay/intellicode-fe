@@ -212,6 +212,29 @@ export class AssignmentService {
   }
 
   /**
+   * Submit code assignment (for code_sandbox assignments)
+   * @param assignmentId - The assignment ID
+   * @param code - The code string to submit
+   * @param language - The programming language
+   * @returns Submission response
+   */
+  public static async submitCodeAssignment(
+    assignmentId: string,
+    code: string,
+    language: string
+  ): Promise<SubmissionResponse> {
+    try {
+      return await apiClient.post(
+        `/course/assignments/${assignmentId}/submit-code`,
+        { code, language }
+      );
+    } catch (error) {
+      console.error("Error submitting code assignment:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Submit assignment with file uploads (for file_upload assignments)
    * Maximum 10 files allowed per submission
    * @param assignmentId - The assignment ID

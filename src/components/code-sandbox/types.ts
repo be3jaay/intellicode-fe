@@ -77,6 +77,30 @@ export interface CodeEditorProps {
    * @default true
    */
   useContainer?: boolean;
+
+  /**
+   * Controlled value for the code editor
+   * When provided, the component works in controlled mode
+   */
+  value?: string;
+
+  /**
+   * Callback when code changes (controlled mode)
+   * @param code - The updated code string
+   */
+  onChange?: (code: string) => void;
+
+  /**
+   * Controlled language value
+   * When provided, overrides internal language state
+   */
+  language?: string;
+
+  /**
+   * Callback when language changes (controlled mode)
+   * @param language - The new language
+   */
+  onLanguageChange?: (language: string) => void;
 }
 
 export interface LanguageOption {
