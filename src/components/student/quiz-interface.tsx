@@ -31,6 +31,7 @@ import { useSubmitAssignment } from "@/hooks/query-hooks/assignment-query";
 import { SubmitAssignmentData } from "@/services/assignment-service/assignment-type";
 import { SubmittedResult } from "@/components/student/submitted-result";
 import { AlreadySubmitted } from "@/components/student/already-submitted";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Question {
   id: string;
@@ -81,6 +82,7 @@ export function QuizInterface({
   isSecured,
   courseId,
 }: QuizInterfaceProps) {
+  const queryClient = useQueryClient();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -206,8 +208,13 @@ export function QuizInterface({
         answers: submissionAnswers,
       });
       setIsSubmitted(true);
+      
+      // Invalidate queries to refetch assignment status when navigating back
+      if (courseId) {
+        queryClient.invalidateQueries({ queryKey: ["student-course", courseId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["assignment", assignment.id] });
     } catch (e) {
-      // Re-enable leave detection if submission fails
       setLeaveDetectionEnabled(true);
       console.error(e);
     }

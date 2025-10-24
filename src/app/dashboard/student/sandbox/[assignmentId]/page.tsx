@@ -23,11 +23,13 @@ import { defaultCode } from "@/components/code-sandbox";
 import { useFetchAssignment } from "@/hooks/query-hooks/assignment-query";
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
 import { notifications } from "@mantine/notifications";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function DashboardSandboxPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const queryClient = useQueryClient();
 
   const assignmentId = params.assignmentId as string;
   const courseId = searchParams.get("courseId");
@@ -91,8 +93,12 @@ export default function DashboardSandboxPage() {
         color: "green",
       });
       
-      // Mark as submitted to gray out the button
       setIsSubmitted(true);
+      
+      if (courseId) {
+        queryClient.invalidateQueries({ queryKey: ["student-course", courseId] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
     } catch (error: any) {
       console.error("Error submitting code assignment:", error);
 
@@ -119,7 +125,6 @@ export default function DashboardSandboxPage() {
     }
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <Box style={{ minHeight: "calc(100vh - 180px)" }}>

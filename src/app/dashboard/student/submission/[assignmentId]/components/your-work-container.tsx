@@ -6,6 +6,8 @@ import { IconCheck, IconAlertTriangle } from "@tabler/icons-react";
 import { YourWorkCard } from "./your-work-card";
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
 import type { Submission, SubmissionFile } from "@/types/assignment";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "next/navigation";
 
 interface YourWorkContainerProps {
   assignmentId: string;
@@ -18,6 +20,10 @@ export function YourWorkContainer({
   assignmentType,
   onSubmissionSuccess,
 }: YourWorkContainerProps) {
+  const queryClient = useQueryClient();
+  const searchParams = useSearchParams();
+  const courseId = searchParams.get("courseId");
+  
   // State
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -27,10 +33,8 @@ export function YourWorkContainer({
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [lastSubmission, setLastSubmission] = useState<Submission | null>(null);
 
-  // Hidden file input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch submissions on mount
   useEffect(() => {
     fetchSubmissions();
   }, [assignmentId]);
@@ -45,12 +49,10 @@ export function YourWorkContainer({
         setIsSubmitted(response.data.length > 0);
         
         if (response.data.length > 0) {
-          // Get the most recent submission
           const latest = response.data[0];
           setLastSubmission(latest);
           
-          // If submission has files, we can't set them as File objects
-          // but we can show them in the UI differently
+
         }
       }
     } catch (err: any) {
@@ -188,7 +190,7 @@ export function YourWorkContainer({
       if (response.success) {
         setIsSubmitted(true);
         setLastSubmission(response.data);
-        setUploadedFiles([]); // Clear local files
+        setUploadedFiles([]);
         
         notifications.show({
           title: "Submitted Successfully! 🎉",
@@ -198,10 +200,13 @@ export function YourWorkContainer({
           autoClose: 4000,
         });
 
-        // Refresh submissions to get latest data
         await fetchSubmissions();
         
-        // Call success callback if provided
+        if (courseId) {
+          queryClient.invalidateQueries({ queryKey: ["student-course", courseId] });
+        }
+        queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
+        
         onSubmissionSuccess?.();
       }
     } catch (err: any) {
@@ -209,7 +214,6 @@ export function YourWorkContainer({
       
       let errorMessage = 'Failed to submit assignment';
       
-      // Map common errors to friendly messages
       if (err.message?.includes('Already submitted') || err.message?.includes('already submitted')) {
         errorMessage = 'This assignment has already been submitted';
       } else if (err.message?.includes('No files provided')) {
@@ -237,7 +241,6 @@ export function YourWorkContainer({
   };
 
   const handleUnmark = () => {
-    // Show tooltip that unsubmit is not supported
     notifications.show({
       title: "Unsubmit Not Supported",
       message: "Once submitted, assignments cannot be unsubmitted. Please contact your instructor if you need to make changes.",
@@ -246,7 +249,7 @@ export function YourWorkContainer({
     });
   };
 
-  // Compute status
+  // Compute 
   const status = isSubmitted
     ? { label: "Submitted", color: "green" as const }
     : { label: "Not Submitted", color: "red" as const };

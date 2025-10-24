@@ -6,7 +6,9 @@ export const useFetchStudentCourse = (courseId: string) => {
     queryKey: ["student-course", courseId],
     queryFn: () => studentCourseService.getCourseById(courseId),
     enabled: !!courseId,
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes (renamed from cacheTime)
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true,
   })
 }
