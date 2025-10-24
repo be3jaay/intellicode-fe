@@ -340,10 +340,11 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                           color: assignment.is_published
                             ? "#bdf052"
                             : "#f6acae",
-                          border: `1px solid ${assignment.is_published
-                            ? "rgba(189, 240, 82, 0.3)"
-                            : "rgba(246, 172, 174, 0.3)"
-                            }`,
+                          border: `1px solid ${
+                            assignment.is_published
+                              ? "rgba(189, 240, 82, 0.3)"
+                              : "rgba(246, 172, 174, 0.3)"
+                          }`,
                         }}
                         leftSection={
                           assignment.is_published ? (
@@ -393,22 +394,35 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                   >
                     <Eye size={16} />
                   </ActionIcon>
-                  {/* {(assignment.assignmentSubtype === "file_upload" || */}
-                  {/* assignment.assignmentSubtype === "code_sandbox") && ( */}
-                  <ActionIcon
-                    variant="light"
-                    size="md"
-                    style={{
-                      background: "rgba(255, 193, 7, 0.15)",
-                      color: "#ffc107",
-                      border: "1px solid rgba(255, 193, 7, 0.3)",
-                    }}
-                    component="a"
-                    href={`/dashboard/teacher/courses/assignments/${assignment.id}/grading`}
-                  >
-                    <ClipboardCheck size={16} />
-                  </ActionIcon>
-                  {/* )} */}
+                  {assignment.assignmentSubtype === "code_sandbox" ? (
+                    <ActionIcon
+                      variant="light"
+                      size="md"
+                      style={{
+                        background: "rgba(6, 182, 212, 0.15)",
+                        color: "#06b6d4",
+                        border: "1px solid rgba(6, 182, 212, 0.3)",
+                      }}
+                      component="a"
+                      href={`/dashboard/teacher/courses/assignments/${assignment.id}/code-review`}
+                    >
+                      <Code size={16} />
+                    </ActionIcon>
+                  ) : (
+                    <ActionIcon
+                      variant="light"
+                      size="md"
+                      style={{
+                        background: "rgba(255, 193, 7, 0.15)",
+                        color: "#ffc107",
+                        border: "1px solid rgba(255, 193, 7, 0.3)",
+                      }}
+                      component="a"
+                      href={`/dashboard/teacher/courses/assignments/${assignment.id}/grading`}
+                    >
+                      <ClipboardCheck size={16} />
+                    </ActionIcon>
+                  )}
                   <ActionIcon
                     variant="light"
                     size="md"

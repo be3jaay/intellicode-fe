@@ -189,6 +189,12 @@ export type SubmissionForGrading = {
   graded_at: string | null;
   files: SubmissionFile[];
   student: SubmissionStudent;
+  submitted_code?: string;
+  code_language?: string;
+  assignment_title?: string;
+  assignment_description?: string;
+  assignment_difficulty?: "easy" | "medium" | "hard";
+  assignment_due_date?: string | null;
 };
 
 export type SubmissionsForGradingResponse = {
