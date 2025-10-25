@@ -14,6 +14,7 @@ import {
   Loader,
   Alert,
   Modal,
+  TextInput,
 } from "@mantine/core";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,8 @@ import {
   AlertCircle,
   RefreshCw,
   Info,
+  Delete,
+  Award,
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import type { CourseValueResponse } from "@/services/course-service/course-type";
@@ -45,8 +48,9 @@ import { AssignmentContent } from "./assignment-content";
 import { StudentContent } from "./student-content";
 import { ModuleContent } from "./module-content";
 import { Gradebook } from "./gradebook";
-import { CourseCompletion } from "./course-completion";
+import { CertificateIssuance } from "./certificate-issuance";
 import { useResubmitCourse } from "@/hooks/query-hooks/course-approval-query";
+import { useDeleteCourse } from "@/hooks/query-hooks/course-delete-query";
 import { notifications } from "@mantine/notifications";
 
 type ContentView =
@@ -71,20 +75,11 @@ export function CourseContentViewer({
   const [moduleId, setModuleId] = useState<string>("");
   const [isLoadingModules, setIsLoadingModules] = useState(false);
   const [rejectionModalOpened, setRejectionModalOpened] = useState(false);
+  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
+  const [deleteCourseTitle, setDeleteCourseTitle] = useState("");
 
   const resubmitCourseMutation = useResubmitCourse();
-
-  // Debug: Log course status and admin_notes
-  useEffect(() => {
-    console.log("========== COURSE DEBUG ==========");
-    console.log("Course Status:", course.status);
-    console.log("Admin Notes:", course.admin_notes);
-    console.log("Admin Notes Type:", typeof course.admin_notes);
-    console.log("Admin Notes Length:", course.admin_notes?.length);
-    console.log("Has Admin Notes:", !!course.admin_notes);
-    console.log("Full Course:", course);
-    console.log("==================================");
-  }, [course]);
+  const deleteCourseMutation = useDeleteCourse();
 
   useEffect(() => {
     const fetchModules = async () => {
@@ -134,6 +129,41 @@ export function CourseContentViewer({
       notifications.show({
         title: "Error",
         message: "Failed to resubmit course. Please try again.",
+        color: "red",
+      });
+    }
+  };
+
+  const handleDeleteCourse = async () => {
+    if (deleteCourseTitle !== course.title) {
+      notifications.show({
+        title: "Error",
+        message: "Course title doesn't match. Please try again.",
+        color: "red",
+      });
+      return;
+    }
+
+    try {
+      await deleteCourseMutation.mutateAsync(course.id);
+
+      notifications.show({
+        title: "Success",
+        message: "Course deleted successfully",
+        color: "green",
+        icon: <Check size={18} />,
+      });
+
+      setDeleteModalOpened(false);
+      setDeleteCourseTitle("");
+      // Navigate back after successful deletion
+      setTimeout(() => {
+        onBack();
+      }, 500);
+    } catch (error) {
+      notifications.show({
+        title: "Error",
+        message: "Failed to delete course. Please try again.",
         color: "red",
       });
     }
@@ -237,7 +267,7 @@ export function CourseContentViewer({
             <ArrowLeft size={20} color="#bdf052" />
           </ActionIcon>
 
-          <Tooltip label="Edit course banner" position="left">
+          <Tooltip label="Delete course banner" position="left">
             <ActionIcon
               variant="filled"
               size="lg"
@@ -246,26 +276,27 @@ export function CourseContentViewer({
                 position: "absolute",
                 top: 24,
                 right: 24,
-                background: "rgba(34, 34, 34, 0.95)",
+                background: "rgba(127, 29, 29, 0.95)",
                 backdropFilter: "blur(10px)",
-                border: "1px solid rgba(189, 240, 82, 0.2)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
                 zIndex: 10,
                 transition: "all 0.2s ease",
               }}
               onClick={() => {
-                console.log("Edit banner clicked");
+                console.log("Delete banner clicked");
+                setDeleteModalOpened(true);
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(189, 240, 82, 0.15)";
-                e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)";
+                e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
+                e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(34, 34, 34, 0.95)";
-                e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.2)";
+                e.currentTarget.style.background = "rgba(127, 29, 29, 0.95)";
+                e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.3)";
               }}
             >
-              <Edit size={20} color="#bdf052" />
+              <Delete size={20} color="#EF4444" />
             </ActionIcon>
           </Tooltip>
 
@@ -552,6 +583,187 @@ export function CourseContentViewer({
         </div>
       </Modal>
 
+      {/* Delete Course Modal */}
+      <Modal
+        opened={deleteModalOpened}
+        onClose={() => {
+          setDeleteModalOpened(false);
+          setDeleteCourseTitle("");
+        }}
+        title={null}
+        centered
+        size="md"
+        styles={{
+          content: {
+            backgroundColor: "#0F0F0F",
+            border: "1px solid #2D2D2D",
+            borderRadius: "16px",
+          },
+          header: {
+            display: "none",
+          },
+          body: {
+            padding: 0,
+          },
+        }}
+      >
+        <div
+          style={{
+            background: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)",
+            padding: "2rem",
+            borderTopLeftRadius: "16px",
+            borderTopRightRadius: "16px",
+          }}
+        >
+          <Group gap="md">
+            <div
+              style={{
+                width: "48px",
+                height: "48px",
+                borderRadius: "12px",
+                backgroundColor: "rgba(255, 255, 255, 0.2)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <Trash2 size={24} color="#FFFFFF" />
+            </div>
+            <div>
+              <Text
+                style={{
+                  fontSize: "1.5rem",
+                  fontWeight: 700,
+                  color: "#FFFFFF",
+                }}
+              >
+                Delete Course
+              </Text>
+              <Text style={{ color: "rgba(255, 255, 255, 0.9)" }}>
+                This action cannot be undone
+              </Text>
+            </div>
+          </Group>
+        </div>
+        <div style={{ padding: "2rem" }}>
+          <Alert
+            icon={<AlertCircle size={18} />}
+            color="red"
+            variant="light"
+            mb="lg"
+            styles={{
+              root: {
+                backgroundColor: "rgba(127, 29, 29, 0.2)",
+                border: "1px solid rgba(239, 68, 68, 0.3)",
+              },
+              message: {
+                color: "#FEE2E2",
+              },
+            }}
+          >
+            <Text size="sm" style={{ lineHeight: 1.6 }}>
+              You are about to permanently delete this course. All associated
+              modules, lessons, assignments, and student data will be lost.
+            </Text>
+          </Alert>
+          <Stack gap="md" mb="xl">
+            <Text style={{ color: "#E9EEEA", fontSize: "0.95rem" }}>
+              To confirm deletion, please type the course title exactly as shown
+              below:
+            </Text>
+            <Card
+              style={{
+                backgroundColor: "#1A1A1A",
+                border: "1px solid #2D2D2D",
+                borderRadius: "8px",
+              }}
+              padding="md"
+            >
+              <Text
+                style={{
+                  color: "#BDF052",
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  fontFamily: "monospace",
+                }}
+              >
+                {course.title}
+              </Text>
+            </Card>
+            <TextInput
+              placeholder="Type course title here"
+              value={deleteCourseTitle}
+              onChange={(e) => setDeleteCourseTitle(e.currentTarget.value)}
+              styles={{
+                input: {
+                  backgroundColor: "#1A1A1A",
+                  border: "1px solid #2D2D2D",
+                  color: "#E9EEEA",
+                  borderRadius: "8px",
+                  padding: "0.75rem",
+                  fontSize: "0.95rem",
+                  "&:focus": {
+                    borderColor: "#DC2626",
+                  },
+                },
+              }}
+            />
+          </Stack>
+          <Group justify="flex-end" gap="sm">
+            <Button
+              onClick={() => {
+                setDeleteModalOpened(false);
+                setDeleteCourseTitle("");
+              }}
+              disabled={deleteCourseMutation.isPending}
+              variant="ghost"
+              style={{
+                borderRadius: "8px",
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleDeleteCourse}
+              disabled={
+                deleteCourseTitle !== course.title ||
+                deleteCourseMutation.isPending
+              }
+              style={{
+                backgroundColor:
+                  deleteCourseTitle !== course.title ||
+                  deleteCourseMutation.isPending
+                    ? "#4B5563"
+                    : "#DC2626",
+                color: "#FFFFFF",
+                borderRadius: "8px",
+                opacity:
+                  deleteCourseTitle !== course.title ||
+                  deleteCourseMutation.isPending
+                    ? 0.5
+                    : 1,
+              }}
+            >
+              {deleteCourseMutation.isPending ? (
+                <>
+                  <Loader
+                    size="sm"
+                    color="#FFFFFF"
+                    style={{ marginRight: "0.5rem" }}
+                  />
+                  Deleting...
+                </>
+              ) : (
+                <>
+                  <Trash2 size={16} style={{ marginRight: "0.5rem" }} />
+                  Delete Course
+                </>
+              )}
+            </Button>
+          </Group>
+        </div>
+      </Modal>
+
       <Card
         shadow="sm"
         padding="lg"
@@ -571,62 +783,7 @@ export function CourseContentViewer({
                 Course Invitation Link
               </Text>
             </Group>
-            <Group gap="xs">
-              <Text
-                size="sm"
-                style={{
-                  fontFamily: "monospace",
-                  background: "rgba(34, 34, 34, 0.8)",
-                  color: "#bdf052",
-                  padding: "8px 14px",
-                  borderRadius: 8,
-                  border: "1px solid rgba(189, 240, 82, 0.2)",
-                  fontSize: 13,
-                }}
-              >
-                {course.course_invite_code}
-              </Text>
-              <CopyButton value={course.course_invite_code}>
-                {({ copied, copy }) => (
-                  <Tooltip
-                    label={copied ? "Copied!" : "Copy link"}
-                    position="top"
-                  >
-                    <ActionIcon
-                      variant="light"
-                      onClick={copy}
-                      size="lg"
-                      style={{
-                        background: copied
-                          ? "rgba(189, 240, 82, 0.15)"
-                          : "rgba(179, 161, 255, 0.15)",
-                        color: copied ? "#bdf052" : "#b3a1ff",
-                        border: `1px solid ${
-                          copied
-                            ? "rgba(189, 240, 82, 0.3)"
-                            : "rgba(179, 161, 255, 0.3)"
-                        }`,
-                        transition: "all 0.2s ease",
-                      }}
-                    >
-                      {copied ? <Check size={18} /> : <Copy size={18} />}
-                    </ActionIcon>
-                  </Tooltip>
-                )}
-              </CopyButton>
-            </Group>
           </Box>
-          <Button
-            style={{
-              background: "linear-gradient(135deg, #bdf052 0%, #a3d742 100%)",
-              color: "#1a1a1a",
-              border: "none",
-              fontWeight: 600,
-            }}
-          >
-            <LinkIcon size={16} style={{ marginRight: 8 }} />
-            Share Link
-          </Button>
         </Group>
       </Card>
 
@@ -691,11 +848,11 @@ export function CourseContentViewer({
               Gradebook
             </Tabs.Tab>
             <Tabs.Tab
-              value="completion"
+              value="certificates"
               color="#bdf052"
-              leftSection={<ClipboardCheck size={16} />}
+              leftSection={<Award size={16} />}
             >
-              Course Completion
+              Certificate Issuance
             </Tabs.Tab>
           </Tabs.List>
 
@@ -799,9 +956,9 @@ export function CourseContentViewer({
             <Gradebook courseId={course.id} />
           </Tabs.Panel>
 
-          {/* Course Completion Tab */}
-          <Tabs.Panel value="completion">
-            <CourseCompletion courseId={course.id} />
+          {/* Certificate Issuance Tab */}
+          <Tabs.Panel value="certificates">
+            <CertificateIssuance courseId={course.id} />
           </Tabs.Panel>
         </Tabs>
       </Card>

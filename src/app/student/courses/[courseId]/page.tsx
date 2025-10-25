@@ -35,6 +35,11 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
 
   const { data, isLoading, isError, error } = useFetchStudentCourse(courseId);
 
+  const handleLessonChange = (lessonId: string, moduleId: string) => {
+    setSelectedLesson(lessonId);
+    setSelectedModule(moduleId);
+  };
+
   if (isLoading) {
     return (
       <Box style={{ minHeight: "100vh", background: "#222222" }}>
@@ -131,6 +136,7 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                   course={courseData}
                   selectedLesson={selectedLesson}
                   selectedModule={selectedModule}
+                  onLessonChange={handleLessonChange}
                 />
               ) : activeTab === "assignments" ? (
                 <AssignmentsSection

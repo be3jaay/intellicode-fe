@@ -2,16 +2,19 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { MantineProvider } from "@mantine/core";
-import { Notifications } from '@mantine/notifications';
+import { Notifications } from "@mantine/notifications";
 import { AuthProvider } from "@/providers/auth-context";
 import { QueryProvider } from "@/providers/query-provider";
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
-import '@mantine/dropzone/styles.css';
-import '../styles/animations.css';
-import '@mantine/dates/styles.css';
-import '@mantine/core/styles.css';
-import '@mantine/tiptap/styles.css';
+import "@mantine/core/styles.css";
+import "@mantine/notifications/styles.css";
+import "@mantine/dropzone/styles.css";
+import "../styles/animations.css";
+import "@mantine/dates/styles.css";
+import "@mantine/core/styles.css";
+import "@mantine/tiptap/styles.css";
+import "@mantine/core/styles.css";
+// ‼️ import charts styles after core package styles
+import "@mantine/charts/styles.css";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -24,7 +27,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Intellicode - AI-Powered Learning",
-  description: "Master coding with AI-powered assessments and personalized feedback for Java, Python, and C",
+  description:
+    "Master coding with AI-powered assessments and personalized feedback for Java, Python, and C",
 };
 
 export default function RootLayout({
@@ -40,9 +44,7 @@ export default function RootLayout({
         <MantineProvider>
           <Notifications position="top-center" zIndex={9999} />
           <QueryProvider>
-            <AuthProvider>
-              {children}
-            </AuthProvider>
+            <AuthProvider>{children}</AuthProvider>
           </QueryProvider>
         </MantineProvider>
       </body>

@@ -43,19 +43,9 @@ export function NavigationBar() {
         href: `/dashboard/${role}/courses`,
       },
       {
-        icon: FileText,
-        label: "Assignments",
-        href: `/dashboard/${role}/assignments`,
-      },
-      {
         icon: Award,
         label: "Certificates",
         href: `/dashboard/${role}/certificates`,
-      },
-      {
-        icon: BarChart,
-        label: "Progress",
-        href: `/dashboard/${role}/progress`,
       },
       {
         icon: User,

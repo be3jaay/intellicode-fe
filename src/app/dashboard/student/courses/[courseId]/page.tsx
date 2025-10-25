@@ -29,8 +29,13 @@ interface StudentCoursePageProps {
 export default function StudentCoursePage({ params }: StudentCoursePageProps) {
   const { courseId } = use(params);
   const searchParams = useSearchParams();
-  const tabParam = searchParams.get("tab") as "lessons" | "assignments" | "progress" | "grades" | null;
-  
+  const tabParam = searchParams.get("tab") as
+    | "lessons"
+    | "assignments"
+    | "progress"
+    | "grades"
+    | null;
+
   const [selectedLesson, setSelectedLesson] = useState<string | null>(null);
   const [selectedModule, setSelectedModule] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<
@@ -38,12 +43,20 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
   >(tabParam || "lessons");
 
   useEffect(() => {
-    if (tabParam && ["lessons", "assignments", "progress", "grades"].includes(tabParam)) {
+    if (
+      tabParam &&
+      ["lessons", "assignments", "progress", "grades"].includes(tabParam)
+    ) {
       setActiveTab(tabParam);
     }
   }, [tabParam]);
 
   const { data, isLoading, isError, error } = useFetchStudentCourse(courseId);
+
+  const handleLessonChange = (lessonId: string, moduleId: string) => {
+    setSelectedLesson(lessonId);
+    setSelectedModule(moduleId);
+  };
 
   if (isLoading) {
     return (
@@ -134,6 +147,7 @@ export default function StudentCoursePage({ params }: StudentCoursePageProps) {
                   course={courseData}
                   selectedLesson={selectedLesson}
                   selectedModule={selectedModule}
+                  onLessonChange={handleLessonChange}
                 />
               ) : activeTab === "assignments" ? (
                 <AssignmentsSection
