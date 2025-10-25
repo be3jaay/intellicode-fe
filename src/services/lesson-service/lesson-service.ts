@@ -58,4 +58,13 @@ export const lessonService = {
     );
     return response;
   },
+  async patchLesson(lessonId: string, data: Partial<LessonData>) {
+    // PATCH /course/lessons/{lessonId}
+    return apiClient.patch(`/course/lessons/${lessonId}`, data);
+  },
+
+  async deleteLesson(lessonId: string) {
+    // DELETE /course/lessons/{lessonId}
+    return apiClient.delete(`/course/lessons/${lessonId}`);
+  },
 };

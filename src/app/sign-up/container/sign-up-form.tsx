@@ -1,15 +1,5 @@
 "use client";
-import { GithubIcon, GoogleIcon } from "@/icons";
-import {
-  Divider,
-  Flex,
-  Text,
-  Title,
-  Box,
-  Stack,
-  Anchor,
-  Grid,
-} from "@mantine/core";
+import { Text, Box, Stack, Anchor, Grid } from "@mantine/core";
 import {
   AtSign,
   LockKeyhole,

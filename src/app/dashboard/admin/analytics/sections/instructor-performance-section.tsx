@@ -34,12 +34,6 @@ export function InstructorPerformanceSection() {
     (sum, course) => sum + course.inProgress,
     0
   );
-  const averageProgress = Math.round(
-    mockCourseProgress.reduce(
-      (sum, course) => sum + course.averageProgress,
-      0
-    ) / mockCourseProgress.length
-  );
 
   const completionRate = Math.round((totalCompleted / totalEnrolled) * 100);
 

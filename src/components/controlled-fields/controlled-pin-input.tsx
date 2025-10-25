@@ -1,15 +1,13 @@
 import {
-  Box,
   Button,
   Container,
   Flex,
   Loader,
-  LoadingOverlay,
   PinInput,
   PinInputProps,
   Text,
-} from '@mantine/core';
-import { Control, Controller, FieldPath, FieldValues } from 'react-hook-form';
+} from "@mantine/core";
+import { Control, Controller, FieldPath, FieldValues } from "react-hook-form";
 
 export type ControlledPinInput<
   TFieldValues extends FieldValues = FieldValues,
@@ -37,14 +35,17 @@ export function ControlledPinInput<
   type,
   inputMode,
   inputType,
-  size = 'xl',
+  size = "xl",
   disabled,
 }: ControlledPinInput<TFieldValues, TName>) {
   return (
     <Controller
       name={name}
       control={control}
-      render={({ field: { onChange, onBlur, value }, fieldState: { error } }) => (
+      render={({
+        field: { onChange, onBlur, value },
+        fieldState: { error },
+      }) => (
         <Container fluid>
           <PinInput
             size={size}
@@ -59,14 +60,26 @@ export function ControlledPinInput<
           />
           {showResendCode ? (
             <Container fluid>
-              <Flex direction="column" align="center" justify="center" gap={4} my={4}>
+              <Flex
+                direction="column"
+                align="center"
+                justify="center"
+                gap={4}
+                my={4}
+              >
                 <Text>Didn't get the otp code?</Text>
                 <Button variant="transparent">Resend Code</Button>
               </Flex>
             </Container>
           ) : (
             <Container fluid py={12}>
-              <Flex direction="column" align="center" justify="center" gap={4} my={4}>
+              <Flex
+                direction="column"
+                align="center"
+                justify="center"
+                gap={4}
+                my={4}
+              >
                 <Flex align="center" gap={12}>
                   <Loader size={16} />
                   Remaining Time: {remainingTime}

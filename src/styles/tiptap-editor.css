@@ -1,0 +1,155 @@
+/* Tiptap Editor Custom Styles - List Visibility Fix */
+
+.ProseMirror ul,
+.ProseMirror ol {
+  padding-left: 28px !important;
+  margin: 1rem 0 !important;
+  list-style-position: outside !important;
+}
+
+.ProseMirror ul {
+  list-style-type: disc !important;
+}
+
+.ProseMirror ol {
+  list-style-type: decimal !important;
+}
+
+.ProseMirror li {
+  color: #ffffff !important;
+  display: list-item !important;
+  margin: 0.5rem 0 !important;
+  padding-left: 4px !important;
+}
+
+.ProseMirror ul > li {
+  list-style-type: disc !important;
+}
+
+.ProseMirror ol > li {
+  list-style-type: decimal !important;
+}
+
+.ProseMirror li::marker {
+  color: #4fd1c5 !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+
+/* Nested lists */
+.ProseMirror ul ul,
+.ProseMirror ol ul {
+  list-style-type: circle !important;
+  margin: 0.5rem 0 !important;
+}
+
+.ProseMirror ul ol,
+.ProseMirror ol ol {
+  list-style-type: lower-alpha !important;
+  margin: 0.5rem 0 !important;
+}
+
+/* Text visibility improvements */
+.ProseMirror p,
+.ProseMirror span,
+.ProseMirror div {
+  color: #ffffff !important;
+}
+
+.ProseMirror strong,
+.ProseMirror b {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+
+.ProseMirror em,
+.ProseMirror i {
+  color: #ffffff !important;
+  font-style: italic !important;
+}
+
+.ProseMirror u {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}
+
+/* Ensure headings are visible */
+.ProseMirror h1,
+.ProseMirror h2,
+.ProseMirror h3,
+.ProseMirror h4,
+.ProseMirror h5,
+.ProseMirror h6 {
+  color: #4fd1c5 !important;
+}
+
+/* Blockquote styling - text must be visible */
+.ProseMirror blockquote {
+  border-left: 4px solid #4fd1c5 !important;
+  background: rgba(79, 209, 197, 0.15) !important;
+  padding: 16px !important;
+  margin: 1.5rem 0 !important;
+  border-radius: 0 8px 8px 0 !important;
+  font-style: italic !important;
+}
+
+.ProseMirror blockquote,
+.ProseMirror blockquote *,
+.ProseMirror blockquote p,
+.ProseMirror blockquote span {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+/* Modern Code Styling */
+.ProseMirror code:not(pre code) {
+  background: linear-gradient(
+    135deg,
+    rgba(79, 209, 197, 0.15) 0%,
+    rgba(56, 178, 172, 0.15) 100%
+  ) !important;
+  color: #4fd1c5 !important;
+  padding: 4px 10px !important;
+  border-radius: 6px !important;
+  font-family: "Fira Code", "Courier New", monospace !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  border: 1px solid rgba(79, 209, 197, 0.4) !important;
+  letter-spacing: 0.3px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.ProseMirror pre {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+  border: 2px solid rgba(79, 209, 197, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin: 1.5rem 0 !important;
+  overflow: auto !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(79, 209, 197, 0.1) !important;
+  position: relative !important;
+}
+
+.ProseMirror pre code {
+  background: transparent !important;
+  color: #ffffff !important;
+  padding: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  display: block !important;
+  font-family: "Fira Code", "Courier New", monospace !important;
+}
+
+/* Syntax highlighted code blocks */
+.ProseMirror .hljs-code-block {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+  border: 2px solid rgba(79, 209, 197, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin: 1.5rem 0 !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(79, 209, 197, 0.1) !important;
+}

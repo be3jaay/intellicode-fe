@@ -1,3 +1,22 @@
+// Delete assignment mutation hook
+export function useDeleteAssignment() {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending, isError } = useMutation({
+    mutationFn: (assignmentId: string) =>
+      AssignmentService.deleteAssignment(assignmentId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assignments"] });
+    },
+    onError: (error: ErrorResponse) => {
+      console.error(error.message);
+    },
+  });
+  return {
+    deleteAssignment: mutateAsync,
+    isDeleting: isPending,
+    isError: isError,
+  };
+}
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
 import {
   CreateQuizForm,

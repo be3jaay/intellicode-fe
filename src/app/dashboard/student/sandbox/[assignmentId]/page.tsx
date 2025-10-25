@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import {
   Container,
@@ -37,8 +37,9 @@ export default function DashboardSandboxPage() {
   const [isRunning, setIsRunning] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [code, setCode] = useState<string>(defaultCode.javascript);
+  const [code, setCode] = useState<string>("");
   const [language, setLanguage] = useState<string>("javascript");
+  const [isCodeInitialized, setIsCodeInitialized] = useState(false);
 
   const {
     data: assignmentResponse,
@@ -47,6 +48,15 @@ export default function DashboardSandboxPage() {
     error,
   } = useFetchAssignment(assignmentId);
   const assignment = assignmentResponse?.data;
+
+  // Set the initial code when assignment data is loaded
+  useEffect(() => {
+    if (assignment && !isCodeInitialized) {
+      const initialCode = assignment.starterCode || defaultCode.javascript;
+      setCode(initialCode);
+      setIsCodeInitialized(true);
+    }
+  }, [assignment, isCodeInitialized]);
 
   const title = assignment?.title ?? "Code Sandbox";
   const description =
@@ -92,11 +102,13 @@ export default function DashboardSandboxPage() {
         message: "Code submitted successfully!",
         color: "green",
       });
-      
+
       setIsSubmitted(true);
-      
+
       if (courseId) {
-        queryClient.invalidateQueries({ queryKey: ["student-course", courseId] });
+        queryClient.invalidateQueries({
+          queryKey: ["student-course", courseId],
+        });
       }
       queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
     } catch (error: any) {

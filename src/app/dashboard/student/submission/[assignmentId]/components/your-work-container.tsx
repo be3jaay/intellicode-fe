@@ -23,7 +23,7 @@ export function YourWorkContainer({
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const courseId = searchParams.get("courseId");
-  
+
   // State
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -42,24 +42,24 @@ export function YourWorkContainer({
   const fetchSubmissions = async () => {
     try {
       setFetchingSubmissions(true);
-      const response = await AssignmentService.getStudentSubmissions(assignmentId);
-      
+      const response = await AssignmentService.getStudentSubmissions(
+        assignmentId
+      );
+
       if (response.success && response.data) {
         setSubmissions(response.data);
         setIsSubmitted(response.data.length > 0);
-        
+
         if (response.data.length > 0) {
           const latest = response.data[0];
           setLastSubmission(latest);
-          
-
         }
       }
     } catch (err: any) {
-      console.error('Error fetching submissions:', err);
+      console.error("Error fetching submissions:", err);
       // Don't show error notification on initial fetch if it's just 404 (no submissions yet)
-      if (!err.message?.includes('404')) {
-        setError(err.message || 'Failed to fetch submissions');
+      if (!err.message?.includes("404")) {
+        setError(err.message || "Failed to fetch submissions");
       }
     } finally {
       setFetchingSubmissions(false);
@@ -91,40 +91,46 @@ export function YourWorkContainer({
 
     // Validate file types (common document types)
     const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-      'application/vnd.ms-powerpoint',
-      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-      'application/vnd.ms-excel',
-      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-      'application/zip',
-      'application/x-zip-compressed',
-      'image/jpeg',
-      'image/png',
-      'image/gif',
-      'image/webp',
-      'text/plain',
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-powerpoint",
+      "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+      "application/zip",
+      "application/x-zip-compressed",
+      "image/jpeg",
+      "image/png",
+      "image/gif",
+      "image/webp",
+      "text/plain",
     ];
 
-    const invalidFiles = newFiles.filter(file => !allowedTypes.includes(file.type));
-    
+    const invalidFiles = newFiles.filter(
+      (file) => !allowedTypes.includes(file.type)
+    );
+
     if (invalidFiles.length > 0) {
       notifications.show({
         title: "Invalid File Type",
-        message: `Some files have unsupported types: ${invalidFiles.map(f => f.name).join(', ')}`,
+        message: `Some files have unsupported types: ${invalidFiles
+          .map((f) => f.name)
+          .join(", ")}`,
         color: "orange",
         icon: <IconAlertTriangle size={18} />,
         autoClose: 4000,
       });
-      
+
       // Filter out invalid files
-      const validFiles = newFiles.filter(file => allowedTypes.includes(file.type));
+      const validFiles = newFiles.filter((file) =>
+        allowedTypes.includes(file.type)
+      );
       if (validFiles.length === 0) return;
-      
-      setUploadedFiles(prev => [...prev, ...validFiles]);
+
+      setUploadedFiles((prev) => [...prev, ...validFiles]);
     } else {
-      setUploadedFiles(prev => [...prev, ...newFiles]);
+      setUploadedFiles((prev) => [...prev, ...newFiles]);
     }
 
     notifications.show({
@@ -137,12 +143,12 @@ export function YourWorkContainer({
 
     // Reset input
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
   const handleRemoveFile = (index: number) => {
-    setUploadedFiles(prev => prev.filter((_, i) => i !== index));
+    setUploadedFiles((prev) => prev.filter((_, i) => i !== index));
     notifications.show({
       title: "File Removed",
       message: "File removed from your submission",
@@ -159,7 +165,8 @@ export function YourWorkContainer({
       setError(null);
 
       // Determine which submission method to use
-      const isFileUploadType = assignmentType === "file_upload" || uploadedFiles.length > 0;
+      const isFileUploadType =
+        assignmentType === "file_upload" || uploadedFiles.length > 0;
 
       if (isFileUploadType && uploadedFiles.length === 0) {
         notifications.show({
@@ -181,17 +188,16 @@ export function YourWorkContainer({
         );
       } else {
         // Submit with JSON (quiz/code - empty answers for now)
-        response = await AssignmentService.submitAssignmentJson(
-          assignmentId,
-          { answers: [] }
-        );
+        response = await AssignmentService.submitAssignmentJson(assignmentId, {
+          answers: [],
+        });
       }
 
       if (response.success) {
         setIsSubmitted(true);
         setLastSubmission(response.data);
         setUploadedFiles([]);
-        
+
         notifications.show({
           title: "Submitted Successfully! 🎉",
           message: "Your assignment has been submitted",
@@ -201,33 +207,43 @@ export function YourWorkContainer({
         });
 
         await fetchSubmissions();
-        
+
         if (courseId) {
-          queryClient.invalidateQueries({ queryKey: ["student-course", courseId] });
+          queryClient.invalidateQueries({
+            queryKey: ["student-course", courseId],
+          });
         }
-        queryClient.invalidateQueries({ queryKey: ["assignment", assignmentId] });
-        
+        queryClient.invalidateQueries({
+          queryKey: ["assignment", assignmentId],
+        });
+
         onSubmissionSuccess?.();
       }
     } catch (err: any) {
-      console.error('Submission error:', err);
-      
-      let errorMessage = 'Failed to submit assignment';
-      
-      if (err.message?.includes('Already submitted') || err.message?.includes('already submitted')) {
-        errorMessage = 'This assignment has already been submitted';
-      } else if (err.message?.includes('No files provided')) {
-        errorMessage = 'Please upload at least one file';
-      } else if (err.message?.includes('404') || err.message?.includes('not found')) {
-        errorMessage = 'Assignment not found or not published';
-      } else if (err.message?.includes('Maximum 10 files')) {
+      console.error("Submission error:", err);
+
+      let errorMessage = "Failed to submit assignment";
+
+      if (
+        err.message?.includes("Already submitted") ||
+        err.message?.includes("already submitted")
+      ) {
+        errorMessage = "This assignment has already been submitted";
+      } else if (err.message?.includes("No files provided")) {
+        errorMessage = "Please upload at least one file";
+      } else if (
+        err.message?.includes("404") ||
+        err.message?.includes("not found")
+      ) {
+        errorMessage = "Assignment not found or not published";
+      } else if (err.message?.includes("Maximum 10 files")) {
         errorMessage = err.message;
       } else if (err.message) {
         errorMessage = err.message;
       }
 
       setError(errorMessage);
-      
+
       notifications.show({
         title: "Submission Failed",
         message: errorMessage,
@@ -243,13 +259,14 @@ export function YourWorkContainer({
   const handleUnmark = () => {
     notifications.show({
       title: "Unsubmit Not Supported",
-      message: "Once submitted, assignments cannot be unsubmitted. Please contact your instructor if you need to make changes.",
+      message:
+        "Once submitted, assignments cannot be unsubmitted. Please contact your instructor if you need to make changes.",
       color: "blue",
       autoClose: 4000,
     });
   };
 
-  // Compute 
+  // Compute
   const status = isSubmitted
     ? { label: "Submitted", color: "green" as const }
     : { label: "Not Submitted", color: "red" as const };
@@ -273,7 +290,7 @@ export function YourWorkContainer({
         type="file"
         multiple
         accept=".pdf,.doc,.docx,.ppt,.pptx,.xls,.xlsx,.zip,.jpg,.jpeg,.png,.gif,.webp,.txt"
-        style={{ display: 'none' }}
+        style={{ display: "none" }}
         onChange={handleFileChange}
       />
     </>

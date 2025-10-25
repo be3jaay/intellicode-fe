@@ -12,10 +12,13 @@ export const useCompleteLesson = () => {
       courseId: string;
       lessonId: string;
     }) => lessonService.completeLesson(courseId, lessonId),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       // Invalidate relevant queries to refresh the data
       queryClient.invalidateQueries({ queryKey: ["enrolled-course"] });
       queryClient.invalidateQueries({ queryKey: ["course-progress"] });
+      queryClient.invalidateQueries({
+        queryKey: ["student-course", variables.courseId],
+      });
     },
   });
 };

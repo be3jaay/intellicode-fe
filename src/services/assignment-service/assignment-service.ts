@@ -291,4 +291,16 @@ export class AssignmentService {
       throw error;
     }
   }
+  /**
+   * Delete an assignment by ID
+   * @param assignmentId - The assignment ID
+   */
+  public static async deleteAssignment(assignmentId: string): Promise<void> {
+    try {
+      await apiClient.delete(`/course/assignments/${assignmentId}`);
+    } catch (error) {
+      console.error("Error deleting assignment:", error);
+      throw error;
+    }
+  }
 }

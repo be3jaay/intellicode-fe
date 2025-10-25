@@ -1,5 +1,6 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { Modal } from "@mantine/core";
 import {
   Box,
   Card,
@@ -13,7 +14,6 @@ import {
   Button,
   Loader,
   Center,
-  Pagination,
 } from "@mantine/core";
 import {
   Search,
@@ -21,7 +21,6 @@ import {
   Edit,
   Trash2,
   Eye,
-  EyeOff,
   Calendar,
   Clock,
   FileText,
@@ -30,20 +29,53 @@ import {
   CheckCircle,
   XCircle,
   ClipboardCheck,
+  Trophy,
+  Sparkles,
+  BookOpen,
+  BookAIcon,
+  BookUser,
 } from "lucide-react";
-import { useGetAssignments } from "@/hooks/query-hooks/assignment-query";
+import {
+  useGetAssignments,
+  useDeleteAssignment,
+} from "@/hooks/query-hooks/assignment-query";
 import {
   Assignment,
   AssignmentQueryParams,
 } from "@/services/assignment-service/assignment-type";
 import { format } from "date-fns";
+import { useDebouncedValue } from "@mantine/hooks";
 
 interface AssignmentContentProps {
   moduleId: string;
 }
 
 export function AssignmentContent({ moduleId }: AssignmentContentProps) {
+  // Delete modal state and mutation (must be inside component)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<Assignment | null>(null);
+  const { deleteAssignment, isDeleting } = useDeleteAssignment();
+
+  // Handle delete icon click
+  const handleDeleteClick = (assignment: Assignment) => {
+    setSelectedAssignment(assignment);
+    setDeleteModalOpen(true);
+  };
+
+  // Confirm delete
+  const handleConfirmDelete = async () => {
+    if (!selectedAssignment) return;
+    try {
+      await deleteAssignment(selectedAssignment.id);
+      setDeleteModalOpen(false);
+      setSelectedAssignment(null);
+    } catch (err) {
+      // Optionally show error
+    }
+  };
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch] = useDebouncedValue(searchTerm, 500); // 500ms delay
   const [publishedFilter, setPublishedFilter] = useState<string | null>(null);
   const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<
     string | null
@@ -56,7 +88,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
   const queryParams: AssignmentQueryParams = {
     offset,
     limit,
-    search: searchTerm || undefined,
+    search: debouncedSearch || undefined,
     is_published: publishedFilter ? publishedFilter === "published" : undefined,
     assignmentType: (assignmentTypeFilter as any) || undefined,
   };
@@ -82,10 +114,14 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     }
   }, [data, limit, offset]);
 
+  // Reset to first page when debounced search changes
+  useEffect(() => {
+    setOffset(0);
+    setAllAssignments([]);
+  }, [debouncedSearch]);
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setOffset(0); // Reset to first page when searching
-    setAllAssignments([]); // Clear accumulated assignments
   };
 
   const handleFilterChange = (filterType: string, value: string | null) => {
@@ -102,16 +138,57 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     setOffset((prev) => prev + limit);
   };
 
-  const getAssignmentTypeIcon = (type: string) => {
+  const getAssignmentTypeIcon = (
+    type: "quiz_form" | "code_sandbox" | "file_upload"
+  ) => {
     switch (type) {
       case "quiz_form":
-        return <FileText size={16} />;
+        return <BookUser size={16} />;
       case "code_sandbox":
         return <Code size={16} />;
       case "file_upload":
         return <Upload size={16} />;
       default:
         return <FileText size={16} />;
+    }
+  };
+
+  const getAssignmentCategoryIcon = (category: string) => {
+    switch (category) {
+      case "exam":
+        return <Trophy size={14} />;
+      case "activity":
+        return <Sparkles size={14} />;
+      case "assignment":
+        return <BookOpen size={14} />;
+      default:
+        return <BookOpen size={14} />;
+    }
+  };
+
+  const getAssignmentCategoryColor = (category: string) => {
+    switch (category) {
+      case "exam":
+        return "#ff0000";
+      case "activity":
+        return "#ffa500";
+      case "assignment":
+        return "#87ceeb";
+      default:
+        return "#87ceeb";
+    }
+  };
+
+  const getAssignmentCategoryLabel = (category: string) => {
+    switch (category) {
+      case "exam":
+        return "Exam";
+      case "activity":
+        return "Activity";
+      case "assignment":
+        return "Assignment";
+      default:
+        return "Assignment";
     }
   };
 
@@ -235,27 +312,6 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                 },
               }}
             />
-            <Select
-              placeholder="Assignment Type"
-              value={assignmentTypeFilter}
-              onChange={(value) => handleFilterChange("assignmentType", value)}
-              data={[
-                { value: "quiz_form", label: "Quiz Form" },
-                { value: "code_sandbox", label: "Code Sandbox" },
-                { value: "file_upload", label: "File Upload" },
-              ]}
-              leftSection={<Filter size={16} color="#9ca3af" />}
-              styles={{
-                input: {
-                  background: "rgba(26, 26, 26, 0.8)",
-                  border: "1px solid rgba(189, 240, 82, 0.2)",
-                  color: "#e9eeea",
-                  "&:focus": {
-                    borderColor: "rgba(189, 240, 82, 0.5)",
-                  },
-                },
-              }}
-            />
           </Group>
         </Stack>
       </Card>
@@ -312,25 +368,46 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                       width: 40,
                       height: 40,
                       borderRadius: 8,
-                      background: getAssignmentTypeColor(
+                      background: `${getAssignmentCategoryColor(
+                        assignment.assignmentType
+                      )}15`,
+                      color: getAssignmentCategoryColor(
                         assignment.assignmentType
                       ),
-                      border: `1px solid ${getAssignmentTypeBorderColor(
+                      border: `1px solid ${getAssignmentCategoryColor(
                         assignment.assignmentType
-                      )}`,
+                      )}40`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      color: "#e9eeea",
                     }}
                   >
-                    {getAssignmentTypeIcon(assignment.assignmentType)}
+                    {getAssignmentTypeIcon(assignment.assignmentSubtype)}
                   </Box>
                   <Box style={{ flex: 1 }}>
                     <Group gap="sm" mb={4}>
                       <Text fw={600} size="sm" c="#e9eeea">
                         {assignment.title}
                       </Text>
+                      <Badge
+                        size="sm"
+                        style={{
+                          background: `${getAssignmentCategoryColor(
+                            assignment.assignmentType
+                          )}15`,
+                          color: getAssignmentCategoryColor(
+                            assignment.assignmentType
+                          ),
+                          border: `1px solid ${getAssignmentCategoryColor(
+                            assignment.assignmentType
+                          )}40`,
+                        }}
+                        leftSection={getAssignmentCategoryIcon(
+                          assignment.assignmentType
+                        )}
+                      >
+                        {getAssignmentCategoryLabel(assignment.assignmentType)}
+                      </Badge>
                       <Badge
                         size="sm"
                         style={{
@@ -394,7 +471,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                   >
                     <Eye size={16} />
                   </ActionIcon>
-                  {assignment.assignmentSubtype === "code_sandbox" ? (
+                  {assignment.assignmentSubtype === "code_sandbox" && (
                     <ActionIcon
                       variant="light"
                       size="md"
@@ -408,7 +485,8 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                     >
                       <Code size={16} />
                     </ActionIcon>
-                  ) : (
+                  )}
+                  {assignment.assignmentSubtype === "file_upload" && (
                     <ActionIcon
                       variant="light"
                       size="md"
@@ -442,9 +520,42 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                       color: "#f6acae",
                       border: "1px solid rgba(246, 172, 174, 0.3)",
                     }}
+                    onClick={() => handleDeleteClick(assignment)}
                   >
                     <Trash2 size={16} />
                   </ActionIcon>
+                  {/* Delete Confirmation Modal */}
+                  <Modal
+                    opened={deleteModalOpen}
+                    onClose={() => setDeleteModalOpen(false)}
+                    title="Delete Assignment"
+                    centered
+                    overlayProps={{ backgroundOpacity: 0.55, blur: 3 }}
+                  >
+                    <Stack gap="md">
+                      <Text>
+                        Are you sure you want to delete the assignment
+                        <b> {selectedAssignment?.title}</b>? This action cannot
+                        be undone.
+                      </Text>
+                      <Group justify="flex-end">
+                        <Button
+                          variant="default"
+                          onClick={() => setDeleteModalOpen(false)}
+                          disabled={isDeleting}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          color="red"
+                          loading={isDeleting}
+                          onClick={handleConfirmDelete}
+                        >
+                          Delete
+                        </Button>
+                      </Group>
+                    </Stack>
+                  </Modal>
                 </Group>
               </Group>
             </Card>

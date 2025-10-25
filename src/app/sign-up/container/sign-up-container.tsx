@@ -1,28 +1,12 @@
 "use client";
-import {
-  Box,
-  Container,
-  Grid,
-  Paper,
-  Stack,
-  Text,
-  Title,
-  ThemeIcon,
-} from "@mantine/core";
+import { Box, Container } from "@mantine/core";
 import { SignUpForm } from "./sign-up-form";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema, type SignUpSchemaType } from "./schema/sign-up-schema";
 import { signUp } from "@/utils/auth";
 import { SignUpFormValue } from "@/types/auth.type";
-import {
-  GraduationCap,
-  Briefcase,
-  Users,
-  TrendingUp,
-  CheckCircle,
-  XCircle,
-} from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
 import { notifications } from "@mantine/notifications";
 import { useState } from "react";
 
@@ -122,8 +106,7 @@ export const SignUpContainer = () => {
     } catch (error) {
       notifications.show({
         title: "Connection Error",
-        message:
-          "An error occurred. Please check your connection and try again.",
+        message: `An error occurred. Please check your connection and try again. ${error}`,
         color: "red",
         icon: <XCircle size={18} />,
         autoClose: 5000,

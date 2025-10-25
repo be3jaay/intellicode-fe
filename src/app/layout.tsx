@@ -12,6 +12,8 @@ import "../styles/animations.css";
 import "@mantine/dates/styles.css";
 import "@mantine/core/styles.css";
 import "@mantine/tiptap/styles.css";
+import "../styles/tiptap-editor.css";
+import "../styles/syntax-highlighting.css";
 import "@mantine/core/styles.css";
 // ‼️ import charts styles after core package styles
 import "@mantine/charts/styles.css";

@@ -1,0 +1,154 @@
+/* Custom Syntax Highlighting Theme for Code Blocks */
+
+/* Base code block styling */
+.hljs-code-block {
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%) !important;
+  border: 2px solid rgba(79, 209, 197, 0.4) !important;
+  border-radius: 12px !important;
+  padding: 20px !important;
+  margin: 1.5rem 0 !important;
+  overflow: auto !important;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(79, 209, 197, 0.1) !important;
+}
+
+/* Syntax highlighting colors */
+.hljs {
+  color: #ffffff;
+  background: transparent;
+}
+
+/* Comments */
+.hljs-comment,
+.hljs-quote {
+  color: #6b7280;
+  font-style: italic;
+}
+
+/* Keywords */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+  color: #c678dd;
+  font-weight: 600;
+}
+
+/* Strings */
+.hljs-string,
+.hljs-attr,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-addition {
+  color: #98c379;
+}
+
+/* Numbers */
+.hljs-number,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal {
+  color: #d19a66;
+}
+
+/* Functions */
+.hljs-function,
+.hljs-title.function_,
+.hljs-title.class_ {
+  color: #61afef;
+  font-weight: 600;
+}
+
+/* Variables */
+.hljs-variable,
+.hljs-params {
+  color: #e06c75;
+}
+
+/* Types */
+.hljs-type,
+.hljs-class {
+  color: #e5c07b;
+}
+
+/* Attributes */
+.hljs-attribute,
+.hljs-meta {
+  color: #c678dd;
+}
+
+/* Tags (HTML/XML) */
+.hljs-tag,
+.hljs-name {
+  color: #e06c75;
+}
+
+/* Operators */
+.hljs-operator,
+.hljs-punctuation {
+  color: #56b6c2;
+}
+
+/* Regular expressions */
+.hljs-regexp,
+.hljs-link {
+  color: #98c379;
+}
+
+/* Sections */
+.hljs-section,
+.hljs-selector-id {
+  color: #e5c07b;
+  font-weight: 600;
+}
+
+/* Properties */
+.hljs-property,
+.hljs-selector-class {
+  color: #d19a66;
+}
+
+/* Deletion */
+.hljs-deletion {
+  color: #e06c75;
+}
+
+/* Template variables */
+.hljs-template-variable,
+.hljs-template-tag {
+  color: #c678dd;
+}
+
+/* Emphasis */
+.hljs-emphasis {
+  font-style: italic;
+}
+
+.hljs-strong {
+  font-weight: 700;
+}
+
+/* Line numbers (if enabled) */
+.hljs-ln-numbers {
+  color: #4b5563;
+  text-align: right;
+  padding-right: 1rem;
+  user-select: none;
+  border-right: 1px solid rgba(79, 209, 197, 0.2);
+  margin-right: 1rem;
+}
+
+/* Make code scrollable */
+.hljs-code-block code {
+  display: block;
+  overflow-x: auto;
+  padding: 0;
+  line-height: 1.6;
+  font-family: "Fira Code", "Courier New", monospace;
+  font-size: 14px;
+}
+
+/* Additional modern touches */
+.hljs-code-block pre {
+  margin: 0;
+  background: transparent;
+}

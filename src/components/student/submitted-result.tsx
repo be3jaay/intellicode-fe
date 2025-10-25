@@ -69,9 +69,11 @@ export function SubmittedResult({
 
   const handleBackToCourse = () => {
     if (courseId) {
-      router.push(`/dashboard/student/courses/${courseId}?tab=assignments`);
+      router.push(
+        `http://localhost:3000/dashboard/student/courses/${courseId}`
+      );
     } else {
-      router.push("/dashboard/student/courses");
+      router.back();
     }
   };
 
@@ -169,7 +171,7 @@ export function SubmittedResult({
           <Group justify="space-between">
             <Group gap="xs">
               <IconClock size={16} color="#BDF052" />
-              <Text size="sm" c="dimmed">
+              <Text size="sm" c="white">
                 Submitted At
               </Text>
             </Group>

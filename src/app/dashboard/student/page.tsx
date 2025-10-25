@@ -16,7 +16,6 @@ import {
   Plus,
   ArrowRight,
   AlertCircle,
-  Award,
 } from "lucide-react";
 import {
   StatCard,
@@ -257,8 +256,8 @@ export default function StudentDashboard() {
                     }}
                   >
                     <Text c="dimmed" size="sm">
-                      You haven't enrolled in any courses yet. Join a course to
-                      get started!
+                      You haven&apos;t enrolled in any courses yet. Join a
+                      course to get started!
                     </Text>
                   </Box>
                 </Grid.Col>

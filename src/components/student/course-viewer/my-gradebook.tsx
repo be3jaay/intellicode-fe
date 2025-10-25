@@ -341,7 +341,7 @@ export function MyGradebookComponent({ courseId }: MyGradebookProps) {
                 background: "rgba(189, 240, 82, 0.05)",
                 borderColor: "rgba(189, 240, 82, 0.3)",
               },
-              "&[data-active]": {
+              "&[dataActive]": {
                 color: "#bdf052",
                 borderColor: "#bdf052",
                 background: "rgba(189, 240, 82, 0.1)",

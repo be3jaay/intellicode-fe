@@ -3,7 +3,15 @@
  */
 
 import { CodeEditor } from "../code-editor";
-import { Box, Container, Title, Text, Paper, Grid, GridCol } from "@mantine/core";
+import {
+  Box,
+  Container,
+  Title,
+  Text,
+  Paper,
+  Grid,
+  GridCol,
+} from "@mantine/core";
 
 // ============================================
 // Example 1: Embedded with content above and below
@@ -15,7 +23,7 @@ export function EmbeddedExample() {
         <Title order={1} c="white" mb="xl">
           Python Programming Lesson
         </Title>
-        
+
         <Paper p="xl" mb="xl" style={{ background: "#161b22" }}>
           <Title order={2} c="white" mb="md">
             Introduction to Functions
@@ -25,7 +33,7 @@ export function EmbeddedExample() {
           </Text>
         </Paper>
 
-        <CodeEditor 
+        <CodeEditor
           title="Practice Area"
           initialLanguage="python"
           fullPage={false}
@@ -67,7 +75,7 @@ export function SideBySideExample() {
                 <ul>
                   <li>You can use string slicing</li>
                   <li>Or use a loop to build the reversed string</li>
-                  <li>Don't forget to return the result!</li>
+                  <li>Don&apos;t forget to return the result!</li>
                 </ul>
               </Text>
             </Paper>
@@ -75,7 +83,7 @@ export function SideBySideExample() {
 
           {/* Code Editor Column */}
           <GridCol span={{ base: 12, md: 8 }}>
-            <CodeEditor 
+            <CodeEditor
               showHeader={false}
               fullPage={false}
               useContainer={false}
@@ -94,12 +102,14 @@ export function SideBySideExample() {
 export function CompactExample() {
   return (
     <Container size="lg" py="xl">
-      <Title order={1} mb="md">Quick Code Test</Title>
+      <Title order={1} mb="md">
+        Quick Code Test
+      </Title>
       <Text mb="xl" c="dimmed">
         Test your JavaScript code snippets:
       </Text>
 
-      <CodeEditor 
+      <CodeEditor
         showHeader={false}
         fullPage={false}
         editorHeight="300px"
@@ -124,7 +134,7 @@ export function MultipleEditorsExample() {
           <Title order={3} c="white" mb="md">
             JavaScript
           </Title>
-          <CodeEditor 
+          <CodeEditor
             showHeader={false}
             fullPage={false}
             initialLanguage="javascript"
@@ -136,7 +146,7 @@ export function MultipleEditorsExample() {
           <Title order={3} c="white" mb="md">
             Python
           </Title>
-          <CodeEditor 
+          <CodeEditor
             showHeader={false}
             fullPage={false}
             initialLanguage="python"
@@ -154,9 +164,9 @@ export function MultipleEditorsExample() {
 export function CardExample() {
   return (
     <Container size="md" py="xl">
-      <Paper 
-        shadow="lg" 
-        radius="md" 
+      <Paper
+        shadow="lg"
+        radius="md"
         p="xl"
         style={{ background: "#161b22", border: "1px solid #30363d" }}
       >
@@ -167,7 +177,7 @@ export function CardExample() {
           Write a function that checks if a number is prime.
         </Text>
 
-        <CodeEditor 
+        <CodeEditor
           showHeader={false}
           fullPage={false}
           useContainer={false}
@@ -190,7 +200,7 @@ export function FullWidthExample() {
         </Title>
       </Box>
 
-      <CodeEditor 
+      <CodeEditor
         showHeader={false}
         fullPage={false}
         useContainer={false}

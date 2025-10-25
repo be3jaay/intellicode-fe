@@ -15,6 +15,7 @@ import {
   Button,
   Grid,
   Title,
+  Select,
 } from "@mantine/core";
 import {
   User,
@@ -24,6 +25,7 @@ import {
   Code2,
   Trophy,
   AlertCircle,
+  ChevronDown,
 } from "lucide-react";
 import { SubmissionForGrading } from "@/services/assignment-service/assignment-type";
 import { format } from "date-fns";
@@ -33,12 +35,13 @@ import { MonacoEditor } from "@/components/code-sandbox/monaco-editor";
 import { useAIAnalysis } from "@/hooks/use-ai-analysis";
 import { AIAnalysisModal } from "./ai-analysis-modal";
 import { AICheckButton } from "./ai-check-button";
+import { languageOptions } from "@/components/code-sandbox/code-constants";
+import { CodeService } from "@/services/code-service";
 
 interface CodeReviewInterfaceProps {
   submission: SubmissionForGrading;
   onClose?: () => void;
 }
-
 
 export function CodeReviewInterface({
   submission,
@@ -50,32 +53,38 @@ export function CodeReviewInterface({
   const [output, setOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState(false);
   const [showAIModal, setShowAIModal] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState<string>(
+    submission.code_language?.toLowerCase() || "javascript"
+  );
 
   const { gradeSubmission, isGrading } = useGradeSubmission();
 
   // AI Analysis hook
-  const {
-    aiStatus,
-    aiResult,
-    runAnalysis,
-    isAnalyzing,
-    hasAnalysis,
-  } = useAIAnalysis({
-    submissionId: submission.id,
-    code,
-    description: submission.assignment_description,
-    language: submission.code_language,
-    maxScore: submission.max_score,
-    onScoreChange: setScore,
-    onFeedbackChange: setFeedback,
-  });
+  const { aiStatus, aiResult, runAnalysis, isAnalyzing, hasAnalysis } =
+    useAIAnalysis({
+      submissionId: submission.id,
+      code,
+      description: submission.assignment_description,
+      language: submission.code_language,
+      maxScore: submission.max_score,
+      onScoreChange: setScore,
+      onFeedbackChange: setFeedback,
+    });
 
   useEffect(() => {
     setScore(submission.score);
     setFeedback("");
     setCode(submission.submitted_code || "");
     setOutput("");
-  }, [submission.id, submission.submitted_code, submission.score]);
+    setSelectedLanguage(
+      submission.code_language?.toLowerCase() || "javascript"
+    );
+  }, [
+    submission.id,
+    submission.submitted_code,
+    submission.score,
+    submission.code_language,
+  ]);
 
   const handleSubmitGrade = async () => {
     try {
@@ -106,35 +115,44 @@ export function CodeReviewInterface({
     }
   };
 
-  const handleRunCode = () => {
+  const handleRunCode = async () => {
     setIsRunning(true);
-    setOutput("");
+    setOutput("Running code...");
 
     try {
-      const logs: string[] = [];
-      const customConsole = {
-        log: (...args: any[]) => {
-          logs.push(args.map((arg) => String(arg)).join(" "));
-        },
-        error: (...args: any[]) => {
-          logs.push(`ERROR: ${args.map((arg) => String(arg)).join(" ")}`);
-        },
-        warn: (...args: any[]) => {
-          logs.push(`WARNING: ${args.map((arg) => String(arg)).join(" ")}`);
-        },
-      };
+      const response = await CodeService.executeCode({
+        code,
+        language: selectedLanguage,
+      });
 
-      const func = new Function("console", code);
-      func(customConsole);
+      if (response.error) {
+        setOutput(response.error);
+      } else {
+        const executionOutput =
+          response.output || "Code executed successfully (no output)";
+        let fullOutput = executionOutput;
 
-      setOutput(logs.join("\n") || "Code executed successfully (no output)");
+        if (response.time || response.memory) {
+          const time = response.time ? `${response.time}s` : "N/A";
+          const memory = response.memory
+            ? `${Math.round(response.memory / 1024)} KB`
+            : "N/A";
+          fullOutput += `\n\n⏱️ Time: ${time} | 💾 Memory: ${memory}`;
+        }
+
+        setOutput(fullOutput);
+      }
     } catch (error: any) {
-      setOutput(`Error: ${error.message}`);
+      console.error("❌ Code execution error:", error);
+      setOutput(
+        `Network Error: Unable to connect to the API.\n\nError details: ${
+          error instanceof Error ? error.message : "Unknown error"
+        }`
+      );
     } finally {
       setIsRunning(false);
     }
   };
-
 
   const handleAICheck = async () => {
     if (hasAnalysis) {
@@ -145,15 +163,13 @@ export function CodeReviewInterface({
     try {
       await runAnalysis();
       setShowAIModal(true);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleReRunAnalysis = async () => {
     try {
       await runAnalysis();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const getStatusColor = (status: string) => {
@@ -302,14 +318,50 @@ export function CodeReviewInterface({
                       <Badge
                         size="sm"
                         style={{
+                          background: "rgba(189, 240, 82, 0.2)",
+                          color: "#bdf052",
+                          border: "1px solid rgba(189, 240, 82, 0.3)",
+                        }}
+                      >
+                        Original: {submission.code_language}
+                      </Badge>
+                    )}
+                    <Select
+                      value={selectedLanguage}
+                      onChange={(value) =>
+                        setSelectedLanguage(value || "javascript")
+                      }
+                      data={languageOptions}
+                      size="xs"
+                      rightSection={<ChevronDown size={14} />}
+                      styles={{
+                        input: {
                           background: "rgba(6, 182, 212, 0.2)",
                           color: "#06b6d4",
                           border: "1px solid rgba(6, 182, 212, 0.3)",
-                        }}
-                      >
-                        {submission.code_language}
-                      </Badge>
-                    )}
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          minWidth: "120px",
+                          "&:focus": {
+                            borderColor: "rgba(6, 182, 212, 0.5)",
+                          },
+                        },
+                        dropdown: {
+                          background: "rgba(26, 26, 26, 0.95)",
+                          border: "1px solid rgba(6, 182, 212, 0.3)",
+                        },
+                        option: {
+                          color: "#e9eeea",
+                          "&[data-selected]": {
+                            background: "rgba(6, 182, 212, 0.2)",
+                            color: "#06b6d4",
+                          },
+                          "&:hover": {
+                            background: "rgba(6, 182, 212, 0.1)",
+                          },
+                        },
+                      }}
+                    />
                   </Group>
                   <Group gap="xs">
                     <AICheckButton
@@ -343,9 +395,12 @@ export function CodeReviewInterface({
                   <MonacoEditor
                     value={code}
                     onChange={(value) => setCode(value || "")}
-                    language={
-                      submission.code_language?.toLowerCase() || "javascript"
-                    }
+                    language={selectedLanguage}
+                    options={{
+                      readOnly: true,
+                      minimap: { enabled: false },
+                      scrollBeyondLastLine: false,
+                    }}
                   />
                 </Box>
               </Stack>

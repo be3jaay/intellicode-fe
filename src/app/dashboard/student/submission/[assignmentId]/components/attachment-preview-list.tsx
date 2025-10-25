@@ -6,7 +6,6 @@ import {
   Text,
   Paper,
   Group,
-  Button,
   Box,
   Skeleton,
   ActionIcon,
@@ -75,19 +74,44 @@ const formatFileSize = (bytes: number): string => {
 
 const getFileCategory = (attachment: Attachment): string => {
   const mimeType = attachment.mime_type?.toLowerCase() || "";
-  const extension = attachment.original_name.split(".").pop()?.toLowerCase() || "";
+  const extension =
+    attachment.original_name.split(".").pop()?.toLowerCase() || "";
 
   if (mimeType.includes("pdf") || extension === "pdf") return "pdf";
-  if (mimeType.startsWith("image/") || ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(extension))
+  if (
+    mimeType.startsWith("image/") ||
+    ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(extension)
+  )
     return "image";
-  if (mimeType.startsWith("video/") || ["mp4", "webm", "ogg", "mov"].includes(extension)) return "video";
-  if (mimeType.startsWith("audio/") || ["mp3", "wav", "ogg", "m4a"].includes(extension)) return "audio";
+  if (
+    mimeType.startsWith("video/") ||
+    ["mp4", "webm", "ogg", "mov"].includes(extension)
+  )
+    return "video";
+  if (
+    mimeType.startsWith("audio/") ||
+    ["mp3", "wav", "ogg", "m4a"].includes(extension)
+  )
+    return "audio";
   if (
     mimeType.startsWith("text/") ||
     ["txt", "md", "json", "xml", "csv", "log"].includes(extension)
   )
     return "text";
-  if (["js", "ts", "jsx", "tsx", "py", "java", "c", "cpp", "css", "html"].includes(extension))
+  if (
+    [
+      "js",
+      "ts",
+      "jsx",
+      "tsx",
+      "py",
+      "java",
+      "c",
+      "cpp",
+      "css",
+      "html",
+    ].includes(extension)
+  )
     return "code";
   if (["zip", "rar", "7z", "tar", "gz"].includes(extension)) return "zip";
 
@@ -106,7 +130,11 @@ const PDFPreview = ({ url }: { url: string }) => {
   return (
     <Box style={{ position: "relative", width: "100%", minHeight: 400 }}>
       {loading && (
-        <Skeleton height={400} width="100%" style={{ position: "absolute", top: 0, left: 0 }} />
+        <Skeleton
+          height={400}
+          width="100%"
+          style={{ position: "absolute", top: 0, left: 0 }}
+        />
       )}
       {error ? (
         <Box
@@ -210,7 +238,10 @@ const ImagePreview = ({ url, alt }: { url: string; alt: string }) => {
         centered
         styles={{
           content: { background: colors.paper },
-          header: { background: colors.paper, borderBottom: `1px solid ${colors.border}` },
+          header: {
+            background: colors.paper,
+            borderBottom: `1px solid ${colors.border}`,
+          },
           title: { color: colors.text, fontWeight: 600 },
         }}
       >
@@ -310,11 +341,7 @@ const AudioPreview = ({ url, name }: { url: string; name: string }) => {
         borderRadius: 8,
       }}
     >
-      <audio
-        controls
-        style={{ width: "100%" }}
-        onError={() => setError(true)}
-      >
+      <audio controls style={{ width: "100%" }} onError={() => setError(true)}>
         <source src={url} />
         Your browser does not support the audio tag.
       </audio>
@@ -355,6 +382,7 @@ const TextPreview = ({ url, name }: { url: string; name: string }) => {
       } catch (err) {
         setError(true);
         setLoading(false);
+        console.error(err);
       }
     };
 
@@ -452,9 +480,17 @@ const AttachmentCard = ({ attachment }: AttachmentCardProps) => {
     return () => observer.disconnect();
   }, []);
 
-  const hasValidUrl = attachment.public_url && attachment.public_url.trim() !== "";
+  const hasValidUrl =
+    attachment.public_url && attachment.public_url.trim() !== "";
   const shouldPreview = hasValidUrl && isInView && isExpanded;
-  const canPreview = ["pdf", "image", "video", "audio", "text", "code"].includes(category);
+  const canPreview = [
+    "pdf",
+    "image",
+    "video",
+    "audio",
+    "text",
+    "code",
+  ].includes(category);
 
   return (
     <Paper
@@ -464,7 +500,8 @@ const AttachmentCard = ({ attachment }: AttachmentCardProps) => {
       style={{
         background: colors.paper,
         border: `1px solid ${isExpanded ? colors.primary : colors.border}`,
-        cursor: canPreview && hasValidUrl && !isExpanded ? "pointer" : "default",
+        cursor:
+          canPreview && hasValidUrl && !isExpanded ? "pointer" : "default",
         transition: "all 0.2s ease",
       }}
       onMouseEnter={(e) => {
@@ -592,16 +629,29 @@ const AttachmentCard = ({ attachment }: AttachmentCardProps) => {
           <>
             {category === "pdf" && <PDFPreview url={attachment.public_url} />}
             {category === "image" && (
-              <ImagePreview url={attachment.public_url} alt={attachment.original_name} />
+              <ImagePreview
+                url={attachment.public_url}
+                alt={attachment.original_name}
+              />
             )}
-            {category === "video" && <VideoPreview url={attachment.public_url} />}
+            {category === "video" && (
+              <VideoPreview url={attachment.public_url} />
+            )}
             {category === "audio" && (
-              <AudioPreview url={attachment.public_url} name={attachment.original_name} />
+              <AudioPreview
+                url={attachment.public_url}
+                name={attachment.original_name}
+              />
             )}
             {(category === "text" || category === "code") && (
-              <TextPreview url={attachment.public_url} name={attachment.original_name} />
+              <TextPreview
+                url={attachment.public_url}
+                name={attachment.original_name}
+              />
             )}
-            {!["pdf", "image", "video", "audio", "text", "code"].includes(category) && (
+            {!["pdf", "image", "video", "audio", "text", "code"].includes(
+              category
+            ) && (
               <Box
                 style={{
                   padding: 24,
@@ -632,7 +682,9 @@ const AttachmentCard = ({ attachment }: AttachmentCardProps) => {
 };
 
 // Main List Component
-export const AttachmentPreviewList = ({ attachments }: AttachmentPreviewListProps) => {
+export const AttachmentPreviewList = ({
+  attachments,
+}: AttachmentPreviewListProps) => {
   if (!attachments || attachments.length === 0) {
     return null;
   }

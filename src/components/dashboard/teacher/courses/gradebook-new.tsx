@@ -342,26 +342,6 @@ export function Gradebook({ courseId }: GradebookProps) {
                 },
               }}
             />
-            <Select
-              placeholder="Assignment Type"
-              value={assignmentTypeFilter}
-              onChange={(value) => handleFilterChange("assignmentType", value)}
-              clearable
-              data={[
-                { value: "assignment", label: "Assignment" },
-                { value: "activity", label: "Activity" },
-                { value: "exam", label: "Exam" },
-              ]}
-              leftSection={<Filter size={16} color="#9ca3af" />}
-              styles={{
-                input: {
-                  background: "rgba(26, 26, 26, 0.8)",
-                  border: "1px solid rgba(189, 240, 82, 0.2)",
-                  color: "#e9eeea",
-                  "&:focus": { borderColor: "rgba(189, 240, 82, 0.5)" },
-                },
-              }}
-            />
           </Group>
           <Group gap="xs">
             <Button

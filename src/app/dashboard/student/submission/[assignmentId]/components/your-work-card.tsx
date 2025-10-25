@@ -20,7 +20,6 @@ export function YourWorkCard({
   uploadedFiles,
   onUploadClick,
   onMarkAsDone,
-  onUnmark,
   onRemoveFile,
   loading = false,
 }: YourWorkCardProps) {
@@ -116,7 +115,7 @@ export function YourWorkCard({
               </Text>
             </Stack>
           </Box>
-          
+
           {/* Hide Unmark button since backend doesn't support unsubmit */}
           {/* <Button
             fullWidth

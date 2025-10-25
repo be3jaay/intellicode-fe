@@ -160,21 +160,48 @@ export function QuizInterface({
     // Disable leave detection before submitting
     setLeaveDetectionEnabled(false);
 
+    console.log("📝 Raw answers before processing:", answers);
+
     const payload: SubmitAssignmentData = {
       answers: answers.map((a) => {
         let answerText = "";
 
-        // For multiple choice, convert index to option text
+        // For multiple choice, use the actual option text (not index)
         if (a.type === "multiple_choice" && !Array.isArray(a.answer)) {
-          const question = assignment.questions.find(
-            (q) => q.id === a.questionId
+          answerText = a.answer as string;
+          console.log(
+            `Multiple Choice - Question: ${a.questionId}, Answer: "${answerText}"`
           );
-          const index = parseInt(a.answer as string);
-          answerText = question?.options[index] || a.answer;
+        } else if (a.type === "enumeration") {
+          // For enumeration, split by newlines and trim each line, then join with comma+space
+          const enumAnswers =
+            typeof a.answer === "string"
+              ? a.answer
+                  .split("\n")
+                  .map((line) => line.trim())
+                  .filter((line) => line)
+              : Array.isArray(a.answer)
+              ? a.answer
+              : [];
+          answerText = enumAnswers.join(", ");
+          console.log(
+            `Enumeration - Question: ${a.questionId}, Answers: ${JSON.stringify(
+              enumAnswers
+            )}, Formatted: "${answerText}"`
+          );
         } else if (Array.isArray(a.answer)) {
-          answerText = a.answer.join("\n");
+          // For other array types, join with ", " (comma + space) for proper formatting
+          answerText = a.answer.join(", ");
+          console.log(
+            `Array - Question: ${a.questionId}, Answers: ${JSON.stringify(
+              a.answer
+            )}, Formatted: "${answerText}"`
+          );
         } else {
           answerText = a.answer ?? "";
+          console.log(
+            `${a.type} - Question: ${a.questionId}, Answer: "${answerText}"`
+          );
         }
 
         return {
@@ -183,6 +210,8 @@ export function QuizInterface({
         };
       }),
     };
+
+    console.log("📦 Final payload:", JSON.stringify(payload, null, 2));
     try {
       const response = await submitAssignment({
         assignmentId: assignment.id,
@@ -208,12 +237,16 @@ export function QuizInterface({
         answers: submissionAnswers,
       });
       setIsSubmitted(true);
-      
+
       // Invalidate queries to refetch assignment status when navigating back
       if (courseId) {
-        queryClient.invalidateQueries({ queryKey: ["student-course", courseId] });
+        queryClient.invalidateQueries({
+          queryKey: ["student-course", courseId],
+        });
       }
-      queryClient.invalidateQueries({ queryKey: ["assignment", assignment.id] });
+      queryClient.invalidateQueries({
+        queryKey: ["assignment", assignment.id],
+      });
     } catch (e) {
       setLeaveDetectionEnabled(true);
       console.error(e);
@@ -472,11 +505,14 @@ export function QuizInterface({
                   : (getCurrentAnswer(currentQuestion.id) as string)
               }
               onChange={(event) => {
-                const lines = event.currentTarget.value
-                  .split("\n")
-                  .map((line) => line.trim())
-                  .filter((line) => line);
-                handleAnswerChange(currentQuestion.id, lines, "enumeration");
+                const textValue = event.currentTarget.value;
+                // Store as string to preserve spaces while typing
+                // Will be split into array when submitting
+                handleAnswerChange(
+                  currentQuestion.id,
+                  textValue,
+                  "enumeration"
+                );
               }}
               minRows={4}
               size="md"

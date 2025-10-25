@@ -14,16 +14,9 @@ import {
   List,
   ThemeIcon,
 } from "@mantine/core";
-import {
-  IconAlertTriangle,
-  IconLock,
-  IconBrain,
-  IconCircleDashed,
-  IconCircleCheck,
-} from "@tabler/icons-react";
+import { IconAlertTriangle, IconLock } from "@tabler/icons-react";
 import { AlreadySubmitted } from "@/components/student/already-submitted";
 import { useFetchAssignment } from "@/hooks/query-hooks/assignment-query";
-import { Assignment } from "@/services/assignment-service/assignment-type";
 import { QuizInterface } from "@/components/student/quiz-interface";
 
 export default function AssignmentPage() {
@@ -77,10 +70,10 @@ export default function AssignmentPage() {
 
   if (isLoading) {
     return (
-      <Center h="100vh">
+      <Center h="90vh">
         <Stack align="center" gap="md">
           <Loader size="lg" />
-          <Text>Loading assignment...</Text>
+          <Text c="white">Loading assignment...</Text>
         </Stack>
       </Center>
     );
@@ -103,7 +96,7 @@ export default function AssignmentPage() {
           background: "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)",
         }}
       >
-        <Center h="100vh">
+        <Center h="90vh">
           <Paper
             shadow="xl"
             p="xl"

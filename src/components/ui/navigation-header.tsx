@@ -75,9 +75,9 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
 
       <Group gap="md">
         {/* Notifications */}
-        <Menu shadow="md" width={400} position="bottom-end">
-          <Menu.Target>
-            <UnstyledButton style={{ position: "relative" }}>
+        <Box style={{ position: "relative" }}>
+          <Menu shadow="md" width={400} position="bottom-end">
+            <Menu.Target>
               <ActionIcon
                 variant="subtle"
                 color="gray"
@@ -86,136 +86,144 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
               >
                 <Bell size={20} />
               </ActionIcon>
-              {unreadCount > 0 && (
-                <Badge
-                  size="xs"
-                  color="red"
-                  style={{
-                    position: "absolute",
-                    top: -2,
-                    right: -2,
-                    minWidth: 18,
-                    height: 18,
-                    borderRadius: "50%",
-                    fontSize: "10px",
-                    fontWeight: 600,
-                  }}
-                >
-                  {unreadCount > 99 ? "99+" : unreadCount}
-                </Badge>
-              )}
-            </UnstyledButton>
-          </Menu.Target>
+            </Menu.Target>
 
-          <Menu.Dropdown>
-            <Menu.Label>
-              <Group justify="space-between">
-                <Text size="sm" fw={600}>
-                  Notifications
-                </Text>
-                {unreadCount > 0 && (
-                  <Button
-                    size="xs"
-                    variant="subtle"
-                    leftSection={<Check size={12} />}
-                    onClick={markAllAsRead}
-                  >
-                    Mark all read
-                  </Button>
-                )}
-              </Group>
-            </Menu.Label>
-            <Menu.Divider />
-
-            <ScrollArea.Autosize mah={300}>
-              {notifications.length === 0 ? (
-                <Box p="md" ta="center">
-                  <Text size="sm" c="dimmed">
-                    No notifications
+            <Menu.Dropdown>
+              <Menu.Label>
+                <Group justify="space-between">
+                  <Text size="sm" fw={600}>
+                    Notifications
                   </Text>
-                </Box>
-              ) : (
-                <Stack gap="xs" p="xs">
-                  {notifications.map((notification) => (
-                    <Box
-                      key={notification.id}
-                      p="sm"
-                      style={{
-                        borderRadius: "4px",
-                        backgroundColor: notification.is_read
-                          ? "transparent"
-                          : "#f8f9fa",
-                        border: notification.is_read
-                          ? "none"
-                          : "1px solid #e9ecef",
-                        cursor: "pointer",
-                        position: "relative",
-                      }}
-                      onClick={() =>
-                        !notification.is_read && markAsRead(notification.id)
-                      }
+                  {unreadCount > 0 && (
+                    <Button
+                      size="xs"
+                      variant="subtle"
+                      leftSection={<Check size={12} />}
+                      onClick={markAllAsRead}
                     >
-                      <Group
-                        justify="space-between"
-                        align="flex-start"
-                        wrap="nowrap"
+                      Mark all read
+                    </Button>
+                  )}
+                </Group>
+              </Menu.Label>
+              <Menu.Divider />
+
+              <ScrollArea.Autosize mah={300}>
+                {notifications.length === 0 ? (
+                  <Box p="md" ta="center">
+                    <Text size="sm" c="dimmed">
+                      No notifications
+                    </Text>
+                  </Box>
+                ) : (
+                  <Stack gap="xs" p="xs">
+                    {notifications.map((notification) => (
+                      <Box
+                        key={notification.id}
+                        p="sm"
+                        style={{
+                          borderRadius: "4px",
+                          backgroundColor: notification.is_read
+                            ? "transparent"
+                            : "#f8f9fa",
+                          border: notification.is_read
+                            ? "none"
+                            : "1px solid #e9ecef",
+                          cursor: "pointer",
+                          position: "relative",
+                        }}
+                        onClick={() =>
+                          !notification.is_read && markAsRead(notification.id)
+                        }
                       >
-                        <Box style={{ flex: 1, minWidth: 0 }}>
-                          <Text size="sm" fw={notification.is_read ? 400 : 600}>
-                            {notification.title}
-                          </Text>
-                          <Text size="xs" c="dimmed" mt={4}>
-                            {notification.message}
-                          </Text>
-                          <Text size="xs" c="dimmed" mt={4}>
-                            {formatDistanceToNow(
-                              new Date(notification.created_at),
-                              { addSuffix: true }
-                            )}
-                          </Text>
-                        </Box>
-                        <Group gap={4} align="center" style={{ flexShrink: 0 }}>
-                          <ActionIcon
-                            size="sm"
-                            variant="subtle"
-                            color="red"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              deleteNotification(notification.id);
-                            }}
-                            style={{
-                              opacity: 0.7,
-                              transition: "opacity 0.2s",
-                            }}
-                            onMouseEnter={(e) => {
-                              e.currentTarget.style.opacity = "1";
-                            }}
-                            onMouseLeave={(e) => {
-                              e.currentTarget.style.opacity = "0.7";
-                            }}
+                        <Group
+                          justify="space-between"
+                          align="flex-start"
+                          wrap="nowrap"
+                        >
+                          <Box style={{ flex: 1, minWidth: 0 }}>
+                            <Text
+                              size="sm"
+                              fw={notification.is_read ? 400 : 600}
+                            >
+                              {notification.title}
+                            </Text>
+                            <Text size="xs" c="dimmed" mt={4}>
+                              {notification.message}
+                            </Text>
+                            <Text size="xs" c="dimmed" mt={4}>
+                              {formatDistanceToNow(
+                                new Date(notification.created_at),
+                                { addSuffix: true }
+                              )}
+                            </Text>
+                          </Box>
+                          <Group
+                            gap={4}
+                            align="center"
+                            style={{ flexShrink: 0 }}
                           >
-                            <Trash2 size={14} />
-                          </ActionIcon>
-                          {!notification.is_read && (
-                            <Box
-                              w={8}
-                              h={8}
-                              style={{
-                                borderRadius: "50%",
-                                backgroundColor: "#4dabf7",
-                                flexShrink: 0,
+                            <ActionIcon
+                              size="sm"
+                              variant="subtle"
+                              color="red"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                deleteNotification(notification.id);
                               }}
-                            />
-                          )}
+                              style={{
+                                opacity: 0.7,
+                                transition: "opacity 0.2s",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.opacity = "1";
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.opacity = "0.7";
+                              }}
+                            >
+                              <Trash2 size={14} />
+                            </ActionIcon>
+                            {!notification.is_read && (
+                              <Box
+                                w={8}
+                                h={8}
+                                style={{
+                                  borderRadius: "50%",
+                                  backgroundColor: "#4dabf7",
+                                  flexShrink: 0,
+                                }}
+                              />
+                            )}
+                          </Group>
                         </Group>
-                      </Group>
-                    </Box>
-                  ))}
-                </Stack>
-              )}
-            </ScrollArea.Autosize>
-          </Menu.Dropdown>
-        </Menu>
+                      </Box>
+                    ))}
+                  </Stack>
+                )}
+              </ScrollArea.Autosize>
+            </Menu.Dropdown>
+          </Menu>
+          {unreadCount > 0 && (
+            <Badge
+              size="xs"
+              color="red"
+              style={{
+                position: "absolute",
+                top: -2,
+                right: -2,
+                minWidth: 18,
+                height: 18,
+                borderRadius: "50%",
+                fontSize: "10px",
+                fontWeight: 600,
+                pointerEvents: "none",
+              }}
+            >
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </Badge>
+          )}
+        </Box>
 
         {/* User Menu */}
         <Menu shadow="md" width={200} position="bottom-end">
