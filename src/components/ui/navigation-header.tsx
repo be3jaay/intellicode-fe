@@ -280,11 +280,7 @@ export function NavigationHeader({ opened, toggle }: NavigationHeaderProps) {
 
           <Menu.Dropdown>
             <Menu.Label>Account</Menu.Label>
-            <Menu.Item leftSection={<User size={14} />}>Profile</Menu.Item>
-            <Menu.Item leftSection={<Settings size={14} />}>Settings</Menu.Item>
-
             <Menu.Divider />
-
             <Menu.Item
               color="red"
               leftSection={<LogOut size={14} />}

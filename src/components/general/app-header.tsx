@@ -1,16 +1,16 @@
 "use client";
 
-import { HiredUpLogo } from "@/icons";
+import { Brain } from "lucide-react";
 import {
   Burger,
   Container,
   Group,
   Menu,
-  Text,
   Flex,
   Box,
   UnstyledButton,
   Avatar,
+  Text,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { ChevronDown, User, Settings, LogOut } from "lucide-react";
@@ -21,28 +21,9 @@ import { useAuth } from "@/providers/auth-context";
 import { useCurrentUser } from "@/hooks/query-hooks/user-management-query";
 
 const links = [
-  { link: "/about", label: "Features" },
-  {
-    link: "#1",
-    label: "Learn",
-    links: [
-      { link: "/docs", label: "Documentation" },
-      { link: "/resources", label: "Resources" },
-      { link: "/community", label: "Community" },
-      { link: "/blog", label: "Blog" },
-    ],
-  },
-  { link: "/about", label: "About" },
-  { link: "/pricing", label: "Pricing" },
-  {
-    link: "#2",
-    label: "Support",
-    links: [
-      { link: "/faq", label: "FAQ" },
-      { link: "/demo", label: "Book a demo" },
-      { link: "/forums", label: "Forums" },
-    ],
-  },
+  { link: "#features", label: "Features" },
+  { link: "#workflow", label: "Course Workflow" },
+  { link: "#testimonials", label: "Testimonials" },
 ];
 
 export function HeaderMenu() {
@@ -78,69 +59,33 @@ export function HeaderMenu() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  const handleNavClick = (link: string) => {
+    if (link.startsWith("#")) {
+      const element = document.querySelector(link);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      router.push(link);
+    }
+  };
+
   const items = (
     <Flex gap="lg" align="center">
-      {links.map((link) => {
-        const menuItems = link.links?.map((item) => (
-          <Menu.Item
-            style={{
-              padding: "0.5rem 2rem",
-            }}
-            key={item.link}
-          >
-            {item.label}
-          </Menu.Item>
-        ));
-
-        if (menuItems) {
-          return (
-            <Menu
-              key={link.label}
-              trigger="hover"
-              transitionProps={{ exitDuration: 0 }}
-              withinPortal
-            >
-              <Menu.Target>
-                <UnstyledButton
-                  style={{
-                    padding: "8px 16px",
-                    borderRadius: "6px",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "4px",
-                    transition: "background-color 0.2s",
-                    cursor: "pointer",
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor =
-                      "rgba(0, 0, 0, 0.05)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = "transparent";
-                  }}
-                >
-                  <Text size="sm" fw={500} c="dark">
-                    {link.label}
-                  </Text>
-                  <ChevronDown size={14} />
-                </UnstyledButton>
-              </Menu.Target>
-              <Menu.Dropdown>{menuItems}</Menu.Dropdown>
-            </Menu>
-          );
-        }
-
-        return (
-          <Button
-            key={link.label}
-            variant="ghost"
-            color="dark"
-            style={{ fontWeight: 500 }}
-          >
-            {link.label}
-          </Button>
-        );
-      })}
+      {links.map((link) => (
+        <Button
+          key={link.label}
+          variant="ghost"
+          style={{
+            fontWeight: 500,
+            color: "#FFFFFF",
+            transition: "all 0.2s",
+          }}
+          onClick={() => handleNavClick(link.link)}
+        >
+          {link.label}
+        </Button>
+      ))}
     </Flex>
   );
 
@@ -151,32 +96,48 @@ export function HeaderMenu() {
         position: "sticky",
         top: 0,
         zIndex: 1000,
-        backgroundColor: isScrolled
-          ? "rgba(255, 255, 255, 0.95)"
-          : "transparent",
-        backdropFilter: isScrolled ? "blur(10px)" : "none",
-        borderBottom: isScrolled ? "1px solid rgba(0, 0, 0, 0.1)" : "none",
+        backgroundColor: isScrolled ? "rgba(26, 26, 26, 0.8)" : "transparent",
+        backdropFilter: isScrolled ? "blur(20px)" : "none",
+        WebkitBackdropFilter: isScrolled ? "blur(20px)" : "none",
+        borderBottom: isScrolled
+          ? "1px solid rgba(189, 240, 82, 0.1)"
+          : "1px solid transparent",
         transition: "all 0.3s ease-in-out",
-        boxShadow: isScrolled ? "0 2px 20px rgba(0, 0, 0, 0.1)" : "none",
+        boxShadow: isScrolled ? "0 4px 30px rgba(0, 0, 0, 0.3)" : "none",
       }}
     >
-      <Container size="xl" py={isScrolled ? 8 : 12}>
+      <Container size="xl" py={isScrolled ? 20 : 24}>
         <Group justify="space-between" h="100%">
-          <Group>
-            <Group gap="xs">
-              <HiredUpLogo fill="#8bc232" withLogo />
-            </Group>
+          <Group
+            gap="xs"
+            style={{ cursor: "pointer" }}
+            onClick={() => router.push("/")}
+          >
+            <Brain size={32} color="#BDF052" />
+            <Text
+              size="xl"
+              fw={800}
+              style={{
+                color: "#FFFFFF",
+              }}
+            >
+              Intellicode
+            </Text>
           </Group>
 
           <Group gap="sm" visibleFrom="sm">
             {items}
           </Group>
-          <Flex gap={12}>
+
+          <Group gap={12} visibleFrom="sm">
             {isAuthenticated ? (
               <>
                 <Button
                   variant="ghost"
-                  color="dark"
+                  style={{
+                    color: "#FFFFFF",
+                    fontWeight: 500,
+                  }}
                   onClick={() => router.push("/dashboard")}
                 >
                   Dashboard
@@ -194,7 +155,7 @@ export function HeaderMenu() {
                       }}
                       onMouseEnter={(e) => {
                         e.currentTarget.style.backgroundColor =
-                          "rgba(0, 0, 0, 0.05)";
+                          "rgba(189, 240, 82, 0.1)";
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = "transparent";
@@ -205,8 +166,11 @@ export function HeaderMenu() {
                         alt={user?.email || "User"}
                         size={32}
                         radius="xl"
+                        style={{
+                          border: "2px solid #BDF052",
+                        }}
                       />
-                      <ChevronDown size={16} />
+                      <ChevronDown size={16} color="#FFFFFF" />
                     </UnstyledButton>
                   </Menu.Target>
                   <Menu.Dropdown>
@@ -241,17 +205,28 @@ export function HeaderMenu() {
               <>
                 <Button
                   variant="ghost"
-                  color="dark"
+                  style={{
+                    color: isScrolled ? "#222222" : "#FFFFFF",
+                    fontWeight: 500,
+                  }}
                   onClick={() => router.push("/sign-in")}
                 >
                   Sign In
                 </Button>
-                <Button onClick={() => router.push("/sign-up")}>
+                <Button
+                  style={{
+                    background: "#BDF052",
+                    color: "#222222",
+                    fontWeight: 600,
+                    border: "none",
+                  }}
+                  onClick={() => router.push("/sign-up")}
+                >
                   Get Started
                 </Button>
               </>
             )}
-          </Flex>
+          </Group>
           <Burger opened={opened} onClick={toggle} size="sm" hiddenFrom="sm" />
         </Group>
       </Container>

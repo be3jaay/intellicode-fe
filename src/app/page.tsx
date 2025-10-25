@@ -1,26 +1,32 @@
-'use client'
+"use client";
 
-import { Box } from '@mantine/core';
+import { Box } from "@mantine/core";
 import {
   HeroSection,
   HowItWorksSection,
   KeyFeaturesSection,
+  UserRolesSection,
+  AssessmentTypesSection,
   SocialProofSection,
   FinalCtaSection,
   FooterSection,
-} from '@/components/general';
-import { ConditionalHeader } from '@/components/navigation/conditional-header';
+} from "@/components/general";
+import { ConditionalHeader } from "@/components/navigation/conditional-header";
 
 export default function HomePage() {
   return (
-    <Box style={{
-      minHeight: '100vh',
-      background: '#222222'
-    }}>
+    <Box
+      style={{
+        minHeight: "100vh",
+        background: "#1a1a1a",
+      }}
+    >
       <ConditionalHeader />
       <HeroSection />
-      <HowItWorksSection />
       <KeyFeaturesSection />
+      <HowItWorksSection />
+      <UserRolesSection />
+      <AssessmentTypesSection />
       <SocialProofSection />
       <FinalCtaSection />
       <FooterSection />

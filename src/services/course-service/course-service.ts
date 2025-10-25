@@ -244,4 +244,22 @@ export class CourseService {
       throw error;
     }
   }
+
+  public static async setGradeWeights(
+    courseId: string,
+    weights: {
+      assignment_weight: number;
+      activity_weight: number;
+      exam_weight: number;
+    }
+  ): Promise<{ message: string }> {
+    try {
+      const response = await apiClient.patch<{
+        data: { message: string };
+      }>(`/course/${courseId}/grade-weights`, weights);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

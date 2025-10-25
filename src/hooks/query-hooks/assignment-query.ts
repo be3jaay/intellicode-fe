@@ -17,6 +17,38 @@ export function useDeleteAssignment() {
     isError: isError,
   };
 }
+
+// Patch assignment mutation hook
+export function usePatchAssignment() {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending, isError } = useMutation({
+    mutationFn: ({
+      assignmentId,
+      data,
+    }: {
+      assignmentId: string;
+      data: Partial<{
+        title: string;
+        description: string;
+        difficulty: string;
+        is_published: boolean;
+        points: number;
+        dueDate: string;
+      }>;
+    }) => AssignmentService.patchAssignment(assignmentId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["assignments"] });
+    },
+    onError: (error: ErrorResponse) => {
+      console.error(error.message);
+    },
+  });
+  return {
+    patchAssignment: mutateAsync,
+    isPatching: isPending,
+    isError: isError,
+  };
+}
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
 import {
   CreateQuizForm,

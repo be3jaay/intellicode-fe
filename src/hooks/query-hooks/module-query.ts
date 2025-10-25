@@ -16,6 +16,7 @@ export function usePatchModule() {
     }) => ModuleService.patchModule(moduleId, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["modules"] });
+      queryClient.invalidateQueries({ queryKey: ["modulesList"] });
     },
     onError: (error: ErrorResponse) => {
       console.error(error.message);
@@ -34,6 +35,7 @@ export function useDeleteModule() {
     mutationFn: (moduleId: string) => ModuleService.deleteModule(moduleId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["modules"] });
+      queryClient.invalidateQueries({ queryKey: ["modulesList"] });
     },
     onError: (error: ErrorResponse) => {
       console.error(error.message);

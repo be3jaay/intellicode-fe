@@ -81,11 +81,6 @@ export function NavigationBar() {
         href: `/dashboard/${role}/course-management`,
       },
       {
-        icon: BarChart,
-        label: "Analytics",
-        href: `/dashboard/${role}/analytics`,
-      },
-      {
         icon: User,
         label: "Profile",
         href: `/dashboard/${role}/profile`,

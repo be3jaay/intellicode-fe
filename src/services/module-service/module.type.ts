@@ -1,56 +1,57 @@
 export type GetModuleByCourseResponse = {
-    success: string;
-    statusCode: number;
-    data: { module_id: string, module_title: string}[];
-    timestamp: string;
-}
+  success: string;
+  statusCode: number;
+  data: { module_id: string; module_title: string }[];
+  timestamp: string;
+};
 
 export type Lesson = {
-    id: string;
-    title: string;
-    description: string;
-    order_index: number;
-    is_published: boolean;
-    difficulty: 'beginner' | 'intermediate' | 'advanced';
-    estimated_duration: number | null;
-    tags: string[];
-    created_at: string;
-    updated_at: string;
-}
+  id: string;
+  title: string;
+  description: string;
+  order_index: number;
+  is_published: boolean;
+  difficulty: "beginner" | "intermediate" | "advanced";
+  estimated_duration: number | null;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+};
 
 export type Module = {
-    id: string;
-    title: string;
-    description: string;
-    created_at: string;
-    updated_at: string;
-    lessons_count: number;
-    activities_count: number;
-    lessons?: Lesson[];
-}
+  id: string;
+  title: string;
+  description: string;
+  created_at: string;
+  updated_at: string;
+  lessons_count: number;
+  activities_count: number;
+  is_published?: boolean;
+  lessons?: Lesson[];
+};
 
 export type ModuleListResponse = {
-    success: boolean;
-    statusCode: number;
-    data: {
-        modules: Module[];
-        total: number;
-        offset: number;
-        limit: number;
-        hasNext: boolean;
-        hasPrevious: boolean;
-    };
-    timestamp: string;
-}
+  success: boolean;
+  statusCode: number;
+  data: {
+    modules: Module[];
+    total: number;
+    offset: number;
+    limit: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+  };
+  timestamp: string;
+};
 
 export type ModuleListQueryParams = {
-    offset?: number;
-    limit?: number;
-}
+  offset?: number;
+  limit?: number;
+};
 
 export type ModuleBulkCreationRequest = {
-    title: string;
-    description: string;
-    order_index: number;
-    is_published: boolean;
-}
+  title: string;
+  description: string;
+  order_index: number;
+  is_published: boolean;
+};

@@ -1,165 +1,227 @@
-'use client'
+"use client";
 
 import {
-    Container,
-    Group,
-    Text,
-    Stack,
-    Grid,
-    Badge,
-    Title,
-    Center,
-    ThemeIcon,
-    Flex,
-    Box
-} from '@mantine/core';
-import {
-    Check,
-    Brain,
-    ArrowRight
-} from 'lucide-react';
-import { Button } from '../ui';
-import { LottieAnimation } from '../lottie/lottie';
-import intellicode from '@/components/lottie/lottie-json/intellicode.json';
-import { useRouter } from 'next/navigation';
+  Container,
+  Group,
+  Text,
+  Stack,
+  Grid,
+  Badge,
+  Title,
+  Center,
+  ThemeIcon,
+  Flex,
+  Box,
+} from "@mantine/core";
+import { Check, Brain, ArrowRight, Code2 } from "lucide-react";
+import { Button } from "../ui";
+import { LottieAnimation } from "../lottie/lottie";
+import intellicode from "@/components/lottie/lottie-json/intellicode.json";
+import { useRouter } from "next/navigation";
 
 export function HeroSection() {
-    const router = useRouter();
-    return (
-        <Container size="xl" py={100}>
-            <Grid align="center" gutter="xl">
-                <Grid.Col span={{ base: 12, md: 6 }}>
-                    <Stack gap="xl">
-                        <Badge
-                            size="lg"
-                            variant="light"
-                            color="blue"
-                            leftSection={<Brain size={16} />}
-                            style={{
-                                background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
-                                border: '1px solid rgba(189, 240, 82, 0.3)',
-                                color: '#8bc232'
-                            }}
-                        >
-                            AI-Powered Learning Platform
-                        </Badge>
+  const router = useRouter();
+  return (
+    <Box
+      py={120}
+      style={{
+        background: "#2a2a2a",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Decorative elements */}
+      <Box
+        style={{
+          position: "absolute",
+          top: "10%",
+          right: "5%",
+          width: "300px",
+          height: "300px",
+          background:
+            "radial-gradient(circle, rgba(189, 240, 82, 0.1) 0%, transparent 70%)",
+          borderRadius: "50%",
+          filter: "blur(40px)",
+        }}
+      />
+      <Box
+        style={{
+          position: "absolute",
+          bottom: "10%",
+          left: "5%",
+          width: "250px",
+          height: "250px",
+          background:
+            "radial-gradient(circle, rgba(179, 161, 255, 0.15) 0%, transparent 70%)",
+          borderRadius: "50%",
+          filter: "blur(40px)",
+        }}
+      />
 
-                        <Title
-                            order={1}
-                            size="3.5rem"
-                            fw={800}
-                            c="dark"
-                            style={{ lineHeight: 1.1 }}
-                        >
-                            Master Coding with{' '}
-                            <Text
-                                size="3.5rem"
-                                fw={800}
-                                span
-                                style={{
-                                    background: 'linear-gradient(135deg, #bdf052 0%, #8bc232 100%)',
-                                    WebkitBackgroundClip: 'text',
-                                    WebkitTextFillColor: 'transparent',
-                                    backgroundClip: 'text'
-                                }}
-                            >
-                                AI-Powered Learning
-                            </Text>
-                        </Title>
+      <Container size="xl" style={{ position: "relative", zIndex: 1 }}>
+        <Grid align="center" gutter={60}>
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Stack gap="xl">
+              <Badge
+                size="xl"
+                variant="light"
+                leftSection={<Brain size={18} />}
+                style={{
+                  background: "#BDF05210",
+                  color: "#BDF052",
+                  fontWeight: 600,
+                  fontSize: "14px",
+                  border: "1px solid #BDF052",
+                }}
+              >
+                AI-Powered Learning Platform
+              </Badge>
 
-                        <Text size="xl" c="dimmed" style={{ lineHeight: 1.6 }}>
-                            Intellicode helps students and instructors create, learn, and assess programming courses in real time.
-                        </Text>
+              <Title
+                order={1}
+                size="3.5rem"
+                style={{
+                  lineHeight: 1.1,
+                  color: "#fff",
+                }}
+              >
+                Personalized Coding Assessments{" "}
+                <Text
+                  size="3.5rem"
+                  fw={800}
+                  span
+                  style={{
+                    background:
+                      "linear-gradient(135deg, #BDF052 0%, #8bc232 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  Powered by AI
+                </Text>
+              </Title>
 
-                        <Flex gap="md" wrap="wrap">
-                            <Button
-                                size="lg"
-                                variant="primary"
-                                rightIcon={<ArrowRight size={20} />}
-                                onClick={() => router.push('/sign-up')}
-                            >
-                                Get Started
-                            </Button>
-                            <Button
-                                size="lg"
-                                variant="outline"
-                                onClick={() => router.push('#features')}
-                            >
-                                Learn More
-                            </Button>
-                        </Flex>
+              <Text
+                size="xl"
+                style={{
+                  lineHeight: 1.7,
+                  color: "white",
+                  opacity: 0.9,
+                }}
+              >
+                Empower students and instructors with intelligent tools for
+                coding education and evaluation.
+              </Text>
 
-                        <Group gap="xl" mt="md">
-                            <Group gap="xs">
-                                <ThemeIcon
-                                    color="blue"
-                                    variant="light"
-                                    size="sm"
-                                    style={{
-                                        background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
-                                        border: '1px solid rgba(189, 240, 82, 0.3)'
-                                    }}
-                                >
-                                    <Check size={14} />
-                                </ThemeIcon>
-                                <Text size="sm" c="dimmed">Real-time compiler</Text>
-                            </Group>
-                            <Group gap="xs">
-                                <ThemeIcon
-                                    color="blue"
-                                    variant="light"
-                                    size="sm"
-                                    style={{
-                                        background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
-                                        border: '1px solid rgba(189, 240, 82, 0.3)'
-                                    }}
-                                >
-                                    <Check size={14} />
-                                </ThemeIcon>
-                                <Text size="sm" c="dimmed">AI grading</Text>
-                            </Group>
-                            <Group gap="xs">
-                                <ThemeIcon
-                                    color="blue"
-                                    variant="light"
-                                    size="sm"
-                                    style={{
-                                        background: 'linear-gradient(135deg, #d9f7ba 0%, #c5f09b 100%)',
-                                        border: '1px solid rgba(189, 240, 82, 0.3)'
-                                    }}
-                                >
-                                    <Check size={14} />
-                                </ThemeIcon>
-                                <Text size="sm" c="dimmed">Progress tracking</Text>
-                            </Group>
-                        </Group>
-                    </Stack>
-                </Grid.Col>
+              <Flex gap="md" wrap="wrap">
+                <Button
+                  size="lg"
+                  style={{
+                    background: "#BDF052",
+                    color: "#222222",
+                    border: "none",
+                    fontWeight: 600,
+                    padding: "14px 32px",
+                    fontSize: "16px",
+                    transition: "all 0.3s ease",
+                  }}
+                  rightIcon={<ArrowRight size={20} />}
+                  onClick={() => router.push("/sign-up")}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow =
+                      "0 8px 20px rgba(189, 240, 82, 0.4)";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  Get Started
+                </Button>
+                <Button
+                  size="lg"
+                  variant="ghost"
+                  color="white"
+                  onClick={() => {
+                    document
+                      .getElementById("features")
+                      ?.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = "#222222";
+                    e.currentTarget.style.color = "#FFFFFF";
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = "transparent";
+                    e.currentTarget.style.color = "#222222";
+                  }}
+                >
+                  <Text c="white">Learn More</Text>
+                </Button>
+              </Flex>
 
-                <Grid.Col span={{ base: 12, md: 6 }} style={{
-                    borderRadius: "100%"
-                }}>
-                    <Center h="100%">
-                        <LottieAnimation animationData={intellicode} width={400} height={400} />
-                        <Box pos="absolute" style={{ zIndex: 1 }}>
-                            <Box
-                                style={{
-                                    width: 180,
-                                    height: 30,
-                                    background: "rgba(189, 240, 82, 0.15)",
-                                    filter: "blur(6px)",
-                                    borderRadius: "50%",
-                                    position: "absolute",
-                                    left: "50%",
-                                    bottom: -200,
-                                    transform: "translateX(-50%)",
-                                    zIndex: 0,
-                                }}
-                            />
-                        </Box>
-                    </Center>
-                </Grid.Col>
-            </Grid>
-        </Container>
-    );
-} 
+              <Group gap="xl" mt="md">
+                <Group gap="xs">
+                  <ThemeIcon
+                    size="sm"
+                    style={{
+                      background: "#BDF052",
+                      color: "#222222",
+                    }}
+                  >
+                    <Check size={14} />
+                  </ThemeIcon>
+                  <Text size="sm" style={{ color: "#fff", fontWeight: 500 }}>
+                    Real-time compiler
+                  </Text>
+                </Group>
+                <Group gap="xs">
+                  <ThemeIcon
+                    size="sm"
+                    style={{
+                      background: "#BDF052",
+                      color: "#222222",
+                    }}
+                  >
+                    <Check size={14} />
+                  </ThemeIcon>
+                  <Text size="sm" style={{ color: "#fff", fontWeight: 500 }}>
+                    AI grading
+                  </Text>
+                </Group>
+                <Group gap="xs">
+                  <ThemeIcon
+                    size="sm"
+                    style={{
+                      background: "#BDF052",
+                      color: "#222222",
+                    }}
+                  >
+                    <Check size={14} />
+                  </ThemeIcon>
+                  <Text size="sm" style={{ color: "#fff", fontWeight: 500 }}>
+                    Progress tracking
+                  </Text>
+                </Group>
+              </Group>
+            </Stack>
+          </Grid.Col>
+
+          <Grid.Col span={{ base: 12, md: 6 }}>
+            <Center h="100%">
+              <Box style={{ position: "relative" }}>
+                <LottieAnimation
+                  animationData={intellicode}
+                  width={500}
+                  height={500}
+                />
+              </Box>
+            </Center>
+          </Grid.Col>
+        </Grid>
+      </Container>
+    </Box>
+  );
+}

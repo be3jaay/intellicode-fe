@@ -44,7 +44,9 @@ import {
   AssignmentQueryParams,
 } from "@/services/assignment-service/assignment-type";
 import { format } from "date-fns";
-import { useDebouncedValue } from "@mantine/hooks";
+import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
+import { EditAssignmentDrawer } from "./edit-assignment-drawer";
+import { notifications } from "@mantine/notifications";
 
 interface AssignmentContentProps {
   moduleId: string;
@@ -57,6 +59,19 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     useState<Assignment | null>(null);
   const { deleteAssignment, isDeleting } = useDeleteAssignment();
 
+  // Edit drawer state
+  const [editDrawerOpened, { open: openEditDrawer, close: closeEditDrawer }] =
+    useDisclosure(false);
+  const [assignmentToEdit, setAssignmentToEdit] = useState<Assignment | null>(
+    null
+  );
+
+  // Handle edit icon click
+  const handleEditClick = (assignment: Assignment) => {
+    setAssignmentToEdit(assignment);
+    openEditDrawer();
+  };
+
   // Handle delete icon click
   const handleDeleteClick = (assignment: Assignment) => {
     setSelectedAssignment(assignment);
@@ -68,10 +83,21 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     if (!selectedAssignment) return;
     try {
       await deleteAssignment(selectedAssignment.id);
+      notifications.show({
+        title: "Success!",
+        message: "Assignment deleted successfully",
+        color: "green",
+        autoClose: 3000,
+      });
       setDeleteModalOpen(false);
       setSelectedAssignment(null);
     } catch (err) {
-      // Optionally show error
+      notifications.show({
+        title: "Error",
+        message: "Failed to delete assignment. Please try again.",
+        color: "red",
+        autoClose: 5000,
+      });
     }
   };
   const [searchTerm, setSearchTerm] = useState("");
@@ -509,21 +535,24 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                       color: "#bdf052",
                       border: "1px solid rgba(189, 240, 82, 0.3)",
                     }}
+                    onClick={() => handleEditClick(assignment)}
                   >
                     <Edit size={16} />
                   </ActionIcon>
-                  <ActionIcon
-                    variant="light"
-                    size="md"
-                    style={{
-                      background: "rgba(246, 172, 174, 0.15)",
-                      color: "#f6acae",
-                      border: "1px solid rgba(246, 172, 174, 0.3)",
-                    }}
-                    onClick={() => handleDeleteClick(assignment)}
-                  >
-                    <Trash2 size={16} />
-                  </ActionIcon>
+                  {!assignment.is_published && (
+                    <ActionIcon
+                      variant="light"
+                      size="md"
+                      style={{
+                        background: "rgba(246, 172, 174, 0.15)",
+                        color: "#f6acae",
+                        border: "1px solid rgba(246, 172, 174, 0.3)",
+                      }}
+                      onClick={() => handleDeleteClick(assignment)}
+                    >
+                      <Trash2 size={16} />
+                    </ActionIcon>
+                  )}
                   {/* Delete Confirmation Modal */}
                   <Modal
                     opened={deleteModalOpen}
@@ -582,6 +611,13 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
           )}
         </Stack>
       ) : null}
+
+      {/* Edit Assignment Drawer */}
+      <EditAssignmentDrawer
+        opened={editDrawerOpened}
+        onClose={closeEditDrawer}
+        assignment={assignmentToEdit}
+      />
     </Stack>
   );
 }
