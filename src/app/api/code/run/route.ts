@@ -29,11 +29,6 @@ export async function POST(
     const { code, language }: RunRequest = await request.json();
 
     // Log the received code submission
-    console.log("📥 Code submission received:");
-    console.log("Language:", language);
-    console.log("Code length:", code.length, "characters");
-    console.log("Code preview:\n", code.substring(0, 200) + (code.length > 200 ? "..." : ""));
-
     if (!code || !language) {
       return NextResponse.json(
         { error: "Missing code or language", success: false },
@@ -68,7 +63,11 @@ export async function POST(
 
     if (!submitResponse.ok) {
       const errorText = await submitResponse.text();
-      console.error("Judge0 submission error:", submitResponse.status, errorText);
+      console.error(
+        "Judge0 submission error:",
+        submitResponse.status,
+        errorText
+      );
       return NextResponse.json(
         { error: "Failed to submit code for execution", success: false },
         { status: 500 }
@@ -107,7 +106,14 @@ export async function POST(
         error: result.compile_output || "Compilation Error",
         success: false,
       });
-    } else if (result.status.id === 7 || result.status.id === 8 || result.status.id === 9 || result.status.id === 10 || result.status.id === 11 || result.status.id === 12) {
+    } else if (
+      result.status.id === 7 ||
+      result.status.id === 8 ||
+      result.status.id === 9 ||
+      result.status.id === 10 ||
+      result.status.id === 11 ||
+      result.status.id === 12
+    ) {
       // Runtime Error and other runtime issues
       return NextResponse.json({
         error: result.stderr || result.message || "Runtime Error",
@@ -123,7 +129,9 @@ export async function POST(
     console.error("API error:", err);
     return NextResponse.json(
       {
-        error: `Server error: ${err instanceof Error ? err.message : "Unknown error"}`,
+        error: `Server error: ${
+          err instanceof Error ? err.message : "Unknown error"
+        }`,
         success: false,
       },
       { status: 500 }

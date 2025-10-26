@@ -6,40 +6,26 @@ import {
   Stack,
   Text,
   Tabs,
-  Badge,
-  ActionIcon,
   CopyButton,
   Tooltip,
   Center,
   Loader,
-  Alert,
-  Modal,
-  TextInput,
-  NumberInput,
+  ActionIcon,
 } from "@mantine/core";
 import { Button } from "@/components/ui/button";
 import {
-  ArrowLeft,
-  Users,
   BookOpen,
   FileText,
   ClipboardCheck,
   UserCheck,
   LinkIcon,
   Plus,
-  Edit,
   Check,
   Copy,
-  AlertCircle,
-  RefreshCw,
-  Info,
-  Trash2,
   Award,
-  Percent,
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useDisclosure } from "@mantine/hooks";
 import type { CourseValueResponse } from "@/services/course-service/course-type";
-import { ModuleService } from "@/services/module-service/module-service";
 import { BulkModuleCreator } from "./bulk-module-creator";
 import { AssignmentCreator } from "./assignment-creator";
 import { LessonCreator } from "./lesson-creator";
@@ -50,18 +36,17 @@ import { ModuleContent } from "./module-content";
 import { Gradebook } from "./gradebook";
 import { CertificateIssuance } from "./certificate-issuance";
 import { useResubmitCourse } from "@/hooks/query-hooks/course-approval-query";
-import { useDeleteCourse } from "@/hooks/query-hooks/course-delete-query";
-import { useSetPassingGrade } from "@/hooks/query-hooks/course-passing-grade-query";
-import { useSetGradeWeights } from "@/hooks/query-hooks/course-grade-weights-query";
 import { notifications } from "@mantine/notifications";
-
-type ContentView =
-  | "main"
-  | "modules"
-  | "assignment"
-  | "lesson"
-  | "quiz"
-  | "activity";
+import { GradeWeightsModal } from "./grade-weights-modal";
+import { useCourseDetailStore } from "./stores";
+import { useFirstModuleId } from "./hooks";
+import {
+  CourseDetailBanner,
+  RejectionReasonModal,
+  DeleteCourseModal,
+  PassingGradeModal,
+  CourseRejectionAlert,
+} from "./components";
 
 interface CourseDetailViewProps {
   course: CourseValueResponse;
@@ -69,44 +54,35 @@ interface CourseDetailViewProps {
 }
 
 export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
-  const [activeTab, setActiveTab] = useState<string>("modules");
-  const [currentView, setCurrentView] = useState<ContentView>("main");
-  const [moduleId, setModuleId] = useState<string>("");
-  const [isLoadingModules, setIsLoadingModules] = useState(false);
-  const [rejectionModalOpened, setRejectionModalOpened] = useState(false);
-  const [deleteModalOpened, setDeleteModalOpened] = useState(false);
-  const [deleteCourseTitle, setDeleteCourseTitle] = useState("");
-  const [passingGradeModalOpened, setPassingGradeModalOpened] = useState(false);
-  const [passingGrade, setPassingGrade] = useState<number>(75);
-  const [gradeWeightsModalOpened, setGradeWeightsModalOpened] = useState(false);
-  const [assignmentWeight, setAssignmentWeight] = useState<number>(0);
-  const [activityWeight, setActivityWeight] = useState<number>(0);
-  const [examWeight, setExamWeight] = useState<number>(0);
+  const { activeTab, currentView, setActiveTab, setCurrentView, resetView } =
+    useCourseDetailStore();
+
+  // Use React Query hook instead of useEffect
+  const {
+    moduleId,
+    isLoading: isLoadingModules,
+    hasModules,
+  } = useFirstModuleId(course.id);
+
+  // Use Mantine's useDisclosure for modals
+  const [
+    rejectionModalOpened,
+    { open: openRejectionModal, close: closeRejectionModal },
+  ] = useDisclosure(false);
+  const [
+    deleteModalOpened,
+    { open: openDeleteModal, close: closeDeleteModal },
+  ] = useDisclosure(false);
+  const [
+    passingGradeModalOpened,
+    { open: openPassingGradeModal, close: closePassingGradeModal },
+  ] = useDisclosure(false);
+  const [
+    gradeWeightsModalOpened,
+    { open: openGradeWeightsModal, close: closeGradeWeightsModal },
+  ] = useDisclosure(false);
 
   const resubmitCourseMutation = useResubmitCourse();
-  const deleteCourseMutation = useDeleteCourse();
-  const setPassingGradeMutation = useSetPassingGrade();
-  const setGradeWeightsMutation = useSetGradeWeights();
-
-  useEffect(() => {
-    const fetchModules = async () => {
-      if (course.id) {
-        setIsLoadingModules(true);
-        try {
-          const response = await ModuleService.getModuleByCourse(course.id);
-          if (response.data && response.data.length > 0) {
-            setModuleId(response.data[0].module_id);
-          }
-        } catch (error) {
-          console.error("Failed to fetch modules:", error);
-        } finally {
-          setIsLoadingModules(false);
-        }
-      }
-    };
-
-    fetchModules();
-  }, [course.id]);
 
   const handleAddModule = () => {
     setCurrentView("modules");
@@ -121,7 +97,7 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
   };
 
   const handleBackToMain = () => {
-    setCurrentView("main");
+    resetView();
   };
 
   const handleResubmit = async () => {
@@ -136,114 +112,7 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
     } catch (error) {
       notifications.show({
         title: "Error",
-        message: "Failed to resubmit course. Please try again.",
-        color: "red",
-      });
-    }
-  };
-
-  const handleDeleteCourse = async () => {
-    if (deleteCourseTitle !== course.title) {
-      notifications.show({
-        title: "Error",
-        message: "Course title doesn't match. Please try again.",
-        color: "red",
-      });
-      return;
-    }
-
-    try {
-      await deleteCourseMutation.mutateAsync(course.id);
-
-      notifications.show({
-        title: "Success",
-        message: "Course deleted successfully",
-        color: "green",
-        icon: <Check size={18} />,
-      });
-
-      setDeleteModalOpened(false);
-      setDeleteCourseTitle("");
-      // Navigate back after successful deletion
-      setTimeout(() => {
-        onBack();
-      }, 500);
-    } catch (error) {
-      notifications.show({
-        title: "Error",
-        message: "Failed to delete course. Please try again.",
-        color: "red",
-      });
-    }
-  };
-
-  const handleSetPassingGrade = async () => {
-    if (!passingGrade || passingGrade < 0 || passingGrade > 100) {
-      notifications.show({
-        title: "Error",
-        message: "Please enter a valid passing grade between 0 and 100.",
-        color: "red",
-      });
-      return;
-    }
-
-    try {
-      await setPassingGradeMutation.mutateAsync({
-        courseId: course.id,
-        passingGrade,
-      });
-
-      notifications.show({
-        title: "Success",
-        message: `Passing grade set to ${passingGrade}%`,
-        color: "green",
-        icon: <Check size={18} />,
-      });
-
-      setPassingGradeModalOpened(false);
-    } catch (error) {
-      notifications.show({
-        title: "Error",
-        message: "Failed to set passing grade. Please try again.",
-        color: "red",
-      });
-    }
-  };
-
-  const handleSetGradeWeights = async () => {
-    const totalWeight = assignmentWeight + activityWeight + examWeight;
-
-    if (totalWeight !== 100) {
-      notifications.show({
-        title: "Error",
-        message: `Total weight must equal 100%. Current total: ${totalWeight}%`,
-        color: "red",
-      });
-      return;
-    }
-
-    try {
-      await setGradeWeightsMutation.mutateAsync({
-        courseId: course.id,
-        weights: {
-          assignment_weight: assignmentWeight,
-          activity_weight: activityWeight,
-          exam_weight: examWeight,
-        },
-      });
-
-      notifications.show({
-        title: "Success",
-        message: "Grade weights updated successfully",
-        color: "green",
-        icon: <Check size={18} />,
-      });
-
-      setGradeWeightsModalOpened(false);
-    } catch (error) {
-      notifications.show({
-        title: "Error",
-        message: "Failed to set grade weights. Please try again.",
+        message: `Failed to resubmit course. Please try again. ${error}`,
         color: "red",
       });
     }
@@ -278,1103 +147,51 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
         animation: "slideIn 0.3s ease-out",
       }}
     >
-      <Card
-        shadow="md"
-        padding={0}
-        radius="lg"
-        mb="xl"
-        style={{
-          overflow: "hidden",
-          position: "relative",
-          background: "#1a1a1a",
-          border: "1px solid rgba(189, 240, 82, 0.1)",
-        }}
-      >
-        {/* Banner Image or Gradient */}
-        <Box
-          style={{
-            height: 280,
-            width: "100%",
-            position: "relative",
-            background: course.thumbnail
-              ? `url(${course.thumbnail})`
-              : "linear-gradient(135deg, rgba(189, 240, 82, 0.15) 0%, rgba(163, 215, 66, 0.1) 50%, rgba(139, 194, 50, 0.05) 100%)",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            display: "flex",
-            alignItems: "flex-end",
-            padding: 32,
-          }}
-        >
-          <Box
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: course.thumbnail
-                ? "linear-gradient(to top, rgba(26, 26, 26, 0.95) 0%, rgba(26, 26, 26, 0.6) 50%, rgba(26, 26, 26, 0.3) 100%)"
-                : "linear-gradient(135deg, rgba(26, 26, 26, 0.8) 0%, rgba(34, 34, 34, 0.6) 100%)",
-            }}
-          />
-
-          <ActionIcon
-            variant="filled"
-            size="lg"
-            radius="md"
-            onClick={onBack}
-            style={{
-              position: "absolute",
-              top: 24,
-              left: 24,
-              background: "rgba(34, 34, 34, 0.95)",
-              backdropFilter: "blur(10px)",
-              border: "1px solid rgba(189, 240, 82, 0.2)",
-              boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-              zIndex: 10,
-              transition: "all 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(189, 240, 82, 0.15)";
-              e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(34, 34, 34, 0.95)";
-              e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.2)";
-            }}
-          >
-            <ArrowLeft size={20} color="#bdf052" />
-          </ActionIcon>
-
-          <Group
-            style={{
-              position: "absolute",
-              top: 24,
-              right: 24,
-              zIndex: 10,
-            }}
-            gap="sm"
-          >
-            <Tooltip label="Set grade weights" position="left">
-              <ActionIcon
-                variant="filled"
-                size="lg"
-                radius="md"
-                style={{
-                  background: "rgba(179, 161, 255, 0.15)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(179, 161, 255, 0.3)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-                  transition: "all 0.2s ease",
-                }}
-                onClick={() => setGradeWeightsModalOpened(true)}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background =
-                    "rgba(179, 161, 255, 0.25)";
-                  e.currentTarget.style.borderColor =
-                    "rgba(179, 161, 255, 0.5)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background =
-                    "rgba(179, 161, 255, 0.15)";
-                  e.currentTarget.style.borderColor =
-                    "rgba(179, 161, 255, 0.3)";
-                }}
-              >
-                <Percent size={20} color="#b3a1ff" />
-              </ActionIcon>
-            </Tooltip>
-
-            <Tooltip label="Set passing grade" position="left">
-              <ActionIcon
-                variant="filled"
-                size="lg"
-                radius="md"
-                style={{
-                  background: "rgba(189, 240, 82, 0.15)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(189, 240, 82, 0.3)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-                  transition: "all 0.2s ease",
-                }}
-                onClick={() => {
-                  console.log("Set passing grade clicked");
-                  setPassingGradeModalOpened(true);
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(189, 240, 82, 0.25)";
-                  e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.5)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(189, 240, 82, 0.15)";
-                  e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.3)";
-                }}
-              >
-                <Award size={20} color="#bdf052" />
-              </ActionIcon>
-            </Tooltip>
-
-            <Tooltip label="Delete course" position="left">
-              <ActionIcon
-                variant="filled"
-                size="lg"
-                radius="md"
-                style={{
-                  background: "rgba(127, 29, 29, 0.95)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                  boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
-                  transition: "all 0.2s ease",
-                }}
-                onClick={() => {
-                  console.log("Delete course clicked");
-                  setDeleteModalOpened(true);
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
-                  e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.background = "rgba(127, 29, 29, 0.95)";
-                  e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.3)";
-                }}
-              >
-                <Trash2 size={20} color="#EF4444" />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
-
-          {!course.thumbnail && (
-            <Box
-              style={{
-                position: "absolute",
-                top: "50%",
-                left: "50%",
-                transform: "translate(-50%, -50%)",
-                opacity: 0.08,
-              }}
-            >
-              <BookOpen size={120} color="#bdf052" strokeWidth={1.5} />
-            </Box>
-          )}
-
-          <Box style={{ position: "relative", zIndex: 5, width: "100%" }}>
-            <Group gap="sm" mb="sm">
-              <Badge
-                size="lg"
-                variant="filled"
-                style={{
-                  textTransform: "capitalize",
-                  background: "rgba(189, 240, 82, 0.2)",
-                  backdropFilter: "blur(10px)",
-                  color: "#bdf052",
-                  border: "1px solid rgba(189, 240, 82, 0.3)",
-                  fontWeight: 600,
-                }}
-              >
-                {course.category}
-              </Badge>
-              {/* Status Badge */}
-              <Badge
-                size="lg"
-                variant="filled"
-                style={{
-                  background:
-                    course.status === "rejected"
-                      ? "rgba(239, 68, 68, 0.2)"
-                      : course.status === "approved"
-                      ? "rgba(16, 185, 129, 0.2)"
-                      : "rgba(245, 158, 11, 0.2)",
-                  backdropFilter: "blur(10px)",
-                  color:
-                    course.status === "rejected"
-                      ? "#EF4444"
-                      : course.status === "approved"
-                      ? "#10B981"
-                      : "#F59E0B",
-                  border:
-                    course.status === "rejected"
-                      ? "1px solid rgba(239, 68, 68, 0.3)"
-                      : course.status === "approved"
-                      ? "1px solid rgba(16, 185, 129, 0.3)"
-                      : "1px solid rgba(245, 158, 11, 0.3)",
-                  fontWeight: 600,
-                  textTransform: "capitalize",
-                }}
-              >
-                {course.status === "waiting_for_approval"
-                  ? "Pending"
-                  : course.status}
-              </Badge>
-              <Badge
-                size="lg"
-                variant="filled"
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  backdropFilter: "blur(10px)",
-                  color: "#e9eeea",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                }}
-                leftSection={<Users size={14} />}
-              >
-                {course.students_count || 0} students
-              </Badge>
-              <Badge
-                size="lg"
-                variant="filled"
-                style={{
-                  background: "rgba(255, 255, 255, 0.1)",
-                  backdropFilter: "blur(10px)",
-                  color: "#e9eeea",
-                  border: "1px solid rgba(255, 255, 255, 0.15)",
-                }}
-                leftSection={<BookOpen size={14} />}
-              >
-                {course.modules_count || 0} modules
-              </Badge>
-            </Group>
-            <Text
-              size="32px"
-              fw={700}
-              style={{
-                color: "#ffffff",
-                textShadow: "0 2px 12px rgba(0, 0, 0, 0.5)",
-                lineHeight: 1.2,
-              }}
-            >
-              {course.title}
-            </Text>
-            <Text
-              size="md"
-              mt="xs"
-              style={{
-                color: "#e9eeea",
-                textShadow: "0 1px 4px rgba(0, 0, 0, 0.5)",
-                maxWidth: 800,
-              }}
-              lineClamp={2}
-            >
-              {course.description}
-            </Text>
-          </Box>
-        </Box>
-      </Card>
+      <CourseDetailBanner
+        course={course}
+        onBack={onBack}
+        onSetGradeWeights={openGradeWeightsModal}
+        onSetPassingGrade={openPassingGradeModal}
+        onDeleteCourse={openDeleteModal}
+      />
 
       {/* Rejection Alert */}
-      {course.status === "rejected" && (
-        <Alert
-          icon={<AlertCircle size={20} color="#DC2626" />}
-          title="Course Rejected"
-          color="red"
-          variant="light"
-          mb="xl"
-          styles={{
-            root: {
-              backgroundColor: "#FEF2F2",
-              border: "2px solid #DC2626",
-              borderRadius: "12px",
-            },
-            title: {
-              color: "#991B1B",
-              fontSize: "1.125rem",
-              fontWeight: 700,
-            },
-            message: {
-              color: "#7F1D1D",
-            },
-            icon: {
-              color: "#DC2626",
-            },
-          }}
-        >
-          <Stack gap="md">
-            <Text
-              style={{ color: "#7F1D1D", lineHeight: 1.6, fontSize: "0.95rem" }}
-            >
-              Your course has been rejected by the administrator.
-              {course.admin_notes &&
-                " Please review the feedback below and make necessary changes before resubmitting."}
-            </Text>
-            <Group gap="sm">
-              <Button
-                onClick={() => setRejectionModalOpened(true)}
-                className="rejection-reason-btn"
-                variant="secondary"
-                style={{
-                  color: "#FFFFFF",
-                  borderRadius: "8px",
-                  border: "none",
-                  fontWeight: 600,
-                  transition: "all 0.2s ease",
-                }}
-              >
-                <Info size={16} style={{ marginRight: "0.5rem" }} />
-                View Rejection Reason
-              </Button>
-              <Button
-                onClick={handleResubmit}
-                disabled={resubmitCourseMutation.isPending}
-                className="resubmit-btn"
-                style={{
-                  borderRadius: "8px",
-                  border: "none",
-                  fontWeight: 600,
-                  transition: "all 0.2s ease",
-                  opacity: resubmitCourseMutation.isPending ? 0.6 : 1,
-                  cursor: resubmitCourseMutation.isPending
-                    ? "not-allowed"
-                    : "pointer",
-                }}
-              >
-                {resubmitCourseMutation.isPending ? (
-                  <Loader
-                    size="sm"
-                    color="#FFFFFF"
-                    style={{ marginRight: "0.5rem" }}
-                  />
-                ) : (
-                  <RefreshCw size={16} style={{ marginRight: "0.5rem" }} />
-                )}
-                Resubmit for Approval
-              </Button>
-            </Group>
-            <style jsx>{`
-              .rejection-reason-btn:hover {
-                background-color: #b91c1c !important;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
-              }
-              .resubmit-btn:not(:disabled):hover {
-                background-color: #15803d !important;
-                transform: translateY(-1px);
-                box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
-              }
-            `}</style>
-          </Stack>
-        </Alert>
-      )}
+      <CourseRejectionAlert
+        course={course}
+        onViewReason={openRejectionModal}
+        onResubmit={handleResubmit}
+        isResubmitting={resubmitCourseMutation.isPending}
+      />
 
       {/* Rejection Reason Modal */}
-      <Modal
+      <RejectionReasonModal
         opened={rejectionModalOpened}
-        onClose={() => setRejectionModalOpened(false)}
-        title={null}
-        centered
-        size="md"
-        styles={{
-          content: {
-            backgroundColor: "#0F0F0F",
-            border: "1px solid #2D2D2D",
-            borderRadius: "16px",
-          },
-          header: {
-            display: "none",
-          },
-          body: {
-            padding: 0,
-          },
-        }}
-      >
-        <div
-          style={{
-            background: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)",
-            padding: "2rem",
-            borderTopLeftRadius: "16px",
-            borderTopRightRadius: "16px",
-          }}
-        >
-          <Group gap="md">
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "12px",
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <AlertCircle size={24} color="#FFFFFF" />
-            </div>
-            <div>
-              <Text
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  color: "#FFFFFF",
-                }}
-              >
-                Rejection Reason
-              </Text>
-              <Text style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                Feedback from administrator
-              </Text>
-            </div>
-          </Group>
-        </div>
-        <div style={{ padding: "2rem" }}>
-          <Card
-            style={{
-              backgroundColor: "#1A1A1A",
-              border: "1px solid #2D2D2D",
-              borderRadius: "12px",
-              marginBottom: "1.5rem",
-            }}
-            padding="lg"
-          >
-            <Text
-              style={{
-                color: "#E9EEEA",
-                fontSize: "1rem",
-                lineHeight: 1.8,
-                whiteSpace: "pre-wrap",
-              }}
-            >
-              {course.admin_notes ||
-                "No specific reason provided by the administrator."}
-            </Text>
-          </Card>
-          <Group justify="flex-end">
-            <Button
-              onClick={() => setRejectionModalOpened(false)}
-              style={{
-                backgroundColor: "#6B7280",
-                color: "#FFFFFF",
-                borderRadius: "8px",
-              }}
-            >
-              Close
-            </Button>
-          </Group>
-        </div>
-      </Modal>
+        onClose={closeRejectionModal}
+        adminNotes={course.admin_notes}
+      />
 
       {/* Delete Course Modal */}
-      <Modal
+      <DeleteCourseModal
         opened={deleteModalOpened}
-        onClose={() => {
-          setDeleteModalOpened(false);
-          setDeleteCourseTitle("");
-        }}
-        title={null}
-        centered
-        size="md"
-        styles={{
-          content: {
-            backgroundColor: "#0F0F0F",
-            border: "1px solid #2D2D2D",
-            borderRadius: "16px",
-          },
-          header: {
-            display: "none",
-          },
-          body: {
-            padding: 0,
-          },
-        }}
-      >
-        <div
-          style={{
-            background: "linear-gradient(135deg, #DC2626 0%, #991B1B 100%)",
-            padding: "2rem",
-            borderTopLeftRadius: "16px",
-            borderTopRightRadius: "16px",
-          }}
-        >
-          <Group gap="md">
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "12px",
-                backgroundColor: "rgba(255, 255, 255, 0.2)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Trash2 size={24} color="#FFFFFF" />
-            </div>
-            <div>
-              <Text
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  color: "#FFFFFF",
-                }}
-              >
-                Delete Course
-              </Text>
-              <Text style={{ color: "rgba(255, 255, 255, 0.9)" }}>
-                This action cannot be undone
-              </Text>
-            </div>
-          </Group>
-        </div>
-        <div style={{ padding: "2rem" }}>
-          <Alert
-            icon={<AlertCircle size={18} />}
-            color="red"
-            variant="light"
-            mb="lg"
-            styles={{
-              root: {
-                backgroundColor: "rgba(127, 29, 29, 0.2)",
-                border: "1px solid rgba(239, 68, 68, 0.3)",
-              },
-              message: {
-                color: "#FEE2E2",
-              },
-            }}
-          >
-            <Text size="sm" style={{ lineHeight: 1.6 }}>
-              You are about to permanently delete this course. All associated
-              modules, lessons, assignments, and student data will be lost.
-            </Text>
-          </Alert>
-          <Stack gap="md" mb="xl">
-            <Text style={{ color: "#E9EEEA", fontSize: "0.95rem" }}>
-              To confirm deletion, please type the course title exactly as shown
-              below:
-            </Text>
-            <Card
-              style={{
-                backgroundColor: "#1A1A1A",
-                border: "1px solid #2D2D2D",
-                borderRadius: "8px",
-              }}
-              padding="md"
-            >
-              <Text
-                style={{
-                  color: "#BDF052",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  fontFamily: "monospace",
-                }}
-              >
-                {course.title}
-              </Text>
-            </Card>
-            <TextInput
-              placeholder="Type course title here"
-              value={deleteCourseTitle}
-              onChange={(e) => setDeleteCourseTitle(e.currentTarget.value)}
-              styles={{
-                input: {
-                  backgroundColor: "#1A1A1A",
-                  border: "1px solid #2D2D2D",
-                  color: "#E9EEEA",
-                  borderRadius: "8px",
-                  padding: "0.75rem",
-                  fontSize: "0.95rem",
-                  "&:focus": {
-                    borderColor: "#DC2626",
-                  },
-                },
-              }}
-            />
-          </Stack>
-          <Group justify="flex-end" gap="sm">
-            <Button
-              onClick={() => {
-                setDeleteModalOpened(false);
-                setDeleteCourseTitle("");
-              }}
-              disabled={deleteCourseMutation.isPending}
-              variant="ghost"
-              style={{
-                borderRadius: "8px",
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleDeleteCourse}
-              disabled={
-                deleteCourseTitle !== course.title ||
-                deleteCourseMutation.isPending
-              }
-              style={{
-                backgroundColor:
-                  deleteCourseTitle !== course.title ||
-                  deleteCourseMutation.isPending
-                    ? "#4B5563"
-                    : "#DC2626",
-                color: "#FFFFFF",
-                borderRadius: "8px",
-                opacity:
-                  deleteCourseTitle !== course.title ||
-                  deleteCourseMutation.isPending
-                    ? 0.5
-                    : 1,
-              }}
-            >
-              {deleteCourseMutation.isPending ? (
-                <>
-                  <Loader
-                    size="sm"
-                    color="#FFFFFF"
-                    style={{ marginRight: "0.5rem" }}
-                  />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 size={16} style={{ marginRight: "0.5rem" }} />
-                  Delete Course
-                </>
-              )}
-            </Button>
-          </Group>
-        </div>
-      </Modal>
+        onClose={closeDeleteModal}
+        courseId={course.id}
+        courseTitle={course.title}
+        onDeleteSuccess={onBack}
+      />
 
       {/* Set Passing Grade Modal */}
-      <Modal
+      <PassingGradeModal
         opened={passingGradeModalOpened}
-        onClose={() => {
-          setPassingGradeModalOpened(false);
-          setPassingGrade(75);
-        }}
-        title={null}
-        centered
-        size="md"
-        styles={{
-          content: {
-            backgroundColor: "#0F0F0F",
-            border: "1px solid #2D2D2D",
-            borderRadius: "16px",
-          },
-          header: {
-            display: "none",
-          },
-          body: {
-            padding: 0,
-          },
-        }}
-      >
-        <div
-          style={{
-            background: "linear-gradient(135deg, #BDF052 0%, #A3D742 100%)",
-            padding: "2rem",
-            borderTopLeftRadius: "16px",
-            borderTopRightRadius: "16px",
-          }}
-        >
-          <Group gap="md">
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "12px",
-                backgroundColor: "rgba(26, 26, 26, 0.3)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Award size={24} color="#1A1A1A" />
-            </div>
-            <div>
-              <Text
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  color: "#1A1A1A",
-                }}
-              >
-                Set Passing Grade
-              </Text>
-              <Text style={{ color: "rgba(26, 26, 26, 0.8)" }}>
-                Define the minimum grade required to pass
-              </Text>
-            </div>
-          </Group>
-        </div>
-        <div style={{ padding: "2rem" }}>
-          <Stack gap="md" mb="xl">
-            <Text style={{ color: "#E9EEEA", fontSize: "0.95rem" }}>
-              Set the minimum grade percentage (0-100) that students need to
-              achieve to pass this course.
-            </Text>
-            <NumberInput
-              label="Passing Grade (%)"
-              placeholder="Enter passing grade"
-              value={passingGrade}
-              onChange={(value) => setPassingGrade(value as number)}
-              min={0}
-              max={100}
-              step={1}
-              styles={{
-                label: {
-                  color: "#E9EEEA",
-                  marginBottom: "0.5rem",
-                  fontWeight: 500,
-                },
-                input: {
-                  backgroundColor: "#1A1A1A",
-                  border: "1px solid #2D2D2D",
-                  color: "#E9EEEA",
-                  borderRadius: "8px",
-                  padding: "0.75rem",
-                  fontSize: "0.95rem",
-                  "&:focus": {
-                    borderColor: "#BDF052",
-                  },
-                },
-              }}
-            />
-            <Alert
-              icon={<Info size={18} />}
-              color="blue"
-              variant="light"
-              styles={{
-                root: {
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  border: "1px solid rgba(59, 130, 246, 0.3)",
-                },
-                message: {
-                  color: "#93C5FD",
-                },
-              }}
-            >
-              <Text size="sm" style={{ lineHeight: 1.6 }}>
-                This setting will determine which students receive a passing
-                status for the course. The default is typically 75%.
-              </Text>
-            </Alert>
-          </Stack>
-          <Group justify="flex-end" gap="sm">
-            <Button
-              onClick={() => {
-                setPassingGradeModalOpened(false);
-                setPassingGrade(75);
-              }}
-              disabled={setPassingGradeMutation.isPending}
-              variant="ghost"
-              style={{
-                borderRadius: "8px",
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSetPassingGrade}
-              disabled={
-                !passingGrade ||
-                passingGrade < 0 ||
-                passingGrade > 100 ||
-                setPassingGradeMutation.isPending
-              }
-              style={{
-                backgroundColor:
-                  !passingGrade ||
-                  passingGrade < 0 ||
-                  passingGrade > 100 ||
-                  setPassingGradeMutation.isPending
-                    ? "#4B5563"
-                    : "#BDF052",
-                color: "#1A1A1A",
-                borderRadius: "8px",
-                fontWeight: 600,
-                opacity:
-                  !passingGrade ||
-                  passingGrade < 0 ||
-                  passingGrade > 100 ||
-                  setPassingGradeMutation.isPending
-                    ? 0.5
-                    : 1,
-              }}
-            >
-              {setPassingGradeMutation.isPending ? (
-                <>
-                  <Loader
-                    size="sm"
-                    color="#1A1A1A"
-                    style={{ marginRight: "0.5rem" }}
-                  />
-                  Setting...
-                </>
-              ) : (
-                <>
-                  <Award size={16} style={{ marginRight: "0.5rem" }} />
-                  Set Passing Grade
-                </>
-              )}
-            </Button>
-          </Group>
-        </div>
-      </Modal>
+        onClose={closePassingGradeModal}
+        courseId={course.id}
+      />
 
-      {/* Set Grade Weights Modal */}
-      <Modal
+      {/* Grade Weights Modal Component */}
+      <GradeWeightsModal
         opened={gradeWeightsModalOpened}
-        onClose={() => {
-          setGradeWeightsModalOpened(false);
-          setAssignmentWeight(0);
-          setActivityWeight(0);
-          setExamWeight(0);
-        }}
-        title={null}
-        centered
-        size="md"
-        styles={{
-          content: {
-            backgroundColor: "#0F0F0F",
-            border: "1px solid #2D2D2D",
-            borderRadius: "16px",
-          },
-          header: {
-            display: "none",
-          },
-          body: {
-            padding: 0,
-          },
-        }}
-      >
-        <div
-          style={{
-            background: "linear-gradient(135deg, #B3A1FF 0%, #9B87E8 100%)",
-            padding: "2rem",
-            borderTopLeftRadius: "16px",
-            borderTopRightRadius: "16px",
-          }}
-        >
-          <Group gap="md">
-            <div
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "12px",
-                backgroundColor: "rgba(26, 26, 26, 0.3)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Percent size={24} color="#1A1A1A" />
-            </div>
-            <div>
-              <Text
-                style={{
-                  fontSize: "1.5rem",
-                  fontWeight: 700,
-                  color: "#1A1A1A",
-                }}
-              >
-                Set Grade Weights
-              </Text>
-              <Text style={{ color: "rgba(26, 26, 26, 0.8)" }}>
-                Define how each component affects the final grade
-              </Text>
-            </div>
-          </Group>
-        </div>
-        <div style={{ padding: "2rem" }}>
-          <Stack gap="md" mb="xl">
-            <Text style={{ color: "#E9EEEA", fontSize: "0.95rem" }}>
-              Set the weight percentage for each assessment type. The total must
-              equal 100%.
-            </Text>
-
-            <NumberInput
-              label="Assignment Weight (%)"
-              placeholder="Enter assignment weight"
-              value={assignmentWeight}
-              onChange={(value) => setAssignmentWeight(value as number)}
-              min={0}
-              max={100}
-              step={1}
-              styles={{
-                label: {
-                  color: "#E9EEEA",
-                  marginBottom: "0.5rem",
-                  fontWeight: 500,
-                },
-                input: {
-                  backgroundColor: "#1A1A1A",
-                  border: "1px solid #2D2D2D",
-                  color: "#E9EEEA",
-                  borderRadius: "8px",
-                  padding: "0.75rem",
-                  fontSize: "0.95rem",
-                  "&:focus": {
-                    borderColor: "#B3A1FF",
-                  },
-                },
-              }}
-            />
-
-            <NumberInput
-              label="Activity Weight (%)"
-              placeholder="Enter activity weight"
-              value={activityWeight}
-              onChange={(value) => setActivityWeight(value as number)}
-              min={0}
-              max={100}
-              step={1}
-              styles={{
-                label: {
-                  color: "#E9EEEA",
-                  marginBottom: "0.5rem",
-                  fontWeight: 500,
-                },
-                input: {
-                  backgroundColor: "#1A1A1A",
-                  border: "1px solid #2D2D2D",
-                  color: "#E9EEEA",
-                  borderRadius: "8px",
-                  padding: "0.75rem",
-                  fontSize: "0.95rem",
-                  "&:focus": {
-                    borderColor: "#B3A1FF",
-                  },
-                },
-              }}
-            />
-
-            <NumberInput
-              label="Exam Weight (%)"
-              placeholder="Enter exam weight"
-              value={examWeight}
-              onChange={(value) => setExamWeight(value as number)}
-              min={0}
-              max={100}
-              step={1}
-              styles={{
-                label: {
-                  color: "#E9EEEA",
-                  marginBottom: "0.5rem",
-                  fontWeight: 500,
-                },
-                input: {
-                  backgroundColor: "#1A1A1A",
-                  border: "1px solid #2D2D2D",
-                  color: "#E9EEEA",
-                  borderRadius: "8px",
-                  padding: "0.75rem",
-                  fontSize: "0.95rem",
-                  "&:focus": {
-                    borderColor: "#B3A1FF",
-                  },
-                },
-              }}
-            />
-
-            <Card
-              style={{
-                backgroundColor:
-                  assignmentWeight + activityWeight + examWeight === 100
-                    ? "rgba(16, 185, 129, 0.1)"
-                    : "rgba(239, 68, 68, 0.1)",
-                border: `1px solid ${
-                  assignmentWeight + activityWeight + examWeight === 100
-                    ? "rgba(16, 185, 129, 0.3)"
-                    : "rgba(239, 68, 68, 0.3)"
-                }`,
-                borderRadius: "8px",
-              }}
-              padding="md"
-            >
-              <Group justify="space-between">
-                <Text style={{ color: "#E9EEEA", fontWeight: 600 }}>
-                  Total Weight:
-                </Text>
-                <Text
-                  style={{
-                    color:
-                      assignmentWeight + activityWeight + examWeight === 100
-                        ? "#10B981"
-                        : "#EF4444",
-                    fontWeight: 700,
-                    fontSize: "1.1rem",
-                  }}
-                >
-                  {assignmentWeight + activityWeight + examWeight}%
-                </Text>
-              </Group>
-            </Card>
-
-            <Alert
-              icon={<Info size={18} />}
-              color="blue"
-              variant="light"
-              styles={{
-                root: {
-                  backgroundColor: "rgba(59, 130, 246, 0.1)",
-                  border: "1px solid rgba(59, 130, 246, 0.3)",
-                },
-                message: {
-                  color: "#93C5FD",
-                },
-              }}
-            >
-              <Text size="sm" style={{ lineHeight: 1.6 }}>
-                These weights determine how much each assessment type
-                contributes to the student's final grade.
-              </Text>
-            </Alert>
-          </Stack>
-          <Group justify="flex-end" gap="sm">
-            <Button
-              onClick={() => {
-                setGradeWeightsModalOpened(false);
-                setAssignmentWeight(0);
-                setActivityWeight(0);
-                setExamWeight(0);
-              }}
-              disabled={setGradeWeightsMutation.isPending}
-              variant="ghost"
-              style={{
-                borderRadius: "8px",
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={handleSetGradeWeights}
-              disabled={
-                assignmentWeight + activityWeight + examWeight !== 100 ||
-                setGradeWeightsMutation.isPending
-              }
-              style={{
-                backgroundColor:
-                  assignmentWeight + activityWeight + examWeight !== 100 ||
-                  setGradeWeightsMutation.isPending
-                    ? "#4B5563"
-                    : "#B3A1FF",
-                color: "#1A1A1A",
-                borderRadius: "8px",
-                fontWeight: 600,
-                opacity:
-                  assignmentWeight + activityWeight + examWeight !== 100 ||
-                  setGradeWeightsMutation.isPending
-                    ? 0.5
-                    : 1,
-              }}
-            >
-              {setGradeWeightsMutation.isPending ? (
-                <>
-                  <Loader
-                    size="sm"
-                    color="#1A1A1A"
-                    style={{ marginRight: "0.5rem" }}
-                  />
-                  Setting...
-                </>
-              ) : (
-                <>
-                  <Percent size={16} style={{ marginRight: "0.5rem" }} />
-                  Set Grade Weights
-                </>
-              )}
-            </Button>
-          </Group>
-        </div>
-      </Modal>
+        onClose={closeGradeWeightsModal}
+        courseId={course.id}
+      />
 
       <Card
         shadow="sm"

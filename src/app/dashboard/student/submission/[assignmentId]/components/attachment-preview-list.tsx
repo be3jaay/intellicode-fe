@@ -387,7 +387,7 @@ const TextPreview = ({ url, name }: { url: string; name: string }) => {
     };
 
     fetchText();
-  }, [url]);
+  }, [url, MAX_SIZE]);
 
   if (loading) {
     return <Skeleton height={200} width="100%" />;

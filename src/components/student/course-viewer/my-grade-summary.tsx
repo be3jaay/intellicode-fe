@@ -2,7 +2,6 @@
 import { Card, Group, Stack, Text, Progress, Badge, Grid } from "@mantine/core";
 import { TrendingUp, FileText, Code, FileCheck } from "lucide-react";
 import { useGetMyGradeSummary } from "@/hooks/query-hooks/student-query";
-import type { MyGradeSummary } from "@/services/student-service/student-type";
 
 interface MyGradeSummaryProps {
   courseId: string;

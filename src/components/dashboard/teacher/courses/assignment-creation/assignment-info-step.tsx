@@ -34,7 +34,6 @@ import type {
   AssignmentFormData,
   AssignmentType,
   AssignmentSubtype,
-  Difficulty,
 } from "./types";
 import { useState } from "react";
 import { GetModuleByCourseResponse } from "@/services/module-service/module.type";

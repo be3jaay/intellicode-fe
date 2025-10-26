@@ -10,7 +10,6 @@ import {
   Text,
   Switch,
   Select,
-  NumberInput,
 } from "@mantine/core";
 import { DateTimePicker } from "@mantine/dates";
 import { Edit } from "lucide-react";
@@ -102,7 +101,7 @@ export function EditAssignmentDrawer({
     } catch (error) {
       notifications.show({
         title: "Error",
-        message: "Failed to update assignment. Please try again.",
+        message: `Failed to update assignment. Please try again. ${error}`,
         color: "red",
         autoClose: 5000,
       });

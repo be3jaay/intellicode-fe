@@ -1,8 +1,4 @@
-import {
-  AIAnalysisRequest,
-  AIAnalysisResponse,
-  AIAnalysisResult,
-} from "./ai-types";
+import { AIAnalysisRequest, AIAnalysisResult } from "./ai-types";
 
 export class AICodeAnalysisService {
   public static async analyze(
@@ -22,8 +18,12 @@ export class AICodeAnalysisService {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: "Unknown error" }));
-        throw new Error(errorData.error || `AI analysis failed with status ${response.status}`);
+        const errorData = await response
+          .json()
+          .catch(() => ({ error: "Unknown error" }));
+        throw new Error(
+          errorData.error || `AI analysis failed with status ${response.status}`
+        );
       }
 
       const data = await response.json();
@@ -35,7 +35,9 @@ export class AICodeAnalysisService {
       };
     } catch (error: any) {
       console.error("AI analysis error:", error);
-      throw new Error(error.message || "Failed to analyze code. Please try again.");
+      throw new Error(
+        error.message || "Failed to analyze code. Please try again."
+      );
     }
   }
 

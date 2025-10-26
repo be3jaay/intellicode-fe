@@ -169,6 +169,10 @@ export class CourseService {
       has_certificate: boolean;
       certificate_id: string | null;
       certificate_issued_at: string | null;
+      certificate_status: string | null;
+      is_certificate_revoked: boolean;
+      certificate_revoked_at: string | null;
+      certificate_revocation_reason: string | null;
     }>;
     total_eligible: number;
     total_enrolled: number;
@@ -189,6 +193,10 @@ export class CourseService {
             has_certificate: boolean;
             certificate_id: string | null;
             certificate_issued_at: string | null;
+            certificate_status: string | null;
+            is_certificate_revoked: boolean;
+            certificate_revoked_at: string | null;
+            certificate_revocation_reason: string | null;
           }>;
           total_eligible: number;
           total_enrolled: number;

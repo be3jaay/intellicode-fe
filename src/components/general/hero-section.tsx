@@ -13,7 +13,7 @@ import {
   Flex,
   Box,
 } from "@mantine/core";
-import { Check, Brain, ArrowRight, Code2 } from "lucide-react";
+import { Check, Brain, ArrowRight } from "lucide-react";
 import { Button } from "../ui";
 import { LottieAnimation } from "../lottie/lottie";
 import intellicode from "@/components/lottie/lottie-json/intellicode.json";
@@ -128,34 +128,16 @@ export function HeroSection() {
                   }}
                   rightIcon={<ArrowRight size={20} />}
                   onClick={() => router.push("/sign-up")}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = "translateY(-2px)";
-                    e.currentTarget.style.boxShadow =
-                      "0 8px 20px rgba(189, 240, 82, 0.4)";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = "translateY(0)";
-                    e.currentTarget.style.boxShadow = "none";
-                  }}
                 >
                   Get Started
                 </Button>
                 <Button
                   size="lg"
-                  variant="ghost"
-                  color="white"
+                  variant="outline"
                   onClick={() => {
                     document
                       .getElementById("features")
                       ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.background = "#222222";
-                    e.currentTarget.style.color = "#FFFFFF";
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.background = "transparent";
-                    e.currentTarget.style.color = "#222222";
                   }}
                 >
                   <Text c="white">Learn More</Text>

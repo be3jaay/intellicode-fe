@@ -5,7 +5,6 @@ import { signUpSchema } from "@/app/sign-up/container/schema/sign-up-schema";
 import config from "@/config";
 import { SignUpFormValue } from "@/types/auth.type";
 import axios from "axios";
-import { redirect } from "next/navigation";
 import { createSession, updateToken, getSession } from "./session";
 
 import { NextRequest } from "next/server";
@@ -333,8 +332,6 @@ export async function signIn(
 
     const res = response.data;
 
-    console.log("Login response:", JSON.stringify(res, null, 2));
-
     if (res.success && (res.statusCode === 200 || res.statusCode === 201)) {
       const { data } = res;
 
@@ -359,8 +356,6 @@ export async function signIn(
           access_token: data.accessToken,
           refresh_token: data.refreshToken,
         });
-
-        console.log("Session created successfully");
       } catch (sessionError) {
         console.error("Failed to create session:", sessionError);
         return {

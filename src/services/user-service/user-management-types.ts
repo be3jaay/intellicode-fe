@@ -4,7 +4,7 @@ export interface UserProfile {
   first_name: string;
   middle_name: string | null;
   last_name: string;
-  role: 'student' | 'teacher' | 'admin';
+  role: "student" | "teacher" | "admin";
   student_number: string | null;
   section: string | null;
   profile_picture: string | null;
@@ -24,7 +24,7 @@ export interface UsersResponse {
 }
 
 export interface UserManagementQuery {
-  role?: 'student' | 'teacher' | 'admin';
+  role?: "student" | "teacher" | "admin";
   search?: string;
   isSuspended?: boolean;
   page?: number;
@@ -66,7 +66,7 @@ export interface SignupRequest {
   first_name: string;
   middle_name?: string;
   last_name: string;
-  role: 'student' | 'teacher';
+  role: "student" | "teacher";
   student_number?: string;
   section?: string;
 }
@@ -77,11 +77,15 @@ export interface SignupResponse {
   user?: UserProfile;
 }
 
-export type UserStatus = 'active' | 'suspended' | 'pending_approval' | 'rejected';
+export type UserStatus =
+  | "active"
+  | "suspended"
+  | "pending_approval"
+  | "rejected";
 
 export interface StatusBadgeProps {
   status: UserStatus;
-  size?: 'sm' | 'md' | 'lg';
+  size?: "sm" | "md" | "lg";
 }
 
 export interface UserProfileCardProps {

@@ -1,12 +1,11 @@
 /**
  * Example usage of the CodeEditor component
- * 
+ *
  * This file demonstrates various ways to use the CodeEditor component
  * throughout your application.
  */
 
 import { CodeEditor } from "../code-editor";
-
 
 // ============================================
 // Example 1: Default Usage
@@ -19,24 +18,14 @@ export function DefaultCodeEditor() {
 // Example 2: Python Learning Page
 // ============================================
 export function PythonLearningEditor() {
-  return (
-    <CodeEditor 
-      title="Python Learning Lab"
-      initialLanguage="python"
-    />
-  );
+  return <CodeEditor title="Python Learning Lab" initialLanguage="python" />;
 }
 
 // ============================================
 // Example 3: Compact Editor (No Header)
 // ============================================
 export function CompactCodeEditor() {
-  return (
-    <CodeEditor 
-      showHeader={false}
-      editorHeight="400px"
-    />
-  );
+  return <CodeEditor showHeader={false} editorHeight="400px" />;
 }
 
 // ============================================
@@ -48,10 +37,10 @@ function reverseString(str) {
   // Your code here
 }
 
-console.log(reverseString("hello")); // Expected: "olleh"`;
+; // Expected: "olleh"`;
 
   return (
-    <CodeEditor 
+    <CodeEditor
       title="Coding Interview Challenge"
       initialLanguage="javascript"
       initialCode={challengeCode}
@@ -75,7 +64,7 @@ def fibonacci(n):
 print(fibonacci(10))`;
 
   return (
-    <CodeEditor 
+    <CodeEditor
       title="Assignment Submission"
       initialLanguage="python"
       initialCode={assignmentTemplate}
@@ -89,7 +78,7 @@ print(fibonacci(10))`;
 // ============================================
 export function CppAlgorithmEditor() {
   return (
-    <CodeEditor 
+    <CodeEditor
       title="C++ Algorithm Practice"
       initialLanguage="cpp"
       editorHeight="700px"
@@ -101,12 +90,7 @@ export function CppAlgorithmEditor() {
 // Example 7: Silent Mode (No Console Logs)
 // ============================================
 export function SilentCodeEditor() {
-  return (
-    <CodeEditor 
-      title="Production Code Editor"
-      enableConsoleLog={false}
-    />
-  );
+  return <CodeEditor title="Production Code Editor" enableConsoleLog={false} />;
 }
 
 // ============================================
@@ -114,7 +98,7 @@ export function SilentCodeEditor() {
 // ============================================
 export function MobileCodeEditor() {
   return (
-    <CodeEditor 
+    <CodeEditor
       showHeader={false}
       editorHeight="350px"
       containerMaxWidth="100%"
@@ -138,10 +122,10 @@ function greet(user: User): string {
 }
 
 const user: User = { name: "Alice", age: 25 };
-console.log(greet(user));`;
+;`;
 
   return (
-    <CodeEditor 
+    <CodeEditor
       title="TypeScript Playground"
       initialLanguage="typescript"
       initialCode={tsCode}
@@ -154,7 +138,7 @@ console.log(greet(user));`;
 // ============================================
 export function JavaDevEnvironment() {
   return (
-    <CodeEditor 
+    <CodeEditor
       title="Java Development Environment"
       initialLanguage="java"
       editorHeight="650px"
@@ -168,7 +152,7 @@ export function JavaDevEnvironment() {
 // ============================================
 export function CodeSnippetTester() {
   return (
-    <CodeEditor 
+    <CodeEditor
       title="Quick Code Tester"
       showHeader={true}
       editorHeight="450px"
@@ -186,18 +170,18 @@ const numbers = [1, 2, 3, 4, 5];
 
 // Map - Transform each element
 const doubled = numbers.map(n => n * 2);
-console.log("Doubled:", doubled);
+;
 
 // Filter - Get elements that match condition
 const evens = numbers.filter(n => n % 2 === 0);
-console.log("Evens:", evens);
+;
 
 // Reduce - Combine into single value
 const sum = numbers.reduce((acc, n) => acc + n, 0);
-console.log("Sum:", sum);`;
+;`;
 
   return (
-    <CodeEditor 
+    <CodeEditor
       title="Array Methods - Interactive Example"
       initialLanguage="javascript"
       initialCode={exampleCode}

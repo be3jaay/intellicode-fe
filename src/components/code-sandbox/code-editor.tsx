@@ -65,7 +65,6 @@ export function CodeEditor({
     }
   }, [isControlledLanguage, controlledLanguage]);
 
-  console.log("code:", currentCode);
   const [output, setOutput] = useState<string>("");
   const [isRunning, setIsRunning] = useState<boolean>(false);
   const [hasError, setHasError] = useState<boolean>(false);
@@ -116,10 +115,6 @@ export function CodeEditor({
     setExecutionInfo("");
 
     if (enableConsoleLog) {
-      console.log("🚀 Submitting code for execution:");
-      console.log("Language:", currentLanguage);
-      console.log("Code:\n", currentCode);
-      console.log("─────────────────────────────────────");
     }
 
     try {

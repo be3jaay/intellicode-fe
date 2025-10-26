@@ -14,10 +14,8 @@ import {
   Textarea,
   Button,
   ActionIcon,
-  ScrollArea,
   Modal,
   Image,
-  Tabs,
 } from "@mantine/core";
 import {
   User,
@@ -26,7 +24,6 @@ import {
   Download,
   ExternalLink,
   Save,
-  X,
   File,
   Eye,
   ChevronLeft,
@@ -506,6 +503,9 @@ export function GradingInterface({
               min={0}
               max={submission.max_score}
               styles={{
+                control: {
+                  color: "#fff",
+                },
                 input: {
                   background: "rgba(26, 26, 26, 0.8)",
                   border: "1px solid rgba(189, 240, 82, 0.2)",
@@ -520,28 +520,6 @@ export function GradingInterface({
                 },
                 description: {
                   color: "#9ca3af",
-                },
-              }}
-            />
-
-            <Textarea
-              label="Feedback (Optional)"
-              placeholder="Provide feedback to the student..."
-              value={feedback}
-              onChange={(e) => setFeedback(e.target.value)}
-              minRows={4}
-              styles={{
-                input: {
-                  background: "rgba(26, 26, 26, 0.8)",
-                  border: "1px solid rgba(189, 240, 82, 0.2)",
-                  color: "#e9eeea",
-                  "&:focus": {
-                    borderColor: "rgba(189, 240, 82, 0.5)",
-                  },
-                },
-                label: {
-                  color: "#e9eeea",
-                  marginBottom: 4,
                 },
               }}
             />

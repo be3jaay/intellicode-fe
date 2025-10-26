@@ -11,7 +11,6 @@ import {
   Box,
   Divider,
   NumberInput,
-  Textarea,
   Button,
   Grid,
   Title,
@@ -60,16 +59,15 @@ export function CodeReviewInterface({
   const { gradeSubmission, isGrading } = useGradeSubmission();
 
   // AI Analysis hook
-  const { aiStatus, aiResult, runAnalysis, isAnalyzing, hasAnalysis } =
-    useAIAnalysis({
-      submissionId: submission.id,
-      code,
-      description: submission.assignment_description,
-      language: submission.code_language,
-      maxScore: submission.max_score,
-      onScoreChange: setScore,
-      onFeedbackChange: setFeedback,
-    });
+  const { aiStatus, aiResult, runAnalysis, hasAnalysis } = useAIAnalysis({
+    submissionId: submission.id,
+    code,
+    description: submission.assignment_description,
+    language: submission.code_language,
+    maxScore: submission.max_score,
+    onScoreChange: setScore,
+    onFeedbackChange: setFeedback,
+  });
 
   useEffect(() => {
     setScore(submission.score);
@@ -108,7 +106,7 @@ export function CodeReviewInterface({
     } catch (error) {
       notifications.show({
         title: "Error",
-        message: "Failed to submit grade",
+        message: `Failed to submit grade. ${error}`,
         color: "red",
         autoClose: 3000,
       });
@@ -163,21 +161,25 @@ export function CodeReviewInterface({
     try {
       await runAnalysis();
       setShowAIModal(true);
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleReRunAnalysis = async () => {
     try {
       await runAnalysis();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case "graded":
         return {
-          bg: "rgba(189, 240, 82, 0.2)",
-          color: "#bdf052",
+          bg: "#52b788",
+          color: "#fff",
           border: "rgba(189, 240, 82, 0.3)",
         };
       case "submitted":
@@ -352,7 +354,7 @@ export function CodeReviewInterface({
                         },
                         option: {
                           color: "#e9eeea",
-                          "&[data-selected]": {
+                          "&[dataSelected]": {
                             background: "rgba(6, 182, 212, 0.2)",
                             color: "#06b6d4",
                           },
@@ -562,6 +564,9 @@ export function CodeReviewInterface({
                   max={submission.max_score}
                   size="md"
                   styles={{
+                    control: {
+                      color: "#fff",
+                    },
                     input: {
                       background: "rgba(26, 26, 26, 0.8)",
                       border: "1px solid rgba(189, 240, 82, 0.2)",
@@ -579,29 +584,6 @@ export function CodeReviewInterface({
                     },
                     description: {
                       color: "#9ca3af",
-                    },
-                  }}
-                />
-
-                <Textarea
-                  label="Feedback (Optional)"
-                  placeholder="Provide detailed feedback to the student..."
-                  value={feedback}
-                  onChange={(e) => setFeedback(e.target.value)}
-                  minRows={5}
-                  styles={{
-                    input: {
-                      background: "rgba(26, 26, 26, 0.8)",
-                      border: "1px solid rgba(189, 240, 82, 0.2)",
-                      color: "#e9eeea",
-                      "&:focus": {
-                        borderColor: "rgba(189, 240, 82, 0.5)",
-                      },
-                    },
-                    label: {
-                      color: "#e9eeea",
-                      marginBottom: 4,
-                      fontWeight: 600,
                     },
                   }}
                 />

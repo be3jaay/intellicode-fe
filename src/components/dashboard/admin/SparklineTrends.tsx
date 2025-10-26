@@ -3,12 +3,7 @@
 import React from "react";
 import { Grid, Card, Text } from "@mantine/core";
 import { Sparkline } from "@mantine/charts";
-import {
-  IconUsers,
-  IconSchool,
-  IconCertificate,
-  IconTrendingUp,
-} from "@tabler/icons-react";
+import { IconUsers, IconSchool, IconTrendingUp } from "@tabler/icons-react";
 
 type GrowthTrends = {
   monthly_data: Array<{
@@ -33,7 +28,6 @@ type Props = {
 };
 
 export default function SparklineTrends({ trends }: Props) {
-  // Helper function to check if sparkline has meaningful data
   const hasSparklineData = (data: number[]) => {
     return data.some((val) => val > 0);
   };
@@ -63,14 +57,6 @@ export default function SparklineTrends({ trends }: Props) {
       color: "#60A5FA",
       sparklineData: trends.monthly_data.map((d) => d.new_enrollments),
     },
-    {
-      title: "Certificates Issued",
-      value: trends.total_certificates_issued,
-      growthRate: trends.certificate_growth_rate || 0,
-      icon: IconCertificate,
-      color: "#F59E0B",
-      sparklineData: trends.monthly_data.map((d) => d.certificates_issued),
-    },
   ];
 
   if (!trends || !trends.monthly_data) {
@@ -86,7 +72,7 @@ export default function SparklineTrends({ trends }: Props) {
   return (
     <Grid gutter="md" style={{ width: "100%" }}>
       {metrics.map((metric, index) => (
-        <Grid.Col key={index} span={{ base: 12, xs: 6, md: 3 }}>
+        <Grid.Col key={index} span={{ base: 12, xs: 6, md: 4 }}>
           <Card
             shadow="sm"
             padding="lg"
@@ -155,7 +141,6 @@ export default function SparklineTrends({ trends }: Props) {
               </div>
             )}
 
-            {/* Show sparkline if there's data, otherwise show a placeholder */}
             {hasSparklineData(metric.sparklineData) ? (
               <Sparkline
                 h={60}

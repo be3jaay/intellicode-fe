@@ -75,17 +75,12 @@ export function StudentCertificatesView() {
           </Center>
         </Box>
       ) : (
-        <SimpleGrid
-          cols={{ base: 1, sm: 1, md: 2, lg: 2 }}
-          spacing="xl"
-          verticalSpacing="xl"
-        >
+        <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg" verticalSpacing="lg">
           {certificates.map((certificate: any) => (
             <CertificateCard
               key={certificate.id}
               certificate={certificate}
               onDownload={() => {
-                // TODO: Implement download functionality
                 window.open(
                   `/api/certificates/${certificate.id}/download`,
                   "_blank"

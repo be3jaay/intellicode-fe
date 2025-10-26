@@ -8,7 +8,6 @@ import {
   Tabs,
   Badge,
   ActionIcon,
-  CopyButton,
   Tooltip,
   Center,
   Loader,
@@ -26,10 +25,8 @@ import {
   UserCheck,
   LinkIcon,
   Plus,
-  Edit,
   Trash2,
   Check,
-  Copy,
   AlertCircle,
   RefreshCw,
   Info,
@@ -42,7 +39,6 @@ import { ModuleService } from "@/services/module-service/module-service";
 import { BulkModuleCreator } from "./bulk-module-creator";
 import { AssignmentCreator } from "./assignment-creator";
 import { LessonCreator } from "./lesson-creator";
-import { BulkQuizCreator } from "./bulk-quiz-creator";
 import { ActivityCreator } from "./activity-creator";
 import { AssignmentContent } from "./assignment-content";
 import { StudentContent } from "./student-content";
@@ -128,7 +124,7 @@ export function CourseContentViewer({
     } catch (error) {
       notifications.show({
         title: "Error",
-        message: "Failed to resubmit course. Please try again.",
+        message: `Failed to resubmit course. Please try again. ${error}`,
         color: "red",
       });
     }
@@ -163,7 +159,7 @@ export function CourseContentViewer({
     } catch (error) {
       notifications.show({
         title: "Error",
-        message: "Failed to delete course. Please try again.",
+        message: `Failed to delete course. Please try again. ${error}`,
         color: "red",
       });
     }
@@ -248,7 +244,7 @@ export function CourseContentViewer({
               position: "absolute",
               top: 24,
               left: 24,
-              background: "rgba(34, 34, 34, 0.95)",
+              backgroundColor: "rgba(34, 34, 34, 0.95)",
               backdropFilter: "blur(10px)",
               border: "1px solid rgba(189, 240, 82, 0.2)",
               boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
@@ -256,11 +252,12 @@ export function CourseContentViewer({
               transition: "all 0.2s ease",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.background = "rgba(189, 240, 82, 0.15)";
+              e.currentTarget.style.backgroundColor =
+                "rgba(189, 240, 82, 0.15)";
               e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)";
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.background = "rgba(34, 34, 34, 0.95)";
+              e.currentTarget.style.backgroundColor = "rgba(34, 34, 34, 0.95)";
               e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.2)";
             }}
           >
@@ -276,7 +273,7 @@ export function CourseContentViewer({
                 position: "absolute",
                 top: 24,
                 right: 24,
-                background: "rgba(127, 29, 29, 0.95)",
+                backgroundColor: "rgba(127, 29, 29, 0.95)",
                 backdropFilter: "blur(10px)",
                 border: "1px solid rgba(239, 68, 68, 0.3)",
                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
@@ -284,15 +281,16 @@ export function CourseContentViewer({
                 transition: "all 0.2s ease",
               }}
               onClick={() => {
-                console.log("Delete banner clicked");
                 setDeleteModalOpened(true);
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(239, 68, 68, 0.2)";
+                e.currentTarget.style.backgroundColor =
+                  "rgba(239, 68, 68, 0.2)";
                 e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.5)";
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.background = "rgba(127, 29, 29, 0.95)";
+                e.currentTarget.style.backgroundColor =
+                  "rgba(127, 29, 29, 0.95)";
                 e.currentTarget.style.borderColor = "rgba(239, 68, 68, 0.3)";
               }}
             >
@@ -449,8 +447,6 @@ export function CourseContentViewer({
             <Group gap="sm">
               <Button
                 onClick={() => {
-                  console.log("View Rejection Reason clicked");
-                  console.log("Admin Notes Value:", course.admin_notes);
                   setRejectionModalOpened(true);
                 }}
                 style={{
@@ -963,41 +959,5 @@ export function CourseContentViewer({
         </Tabs>
       </Card>
     </Box>
-  );
-}
-
-function ActivitiesContent() {
-  return (
-    <Card
-      padding="xl"
-      radius="md"
-      style={{
-        background: "rgba(34, 34, 34, 0.4)",
-        border: "1px solid rgba(189, 240, 82, 0.1)",
-        textAlign: "center",
-      }}
-    >
-      <Text c="dimmed">
-        No activities yet. Create engaging activities for your students.
-      </Text>
-    </Card>
-  );
-}
-
-function QuizzesContent() {
-  return (
-    <Card
-      padding="xl"
-      radius="md"
-      style={{
-        background: "rgba(34, 34, 34, 0.4)",
-        border: "1px solid rgba(189, 240, 82, 0.1)",
-        textAlign: "center",
-      }}
-    >
-      <Text c="dimmed">
-        No quizzes yet. Add quizzes to assess student learning.
-      </Text>
-    </Card>
   );
 }

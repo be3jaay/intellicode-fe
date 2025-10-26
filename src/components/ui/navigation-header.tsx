@@ -17,19 +17,9 @@ import {
   ActionIcon,
   Button,
   Stack,
-  Divider,
   Skeleton,
-  Loader,
 } from "@mantine/core";
-import {
-  LogOut,
-  User,
-  Settings,
-  ChevronDown,
-  Bell,
-  Check,
-  Trash2,
-} from "lucide-react";
+import { LogOut, ChevronDown, Bell, Check, Trash2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 
 interface NavigationHeaderProps {

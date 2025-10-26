@@ -10,7 +10,6 @@ import {
   Title,
   Text,
   ThemeIcon,
-  Group,
 } from "@mantine/core";
 import { BookOpen, UserCheck, Sparkles, Award } from "lucide-react";
 

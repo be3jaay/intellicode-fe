@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
+const GEMINI_API_URL =
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
 interface AICheckRequest {
   description: string;
@@ -100,11 +101,16 @@ Important output constraint:
 Do not include any text outside the JSON object. Do not wrap it in markdown code blocks.`;
 }
 
-function extractJSON(text: string): { finalScore: number; feedbackMarkdown: string } | null {
+function extractJSON(
+  text: string
+): { finalScore: number; feedbackMarkdown: string } | null {
   try {
     // Try direct parse first
     const parsed = JSON.parse(text);
-    if (parsed.finalScore !== undefined && parsed.feedbackMarkdown !== undefined) {
+    if (
+      parsed.finalScore !== undefined &&
+      parsed.feedbackMarkdown !== undefined
+    ) {
       return parsed;
     }
   } catch {
@@ -113,7 +119,10 @@ function extractJSON(text: string): { finalScore: number; feedbackMarkdown: stri
     if (jsonMatch) {
       try {
         const parsed = JSON.parse(jsonMatch[1]);
-        if (parsed.finalScore !== undefined && parsed.feedbackMarkdown !== undefined) {
+        if (
+          parsed.finalScore !== undefined &&
+          parsed.feedbackMarkdown !== undefined
+        ) {
           return parsed;
         }
       } catch {
@@ -122,11 +131,16 @@ function extractJSON(text: string): { finalScore: number; feedbackMarkdown: stri
     }
 
     // Try to find JSON object in text
-    const objectMatch = text.match(/\{[\s\S]*"finalScore"[\s\S]*"feedbackMarkdown"[\s\S]*\}/);
+    const objectMatch = text.match(
+      /\{[\s\S]*"finalScore"[\s\S]*"feedbackMarkdown"[\s\S]*\}/
+    );
     if (objectMatch) {
       try {
         const parsed = JSON.parse(objectMatch[0]);
-        if (parsed.finalScore !== undefined && parsed.feedbackMarkdown !== undefined) {
+        if (
+          parsed.finalScore !== undefined &&
+          parsed.feedbackMarkdown !== undefined
+        ) {
           return parsed;
         }
       } catch {
@@ -134,7 +148,7 @@ function extractJSON(text: string): { finalScore: number; feedbackMarkdown: stri
       }
     }
   }
-  
+
   return null;
 }
 
@@ -143,14 +157,13 @@ export async function POST(request: NextRequest) {
     if (!GEMINI_API_KEY) {
       console.error("GEMINI_API_KEY is not configured");
       return NextResponse.json(
-        { error: "AI service is not configured. Please contact the administrator." },
+        {
+          error:
+            "AI service is not configured. Please contact the administrator.",
+        },
         { status: 500 }
       );
     }
-
-    console.log("AI Check request received");
-    console.log("API Key present:", !!GEMINI_API_KEY);
-    console.log("API Key length:", GEMINI_API_KEY?.length);
 
     const body: AICheckRequest = await request.json();
     const { description, code, maxScore } = body;
@@ -164,39 +177,42 @@ export async function POST(request: NextRequest) {
 
     if (!maxScore || typeof maxScore !== "number" || maxScore <= 0) {
       return NextResponse.json(
-        { error: "Invalid request: 'maxScore' is required and must be a positive number" },
+        {
+          error:
+            "Invalid request: 'maxScore' is required and must be a positive number",
+        },
         { status: 400 }
       );
     }
 
     const prompt = buildPrompt(description || "", code);
-    
-    console.log("Calling Gemini API...");
-    console.log("Prompt length:", prompt.length);
 
-    const geminiResponse = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [
-              {
-                text: prompt,
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: 0.2,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 2048,
+    const geminiResponse = await fetch(
+      `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      }),
-    });
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: prompt,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.2,
+            topK: 40,
+            topP: 0.95,
+            maxOutputTokens: 2048,
+          },
+        }),
+      }
+    );
 
     if (!geminiResponse.ok) {
       const errorText = await geminiResponse.text();
@@ -231,38 +247,44 @@ export async function POST(request: NextRequest) {
     }
 
     const extracted = extractJSON(responseText);
-    
+
     if (!extracted) {
-      console.error("Failed to extract JSON from Gemini response:", responseText);
-      
+      console.error(
+        "Failed to extract JSON from Gemini response:",
+        responseText
+      );
+
       const retryPrompt = `${prompt}
 
 CRITICAL: Your previous response was not valid JSON. You MUST return ONLY a JSON object with no additional text, markdown formatting, or code blocks. Return this exact structure:
 {"finalScore": <number 0-100>, "feedbackMarkdown": "<your analysis as markdown string>"}`;
 
-      const retryResponse = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: retryPrompt,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.1,
-            topK: 20,
-            topP: 0.9,
-            maxOutputTokens: 2048,
+      const retryResponse = await fetch(
+        `${GEMINI_API_URL}?key=${GEMINI_API_KEY}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
           },
-        }),
-      });
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  {
+                    text: retryPrompt,
+                  },
+                ],
+              },
+            ],
+            generationConfig: {
+              temperature: 0.1,
+              topK: 20,
+              topP: 0.9,
+              maxOutputTokens: 2048,
+            },
+          }),
+        }
+      );
 
       if (retryResponse.ok) {
         const retryData: GeminiResponse = await retryResponse.json();
@@ -271,7 +293,9 @@ CRITICAL: Your previous response was not valid JSON. You MUST return ONLY a JSON
           const retryExtracted = extractJSON(retryText);
           if (retryExtracted) {
             const scaledScore = Math.round(
-              Math.max(0, Math.min(100, retryExtracted.finalScore)) * maxScore / 100
+              (Math.max(0, Math.min(100, retryExtracted.finalScore)) *
+                maxScore) /
+                100
             );
             return NextResponse.json({
               finalScore: retryExtracted.finalScore,
@@ -289,7 +313,7 @@ CRITICAL: Your previous response was not valid JSON. You MUST return ONLY a JSON
     }
 
     const scaledScore = Math.round(
-      Math.max(0, Math.min(100, extracted.finalScore)) * maxScore / 100
+      (Math.max(0, Math.min(100, extracted.finalScore)) * maxScore) / 100
     );
 
     return NextResponse.json({
@@ -297,7 +321,6 @@ CRITICAL: Your previous response was not valid JSON. You MUST return ONLY a JSON
       scaledScore,
       feedbackMarkdown: extracted.feedbackMarkdown,
     });
-
   } catch (error) {
     console.error("Unexpected error in /api/ai-check:", error);
     return NextResponse.json(

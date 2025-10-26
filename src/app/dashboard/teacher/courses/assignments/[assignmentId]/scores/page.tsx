@@ -240,20 +240,6 @@ export default function AssignmentScoresPage() {
           </Text>
         </Group>
       </Table.Td>
-      <Table.Td>
-        <Group gap="xs">
-          <Tooltip label="View Details">
-            <ActionIcon variant="subtle" color="blue" size="sm">
-              <Eye size={16} />
-            </ActionIcon>
-          </Tooltip>
-          <Tooltip label="Download Report">
-            <ActionIcon variant="subtle" color="green" size="sm">
-              <Download size={16} />
-            </ActionIcon>
-          </Tooltip>
-        </Group>
-      </Table.Td>
     </Table.Tr>
   ));
 
@@ -374,35 +360,6 @@ export default function AssignmentScoresPage() {
                     </Group>
                   </Group>
                 </Stack>
-              </Group>
-            </Grid.Col>
-
-            <Grid.Col span={4}>
-              <Group justify="flex-end" gap="sm">
-                <Button
-                  leftSection={<Download size={16} />}
-                  variant="outline"
-                  color={typeConfig?.color || "#bdf052"}
-                  style={{
-                    borderColor:
-                      typeConfig?.borderColor || "rgba(189, 240, 82, 0.3)",
-                    color: typeConfig?.color || "#bdf052",
-                  }}
-                >
-                  Export Scores
-                </Button>
-                <Button
-                  leftSection={<BarChart3 size={16} />}
-                  style={{
-                    background: `linear-gradient(135deg, ${
-                      typeConfig?.color || "#bdf052"
-                    } 0%, ${typeConfig?.color || "#bdf052"}cc 100%)`,
-                    border: "none",
-                    color: "#222222",
-                  }}
-                >
-                  Analytics
-                </Button>
               </Group>
             </Grid.Col>
           </Grid>
@@ -593,7 +550,7 @@ export default function AssignmentScoresPage() {
             overflow: "hidden",
           }}
         >
-          <Table highlightOnHover>
+          <Table>
             <Table.Thead style={{ background: "rgba(255, 255, 255, 0.05)" }}>
               <Table.Tr>
                 <Table.Th style={{ color: "white", fontWeight: 600 }}>
@@ -607,9 +564,6 @@ export default function AssignmentScoresPage() {
                 </Table.Th>
                 <Table.Th style={{ color: "white", fontWeight: 600 }}>
                   Submitted At
-                </Table.Th>
-                <Table.Th style={{ color: "white", fontWeight: 600 }}>
-                  Actions
                 </Table.Th>
               </Table.Tr>
             </Table.Thead>

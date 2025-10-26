@@ -7,7 +7,7 @@ import {
   type CreateCourseSchemaType,
 } from "@/app/dashboard/teacher/courses/create/schema/create-course-schema";
 import { CourseCreationModal } from "./course-creation-modal";
-import { CourseGridViewer, type Course } from "./course-grid-viewer";
+import { CourseGridViewer } from "./course-grid-viewer";
 import { notifications } from "@mantine/notifications";
 import { CheckCircle, XCircle } from "lucide-react";
 import { Box } from "@mantine/core";

@@ -63,19 +63,6 @@ export function CourseHeader({
     return hours > 0 ? `${hours}h ${mins}m` : `${mins}m`;
   };
 
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case "beginner":
-        return "green";
-      case "intermediate":
-        return "yellow";
-      case "advanced":
-        return "red";
-      default:
-        return "blue";
-    }
-  };
-
   return (
     <Box
       style={{
@@ -115,15 +102,6 @@ export function CourseHeader({
         <Stack gap="lg">
           {/* Navigation */}
           <Group justify="space-between" align="center">
-            <Button
-              leftSection={<IconArrowLeft size={16} />}
-              size="md"
-              radius="md"
-              variant="primary"
-            >
-              Back to Courses
-            </Button>
-
             <Group gap="xs">
               <Badge
                 size="lg"
@@ -281,7 +259,6 @@ export function CourseHeader({
               variant="subtle"
               leftSection={<IconBook size={16} />}
               onClick={() => {
-                console.log("Lessons button clicked");
                 onTabChange("lessons");
               }}
               style={{
@@ -300,7 +277,6 @@ export function CourseHeader({
               variant="subtle"
               leftSection={<IconCheck size={16} />}
               onClick={() => {
-                console.log("Assignments button clicked");
                 onTabChange("assignments");
               }}
               style={{
@@ -319,7 +295,6 @@ export function CourseHeader({
               variant="subtle"
               leftSection={<IconChartBar size={16} />}
               onClick={() => {
-                console.log("Grades button clicked");
                 onTabChange("grades");
               }}
               style={{
@@ -338,7 +313,6 @@ export function CourseHeader({
               variant="subtle"
               leftSection={<IconTrophy size={16} />}
               onClick={() => {
-                console.log("Progress button clicked");
                 onTabChange("progress");
               }}
               style={{

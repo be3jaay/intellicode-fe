@@ -20,7 +20,7 @@ export const useBulkLessonCreation = () => {
       lessons: BulkLessonRequest;
     }) => lessonService.createBulkLessons(courseId, moduleId, lessons),
 
-    onSuccess: (data) => {
+    onSuccess: () => {
       notifications.show({
         title: "Success!",
         message: "Lessons created successfully",

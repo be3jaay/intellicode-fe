@@ -1,94 +1,57 @@
-import { useState, useEffect, useCallback } from "react";
+import { useMemo } from "react";
 import {
-  notificationService,
-  Notification,
-  NotificationResponse,
-} from "@/services/notification-service";
+  useNotifications as useNotificationsQuery,
+  useMarkAsRead as useMarkAsReadMutation,
+  useMarkAllAsRead as useMarkAllAsReadMutation,
+  useDeleteNotification as useDeleteNotificationMutation,
+} from "@/hooks/query-hooks/notification-query";
+import type { Notification } from "@/services/notification-service";
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unreadCount, setUnreadCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { data, isLoading, error, refetch } = useNotificationsQuery();
 
-  const fetchNotifications = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await notificationService.getNotifications();
-      setNotifications(response.data.data);
-      setUnreadCount(response.data.unread_count);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to fetch notifications"
-      );
-      console.error("Error fetching notifications:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const markAsReadMutation = useMarkAsReadMutation();
+  const markAllAsReadMutation = useMarkAllAsReadMutation();
+  const deleteNotificationMutation = useDeleteNotificationMutation();
 
-  const markAsRead = useCallback(async (notificationId: string) => {
+  const notifications = useMemo<Notification[]>(() => {
+    return data?.data?.data || [];
+  }, [data]);
+
+  const unreadCount = useMemo(() => {
+    return data?.data?.unread_count || 0;
+  }, [data]);
+
+  const markAsRead = async (notificationId: string) => {
     try {
-      await notificationService.markAsRead(notificationId);
-      setNotifications((prev) =>
-        prev.map((notification) =>
-          notification.id === notificationId
-            ? { ...notification, is_read: true }
-            : notification
-        )
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+      await markAsReadMutation.mutateAsync(notificationId);
     } catch (err) {
       console.error("Error marking notification as read:", err);
     }
-  }, []);
+  };
 
-  const markAllAsRead = useCallback(async () => {
+  const markAllAsRead = async () => {
     try {
-      await notificationService.markAllAsRead();
-      setNotifications((prev) =>
-        prev.map((notification) => ({ ...notification, is_read: true }))
-      );
-      setUnreadCount(0);
+      await markAllAsReadMutation.mutateAsync();
     } catch (err) {
       console.error("Error marking all notifications as read:", err);
     }
-  }, []);
+  };
 
-  const deleteNotification = useCallback(
-    async (notificationId: string) => {
-      try {
-        await notificationService.deleteNotification(notificationId);
-        setNotifications((prev) =>
-          prev.filter((notification) => notification.id !== notificationId)
-        );
-        // Also decrement unread count if the deleted notification was unread
-        setUnreadCount((prev) => {
-          const deletedNotification = notifications.find(
-            (n) => n.id === notificationId
-          );
-          return deletedNotification && !deletedNotification.is_read
-            ? Math.max(0, prev - 1)
-            : prev;
-        });
-      } catch (err) {
-        console.error("Error deleting notification:", err);
-      }
-    },
-    [notifications]
-  );
-
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+  const deleteNotification = async (notificationId: string) => {
+    try {
+      await deleteNotificationMutation.mutateAsync(notificationId);
+    } catch (err) {
+      console.error("Error deleting notification:", err);
+    }
+  };
 
   return {
     notifications,
     unreadCount,
     isLoading,
-    error,
-    fetchNotifications,
+    error: error ? (error as Error).message : null,
+    fetchNotifications: refetch,
     markAsRead,
     markAllAsRead,
     deleteNotification,

@@ -1,7 +1,6 @@
 import { apiClient } from "../api-client";
 import {
   CourseApprovalResponse,
-  CourseApprovalAction,
   CourseApprovalActionResponse,
   CourseResubmitResponse,
 } from "./course-approval-type";

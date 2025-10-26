@@ -11,7 +11,6 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function SignInContainer() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<SignInSchemaType>({
@@ -74,8 +73,7 @@ export default function SignInContainer() {
     } catch (error) {
       notifications.show({
         title: "Connection Error",
-        message:
-          "An error occurred. Please check your connection and try again.",
+        message: `An error occurred. Please check your connection and try again. ${error}`,
         color: "red",
         icon: <XCircle size={18} />,
         autoClose: 5000,

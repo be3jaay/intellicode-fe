@@ -28,6 +28,7 @@ interface LessonFormData {
   description: string;
   difficulty: "beginner" | "intermediate" | "advanced";
   estimated_duration: number | null;
+  order_index: number;
   is_published: boolean;
 }
 
@@ -42,6 +43,7 @@ export function EditLessonDrawer({
     description: "",
     difficulty: "beginner",
     estimated_duration: null,
+    order_index: 0,
     is_published: false,
   });
   const [errors, setErrors] = useState<
@@ -55,6 +57,7 @@ export function EditLessonDrawer({
         description: lesson.description,
         difficulty: lesson.difficulty,
         estimated_duration: lesson.estimated_duration,
+        order_index: lesson.order_index,
         is_published: lesson.is_published,
       });
       setErrors({});
@@ -198,6 +201,34 @@ export function EditLessonDrawer({
           />
 
           <NumberInput
+            label="Order Index"
+            placeholder="Enter lesson order"
+            required
+            min={0}
+            value={formData.order_index}
+            onChange={(value) =>
+              setFormData({
+                ...formData,
+                order_index: typeof value === "number" ? value : 0,
+              })
+            }
+            styles={{
+              control: {
+                color: "#fff",
+              },
+              label: { color: "#e9eeea", marginBottom: 8 },
+              input: {
+                background: "rgba(34, 34, 34, 0.6)",
+                border: "1px solid rgba(189, 240, 82, 0.2)",
+                color: "#e9eeea",
+                "&:focus": {
+                  borderColor: "#bdf052",
+                },
+              },
+            }}
+          />
+
+          <NumberInput
             label="Estimated Duration (minutes)"
             placeholder="Enter duration in minutes"
             min={0}
@@ -209,6 +240,9 @@ export function EditLessonDrawer({
               })
             }
             styles={{
+              control: {
+                color: "#fff",
+              },
               label: { color: "#e9eeea", marginBottom: 8 },
               input: {
                 background: "rgba(34, 34, 34, 0.6)",

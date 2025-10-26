@@ -10,7 +10,7 @@ import {
   Anchor,
   Divider,
 } from "@mantine/core";
-import { Brain } from "lucide-react";
+import { Code } from "lucide-react";
 
 export function FooterSection() {
   return (
@@ -24,7 +24,7 @@ export function FooterSection() {
         <Grid gutter={60}>
           <Grid.Col span={{ base: 12, md: 4 }}>
             <Group mb="lg" gap="xs">
-              <Brain size={32} color="#BDF052" />
+              <Code size={32} color="#BDF052" />
               <Text size="xl" fw={800} style={{ color: "#FFFFFF" }}>
                 Intellicode
               </Text>

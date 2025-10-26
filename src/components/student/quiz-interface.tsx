@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
   Box,
   Text,
@@ -8,19 +8,16 @@ import {
   Paper,
   Group,
   Radio,
-  Checkbox,
   TextInput,
   Textarea,
   Modal,
   Progress,
   Alert,
-  Divider,
   Badge,
   Center,
 } from "@mantine/core";
 import {
   IconBrain,
-  IconClock,
   IconTrophy,
   IconAlertTriangle,
   IconCheck,
@@ -99,32 +96,32 @@ export function QuizInterface({
 
   const { submitAssignment, isSubmitting } = useSubmitAssignment();
 
-  //   useLeaveDetection(async () => {
-  //     if (!isSecured || !leaveDetectionEnabled) return;
-  //     if (hasAutoSubmitted) {
-  //       setShowLeaveModal(true);
-  //       return;
-  //     }
+  useLeaveDetection(async () => {
+    if (!isSecured || !leaveDetectionEnabled) return;
+    if (hasAutoSubmitted) {
+      setShowLeaveModal(true);
+      return;
+    }
 
-  //     setIsAutoSubmitting(true);
-  //     try {
-  //       await submitAssignment({
-  //         assignmentId: assignment.id,
-  //         data: {
-  //           answers: answers.map((a) => ({
-  //             question_id: a.questionId,
-  //             answer_text: Array.isArray(a.answer)
-  //               ? a.answer.join("\n")
-  //               : a.answer ?? "",
-  //           })),
-  //         },
-  //       });
-  //     } finally {
-  //       setHasAutoSubmitted(true);
-  //       setIsAutoSubmitting(false);
-  //       setShowLeaveModal(true);
-  //     }
-  //   });
+    setIsAutoSubmitting(true);
+    try {
+      await submitAssignment({
+        assignmentId: assignment.id,
+        data: {
+          answers: answers.map((a) => ({
+            question_id: a.questionId,
+            answer_text: Array.isArray(a.answer)
+              ? a.answer.join("\n")
+              : a.answer ?? "",
+          })),
+        },
+      });
+    } finally {
+      setHasAutoSubmitted(true);
+      setIsAutoSubmitting(false);
+      setShowLeaveModal(true);
+    }
+  });
   const currentQuestion = assignment.questions[currentQuestionIndex];
   const progress =
     ((currentQuestionIndex + 1) / assignment.questions.length) * 100;
@@ -159,8 +156,6 @@ export function QuizInterface({
   const handleSubmit = async () => {
     // Disable leave detection before submitting
     setLeaveDetectionEnabled(false);
-
-    console.log("📝 Raw answers before processing:", answers);
 
     const payload: SubmitAssignmentData = {
       answers: answers.map((a) => {
@@ -211,7 +206,6 @@ export function QuizInterface({
       }),
     };
 
-    console.log("📦 Final payload:", JSON.stringify(payload, null, 2));
     try {
       const response = await submitAssignment({
         assignmentId: assignment.id,

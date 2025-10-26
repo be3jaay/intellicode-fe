@@ -9,10 +9,7 @@ import {
   Card,
   Flex,
   Progress,
-  rem,
-  Alert,
   Center,
-  Timeline,
 } from "@mantine/core";
 import { useRouter } from "next/navigation";
 import {
@@ -191,8 +188,8 @@ export function AssignmentsSection({
             No assignments yet
           </Text>
           <Text size="sm" c="dimmed" ta="center">
-            Your instructor hasn't assigned any tasks yet. Check back later for
-            assignments.
+            Your instructor hasn&apos;t assigned any tasks yet. Check back later
+            for assignments.
           </Text>
         </Stack>
       </Center>

@@ -55,7 +55,6 @@ export default function UserManagementPage() {
         : undefined,
   };
 
-  // Data fetching
   const {
     data: usersData,
     isLoading: usersLoading,
@@ -92,11 +91,9 @@ export default function UserManagementPage() {
         break;
       case "edit":
         // Handle edit user
-        console.log("Edit user:", user);
         break;
       case "delete":
         // Handle delete user
-        console.log("Delete user:", user);
         break;
     }
   };
@@ -254,25 +251,6 @@ export default function UserManagementPage() {
               </div>
             </Group>
             <Group gap="sm">
-              <Button
-                leftSection={<Plus size={16} />}
-                style={{
-                  backgroundColor: "#0F0F0F",
-                  color: "#BDF052",
-                  border: "2px solid #0F0F0F",
-                }}
-                styles={{
-                  root: {
-                    "&:hover": {
-                      backgroundColor: "#1A1A1A",
-                      transform: "translateY(-2px)",
-                    },
-                    transition: "all 0.2s ease",
-                  },
-                }}
-              >
-                Add User
-              </Button>
               <Button
                 leftSection={<RefreshCw size={16} />}
                 onClick={handleRefresh}

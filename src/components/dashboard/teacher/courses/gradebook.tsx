@@ -7,7 +7,6 @@ import {
   Stack,
   Text,
   TextInput,
-  Select,
   Badge,
   ActionIcon,
   Button,
@@ -20,10 +19,8 @@ import {
   Search,
   Filter,
   Eye,
-  Download,
   ArrowUpDown,
   TrendingUp,
-  TrendingDown,
   Clock,
   CheckCircle,
   AlertCircle,
@@ -35,6 +32,7 @@ import type {
 } from "@/services/student-service/student-type";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import { useDebouncedValue } from "@mantine/hooks";
 
 interface GradebookProps {
   courseId: string;
@@ -52,6 +50,7 @@ type SortKey =
 export function Gradebook({ courseId }: GradebookProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch] = useDebouncedValue(searchTerm, 500);
   const [sectionFilter, setSectionFilter] = useState<string | null>(null);
   const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<
     string | null
@@ -66,7 +65,7 @@ export function Gradebook({ courseId }: GradebookProps) {
   const queryParams: GradebookQueryParams = {
     offset,
     limit,
-    search: searchTerm || undefined,
+    search: debouncedSearch.trim() !== "" ? debouncedSearch : undefined,
     section: sectionFilter || undefined,
     assignment_type: assignmentTypeFilter || undefined,
     sort_by: sortBy,
@@ -92,20 +91,19 @@ export function Gradebook({ courseId }: GradebookProps) {
     }
   }, [data, limit, offset]);
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    if (offset !== 0) {
+      setOffset(0);
+    } else {
+      // If offset is already 0, we need to refetch manually
+      refetch();
+    }
+    setAllStudents([]);
+  }, [debouncedSearch, sectionFilter, assignmentTypeFilter, sortBy, sortOrder]);
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setOffset(0);
-    setAllStudents([]);
-  };
-
-  const handleFilterChange = (filterType: string, value: string | null) => {
-    if (filterType === "section") {
-      setSectionFilter(value);
-    } else if (filterType === "assignmentType") {
-      setAssignmentTypeFilter(value);
-    }
-    setOffset(0);
-    setAllStudents([]);
   };
 
   const handleSortChange = (key: SortKey) => {
@@ -115,8 +113,6 @@ export function Gradebook({ courseId }: GradebookProps) {
       setSortBy(key);
       setSortOrder("asc");
     }
-    setOffset(0);
-    setAllStudents([]);
   };
 
   const handleViewMore = () => {
@@ -324,29 +320,6 @@ export function Gradebook({ courseId }: GradebookProps) {
                 },
               }}
             />
-            <Select
-              placeholder="Section"
-              value={sectionFilter}
-              onChange={(value) => handleFilterChange("section", value)}
-              clearable
-              data={[
-                { value: "BSCS 3A", label: "BSCS 3A" },
-                { value: "BSCS 3B", label: "BSCS 3B" },
-                { value: "BSCS 4A", label: "BSCS 4A" },
-                { value: "BSCS 4B", label: "BSCS 4B" },
-              ]}
-              leftSection={<Filter size={16} color="#9ca3af" />}
-              styles={{
-                input: {
-                  background: "rgba(26, 26, 26, 0.8)",
-                  border: "1px solid rgba(189, 240, 82, 0.2)",
-                  color: "#e9eeea",
-                  "&:focus": {
-                    borderColor: "rgba(189, 240, 82, 0.5)",
-                  },
-                },
-              }}
-            />
           </Group>
           <Group gap="xs">
             <Button
@@ -412,18 +385,6 @@ export function Gradebook({ courseId }: GradebookProps) {
             >
               Exams
             </Button>
-            <Button
-              size="xs"
-              variant="outline"
-              leftSection={<Download size={14} />}
-              style={{
-                borderColor: "rgba(189, 240, 82, 0.3)",
-                color: "#bdf052",
-                marginLeft: "auto",
-              }}
-            >
-              Export
-            </Button>
           </Group>
         </Stack>
       </Card>
@@ -449,7 +410,7 @@ export function Gradebook({ courseId }: GradebookProps) {
               padding="md"
               radius="md"
               style={{
-                background: "rgba(34, 34, 34, 0.6)",
+                backgroundColor: "rgba(34, 34, 34, 0.6)",
                 border: `1px solid ${getGradeBorderColor(
                   student.overall_grade
                 )}`,
@@ -459,7 +420,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                 e.currentTarget.style.borderColor = getGradeBorderColor(
                   student.overall_grade
                 ).replace("0.3", "0.6");
-                e.currentTarget.style.background = getGradeBgColor(
+                e.currentTarget.style.backgroundColor = getGradeBgColor(
                   student.overall_grade
                 );
               }}
@@ -467,24 +428,39 @@ export function Gradebook({ courseId }: GradebookProps) {
                 e.currentTarget.style.borderColor = getGradeBorderColor(
                   student.overall_grade
                 );
-                e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)";
+                e.currentTarget.style.backgroundColor = "rgba(34, 34, 34, 0.6)";
               }}
             >
               <Group justify="space-between" wrap="nowrap" align="flex-start">
                 <Group gap="md" style={{ flex: 1 }}>
-                  <Avatar
-                    size={48}
-                    radius="md"
-                    style={{
-                      background:
-                        "linear-gradient(135deg, #b3a1ff 0%, #9b89e6 100%)",
-                      color: "#1a1a1a",
-                      fontWeight: 700,
-                    }}
-                  >
-                    {student.first_name[0]}
-                    {student.last_name[0]}
-                  </Avatar>
+                  {student.profile_picture ? (
+                    <Avatar
+                      size={48}
+                      radius="md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #b3a1ff 0%, #9b89e6 100%)",
+                        color: "#1a1a1a",
+                        fontWeight: 700,
+                      }}
+                      src={student.profile_picture}
+                    />
+                  ) : (
+                    <Avatar
+                      size={48}
+                      radius="md"
+                      style={{
+                        background:
+                          "linear-gradient(135deg, #b3a1ff 0%, #9b89e6 100%)",
+                        color: "#1a1a1a",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {student.first_name[0]}
+                      {student.last_name[0]}
+                    </Avatar>
+                  )}
+
                   <Box style={{ flex: 1 }}>
                     <Group gap="sm" mb={4}>
                       <Text fw={600} size="sm" c="#e9eeea">

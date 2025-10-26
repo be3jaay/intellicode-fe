@@ -504,7 +504,7 @@ export function QuizFormContentStep({
                                   watch(`questions.${index}.options`) || []
                                 )
                                   .filter((opt: string) => opt && opt.trim()) // Filter out empty options
-                                  .map((opt: string, i: number) => ({
+                                  .map((opt: string) => ({
                                     value: opt,
                                     label: opt,
                                   }))}
@@ -733,6 +733,9 @@ export function QuizFormContentStep({
                                 )
                               }
                               styles={{
+                                control: {
+                                  color: "#fff",
+                                },
                                 label: {
                                   color: "#ffd700",
                                   fontWeight: 600,
@@ -749,30 +752,6 @@ export function QuizFormContentStep({
                               }}
                             />
                           </Group>
-
-                          <Textarea
-                            label="Explanation (Optional)"
-                            placeholder="Provide an explanation for the answer..."
-                            rows={2}
-                            size="md"
-                            {...register(`questions.${index}.explanation`)}
-                            styles={{
-                              label: {
-                                color: "#b3a1ff",
-                                fontWeight: 600,
-                                marginBottom: 8,
-                              },
-                              input: {
-                                background: "#1a1a1a",
-                                borderColor: "rgba(179, 161, 255, 0.3)",
-                                color: "#ffffff",
-                                fontSize: rem(15),
-                                "&:focus": {
-                                  borderColor: "#b3a1ff",
-                                },
-                              },
-                            }}
-                          />
 
                           <Group justify="flex-end" gap="sm" mt="md">
                             <Button

@@ -6,26 +6,20 @@ import {
   Button,
   Group,
   Stack,
-  Alert,
   Loader,
   Card,
   Avatar,
   Badge,
   Divider,
-  Progress,
-  Flex,
-  Box,
   Textarea,
   ScrollArea,
 } from "@mantine/core";
 import {
-  AlertTriangle,
   CheckCircle,
   XCircle,
   User,
   Calendar,
   Code,
-  Clock,
   BookOpen,
 } from "lucide-react";
 import { CourseApprovalItem } from "@/services/course-service/course-approval-type";

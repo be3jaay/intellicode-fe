@@ -94,7 +94,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     } catch (err) {
       notifications.show({
         title: "Error",
-        message: "Failed to delete assignment. Please try again.",
+        message: `Failed to delete assignment. Please try again. ${error}`,
         color: "red",
         autoClose: 5000,
       });
@@ -114,7 +114,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
   const queryParams: AssignmentQueryParams = {
     offset,
     limit,
-    search: debouncedSearch || undefined,
+    search: debouncedSearch.trim() !== "" ? debouncedSearch : undefined,
     is_published: publishedFilter ? publishedFilter === "published" : undefined,
     assignmentType: (assignmentTypeFilter as any) || undefined,
   };
@@ -140,11 +140,15 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     }
   }, [data, limit, offset]);
 
-  // Reset to first page when debounced search changes
+  // Reset to first page when filters change
   useEffect(() => {
-    setOffset(0);
-    setAllAssignments([]);
-  }, [debouncedSearch]);
+    if (offset !== 0) {
+      setOffset(0);
+    } else {
+      // If offset is already 0, we need to refetch manually
+      refetch();
+    }
+  }, [debouncedSearch, publishedFilter, assignmentTypeFilter]);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -156,8 +160,6 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
     } else if (filterType === "assignmentType") {
       setAssignmentTypeFilter(value);
     }
-    setOffset(0); // Reset to first page when filtering
-    setAllAssignments([]); // Clear accumulated assignments
   };
 
   const handleViewMore = () => {
@@ -365,7 +367,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
               padding="md"
               radius="md"
               style={{
-                background: "rgba(34, 34, 34, 0.6)",
+                backgroundColor: "rgba(34, 34, 34, 0.6)",
                 border: `1px solid ${getAssignmentTypeBorderColor(
                   assignment.assignmentType
                 )}`,
@@ -377,14 +379,14 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                   getAssignmentTypeBorderColor(
                     assignment.assignmentType
                   ).replace("0.3", "0.6");
-                e.currentTarget.style.background = getAssignmentTypeColor(
+                e.currentTarget.style.backgroundColor = getAssignmentTypeColor(
                   assignment.assignmentType
                 );
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor =
                   getAssignmentTypeBorderColor(assignment.assignmentType);
-                e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)";
+                e.currentTarget.style.backgroundColor = "rgba(34, 34, 34, 0.6)";
               }}
             >
               <Group justify="space-between" wrap="nowrap">

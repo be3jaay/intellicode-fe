@@ -36,6 +36,7 @@ export function InstructorDashboardContent({
     title: course.title,
     description: `${course.category} • ${course.modules_count} modules`,
     studentsCount: course.students_count,
+    thumbnail: course.thumbnail,
     lastActivity: "Active",
     status:
       course.status === "approved" ? ("active" as const) : ("draft" as const),
@@ -100,12 +101,13 @@ export function InstructorDashboardContent({
                   title={course.title}
                   description={course.description}
                   studentsCount={course.students_count}
+                  thumbnail={course.thumbnail}
                   lastActivity={new Date(
                     course.created_at
                   ).toLocaleDateString()}
                   status={course.status === "approved" ? "active" : "draft"}
                   onClick={() =>
-                    router.push(`/dashboard/teacher/courses/${course.id}`)
+                    router.push(`/dashboard/teacher/course/${course.id}`)
                   }
                 />
               </Grid.Col>
@@ -150,7 +152,7 @@ export function InstructorDashboardContent({
                 <CourseCard
                   {...course}
                   onClick={() =>
-                    router.push(`/dashboard/teacher/courses/${course.id}`)
+                    router.push(`/dashboard/teacher/course/${course.id}`)
                   }
                 />
               </Grid.Col>
@@ -184,123 +186,6 @@ export function InstructorDashboardContent({
               </Box>
             </Grid.Col>
           )}
-        </Grid>
-      </Box>
-
-      {/* Top Popular Courses */}
-
-      {/* Quick Actions */}
-      <Box>
-        <Text size="xl" fw={700} c="#e9eeea" mb="md">
-          Quick Actions
-        </Text>
-        <Grid>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <Button
-              fullWidth
-              size="lg"
-              variant="outline"
-              radius="md"
-              styles={{
-                root: {
-                  borderColor: "#bdf052",
-                  color: "#bdf052",
-                  height: rem(80),
-                  "&:hover": {
-                    background: "rgba(189, 240, 82, 0.1)",
-                  },
-                },
-              }}
-              onClick={() =>
-                router.push("/dashboard/teacher/courses?action=create")
-              }
-            >
-              <Stack gap={4} align="center">
-                <BookOpen size={24} />
-                <Text size="sm" fw={600}>
-                  Create Course
-                </Text>
-              </Stack>
-            </Button>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <Button
-              fullWidth
-              size="lg"
-              variant="outline"
-              radius="md"
-              styles={{
-                root: {
-                  borderColor: "#a78bfa",
-                  color: "#a78bfa",
-                  height: rem(80),
-                  "&:hover": {
-                    background: "rgba(167, 139, 250, 0.1)",
-                  },
-                },
-              }}
-              onClick={() => router.push("/dashboard/teacher/grades")}
-            >
-              <Stack gap={4} align="center">
-                <ClipboardCheck size={24} />
-                <Text size="sm" fw={600}>
-                  Grade Submissions
-                </Text>
-              </Stack>
-            </Button>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <Button
-              fullWidth
-              size="lg"
-              variant="outline"
-              radius="md"
-              styles={{
-                root: {
-                  borderColor: "#667eea",
-                  color: "#667eea",
-                  height: rem(80),
-                  "&:hover": {
-                    background: "rgba(102, 126, 234, 0.1)",
-                  },
-                },
-              }}
-              onClick={() => router.push("/dashboard/teacher/students")}
-            >
-              <Stack gap={4} align="center">
-                <Users size={24} />
-                <Text size="sm" fw={600}>
-                  View Students
-                </Text>
-              </Stack>
-            </Button>
-          </Grid.Col>
-          <Grid.Col span={{ base: 12, sm: 6, md: 3 }}>
-            <Button
-              fullWidth
-              size="lg"
-              variant="outline"
-              radius="md"
-              styles={{
-                root: {
-                  borderColor: "#f5576c",
-                  color: "#f5576c",
-                  height: rem(80),
-                  "&:hover": {
-                    background: "rgba(245, 87, 108, 0.1)",
-                  },
-                },
-              }}
-              onClick={() => router.push("/dashboard/teacher/analytics")}
-            >
-              <Stack gap={4} align="center">
-                <BookOpen size={24} />
-                <Text size="sm" fw={600}>
-                  View Analytics
-                </Text>
-              </Stack>
-            </Button>
-          </Grid.Col>
         </Grid>
       </Box>
     </Stack>

@@ -60,7 +60,8 @@
 
 /* Pulse Animation */
 @keyframes pulse {
-  0%, 100% {
+  0%,
+  100% {
     opacity: 1;
   }
   50% {
@@ -86,7 +87,7 @@
 }
 
 .button-hover-effect::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -212,7 +213,11 @@ html {
 }
 
 /* Smooth Transitions for Interactive Elements */
-a, button, input, textarea, select {
+a,
+button,
+input,
+textarea,
+select {
   transition: all 0.2s ease;
 }
 
@@ -244,3 +249,19 @@ a, button, input, textarea, select {
   animation: gradientShift 15s ease infinite;
 }
 
+/* Floating Animation for Background Elements */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0) translateX(0);
+  }
+  25% {
+    transform: translateY(-20px) translateX(10px);
+  }
+  50% {
+    transform: translateY(-10px) translateX(20px);
+  }
+  75% {
+    transform: translateY(-30px) translateX(5px);
+  }
+}

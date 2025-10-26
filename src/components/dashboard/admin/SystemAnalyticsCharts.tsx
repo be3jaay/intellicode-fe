@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Grid, Card, Text } from "@mantine/core";
-import { BarChart, DonutChart } from "@mantine/charts";
+import { AreaChart, BarChart, DonutChart } from "@mantine/charts";
 
 type SystemAnalytics = {
   total_users: number;
@@ -32,14 +32,14 @@ export default function SystemAnalyticsCharts({ stats }: Props) {
     {
       name: "Instructors",
       value: stats.total_instructors,
-      color: "#F59E0B",
+      color: "#b3a1ff",
     },
     { name: "Admins", value: stats.total_admins, color: "#BDF052" },
   ];
 
   const courseStatusData = [
     { name: "Active", value: stats.active_courses, color: "#10B981" },
-    { name: "Pending", value: stats.pending_courses, color: "#F59E0B" },
+    { name: "Pending", value: stats.pending_courses, color: "#b3a1ff" },
     { name: "Rejected", value: stats.rejected_courses, color: "#EF4444" },
   ];
 
@@ -154,8 +154,8 @@ export default function SystemAnalyticsCharts({ stats }: Props) {
           >
             Platform Activity Overview
           </Text>
-          <BarChart
-            h={350}
+          <AreaChart
+            h={450}
             data={activityData}
             dataKey="type"
             series={[{ name: "count", color: "#BDF052", label: "Total Count" }]}
@@ -163,10 +163,12 @@ export default function SystemAnalyticsCharts({ stats }: Props) {
             gridAxis="y"
             withLegend
             legendProps={{ verticalAlign: "bottom", height: 50 }}
-            barProps={{ radius: 8 }}
             styles={{
               axis: {
                 stroke: "#666666",
+              },
+              legend: {
+                color: "#fff",
               },
               grid: {
                 stroke: "#444444",

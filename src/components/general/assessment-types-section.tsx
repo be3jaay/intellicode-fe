@@ -64,10 +64,6 @@ export function AssessmentTypesSection() {
     },
   ];
 
-  const activeAssessment =
-    assessmentTypes.find((type) => type.value === activeTab) ||
-    assessmentTypes[0];
-
   return (
     <Box
       py={100}

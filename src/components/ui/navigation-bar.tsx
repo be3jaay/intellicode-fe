@@ -1,21 +1,9 @@
 "use client";
 
 import { useAuth } from "@/providers/auth-context";
-import { Stack, NavLink, Box, Text } from "@mantine/core";
+import { Stack, NavLink } from "@mantine/core";
 import { usePathname, useRouter } from "next/navigation";
-import {
-  LayoutDashboard,
-  BookOpen,
-  Users,
-  FileText,
-  Settings,
-  BarChart,
-  Calendar,
-  Award,
-  Shield,
-  GraduationCap,
-  User,
-} from "lucide-react";
+import { LayoutDashboard, BookOpen, Award, User } from "lucide-react";
 import { IconUserCog } from "@tabler/icons-react";
 
 export function NavigationBar() {
@@ -23,7 +11,6 @@ export function NavigationBar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  // Navigation items based on user role
   const getNavigationItems = () => {
     const role = user?.role;
 

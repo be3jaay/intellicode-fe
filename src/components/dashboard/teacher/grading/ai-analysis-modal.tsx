@@ -167,6 +167,9 @@ export function AIAnalysisModal({
             size="lg"
             description={`Out of ${maxScore} points (editable)`}
             styles={{
+              control: {
+                color: "#fff",
+              },
               input: {
                 background: "rgba(26, 26, 26, 0.8)",
                 border: "2px solid rgba(189, 240, 82, 0.3)",
@@ -217,7 +220,7 @@ export function AIAnalysisModal({
                   background: "rgba(189, 240, 82, 0.1)",
                   color: "#bdf052",
                 },
-                "&[data-active]": {
+                "&[dataActive]": {
                   color: "#bdf052",
                   borderColor: "#bdf052",
                 },
@@ -227,9 +230,6 @@ export function AIAnalysisModal({
             <Tabs.List>
               <Tabs.Tab value="preview" leftSection={<Eye size={14} />}>
                 Preview
-              </Tabs.Tab>
-              <Tabs.Tab value="edit" leftSection={<Edit size={14} />}>
-                Edit
               </Tabs.Tab>
             </Tabs.List>
 
@@ -416,35 +416,11 @@ export function AIAnalysisModal({
                 </ReactMarkdown>
               </Box>
             </Tabs.Panel>
-
-            <Tabs.Panel value="edit" p="md">
-              <Textarea
-                value={feedback}
-                onChange={(e) => onFeedbackChange(e.target.value)}
-                minRows={10}
-                maxRows={20}
-                autosize
-                styles={{
-                  input: {
-                    background: "transparent",
-                    border: "none",
-                    color: "#e9eeea",
-                    fontSize: "14px",
-                    lineHeight: 1.6,
-                    fontFamily: "'Fira Code', 'Courier New', monospace",
-                    "&:focus": {
-                      outline: "none",
-                    },
-                  },
-                }}
-              />
-            </Tabs.Panel>
           </Tabs>
         </Box>
 
         <Divider color="rgba(189, 240, 82, 0.1)" />
 
-        {/* Helper Card */}
         <Card
           padding="md"
           radius="md"

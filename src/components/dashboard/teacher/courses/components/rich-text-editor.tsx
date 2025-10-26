@@ -53,7 +53,6 @@ export function CustomRichTextEditor({
   content,
   onChange,
   onAddLink,
-  placeholder,
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
@@ -140,7 +139,7 @@ export function CustomRichTextEditor({
             padding: rem(12),
             gap: rem(8),
             flexWrap: "wrap",
-            "& .mantine-RichTextEditor-control": {
+            "& .mantineRichTextEditorControl": {
               color: "#ffffff",
               border: "1px solid transparent",
               borderRadius: rem(6),
@@ -323,7 +322,7 @@ export function CustomRichTextEditor({
                 textDecoration: "underline",
               },
             },
-            "& .ProseMirror-focused": {
+            "& .ProseMirrorFocused": {
               outline: "none",
             },
           },

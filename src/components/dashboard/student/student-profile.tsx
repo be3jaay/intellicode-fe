@@ -1,25 +1,14 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Stack,
-  Grid,
-  Box,
-  Text,
-  Badge,
-  Group,
-  Progress,
-  Card,
-  LoadingOverlay,
-} from "@mantine/core";
+import { Stack, Grid, Box, Text, Group, LoadingOverlay } from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { ProfileHeader } from "@/components/dashboard/shared/profile-header";
-import { ProfileForm } from "@/components/dashboard/shared/profile-form";
 import { ProfilePictureUpload } from "@/components/dashboard/shared/profile-picture-upload";
 import { ControlledTextInput } from "@/components/controlled-fields";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { BookOpen, BarChart3, Users, Hash } from "lucide-react";
+import { BookOpen, Users, Hash } from "lucide-react";
 import * as z from "zod";
 import {
   useCurrentUser,

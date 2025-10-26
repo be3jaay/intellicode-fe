@@ -9,10 +9,8 @@ import {
   Progress,
   Card,
   Flex,
-  Divider,
   rem,
   Center,
-  Loader,
 } from "@mantine/core";
 import {
   IconCheck,
@@ -21,9 +19,7 @@ import {
   IconArrowLeft,
   IconArrowRight,
   IconTrophy,
-  IconVideo,
 } from "@tabler/icons-react";
-import { useState } from "react";
 import { useCompleteLesson } from "@/hooks/query-hooks/lesson-complete-query";
 import { notifications } from "@mantine/notifications";
 
@@ -85,22 +81,14 @@ interface LessonViewerProps {
 export function LessonViewer({
   course,
   selectedLesson,
-  selectedModule,
   onLessonChange,
 }: LessonViewerProps) {
-  const [isPlaying, setIsPlaying] = useState(false);
   const completeLessonMutation = useCompleteLesson();
 
-  // Find the selected lesson
   const currentLesson = course.modules
     .flatMap((module: any) => module.lessons)
     .find((lesson: any) => lesson.id === selectedLesson);
 
-  const currentModule = course.modules.find(
-    (module: any) => module.id === selectedModule
-  );
-
-  // Get all lessons in order for navigation
   const allLessons = course.modules
     .sort((a, b) => a.order_index - b.order_index)
     .flatMap((module: any) =>
@@ -166,7 +154,7 @@ export function LessonViewer({
       } catch (error) {
         notifications.show({
           title: "Error",
-          message: "Failed to complete lesson. Please try again.",
+          message: `Failed to complete lesson. Please try again. ${error}`,
           color: "red",
         });
       }
@@ -326,8 +314,104 @@ export function LessonViewer({
             lineHeight: 1.6,
             fontSize: rem(16),
           }}
+          className="lesson-content"
           dangerouslySetInnerHTML={{ __html: currentLesson.content }}
         />
+        <style jsx global>{`
+          .lesson-content h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #bdf052;
+          }
+          .lesson-content h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-bottom: 0.875rem;
+            color: #bdf052;
+          }
+          .lesson-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: #bdf052;
+          }
+          .lesson-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+          }
+          .lesson-content code {
+            background-color: rgba(189, 240, 82, 0.1);
+            color: #bdf052;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            font-size: 0.9em;
+            border: 1px solid rgba(189, 240, 82, 0.2);
+          }
+          .lesson-content pre {
+            background-color: rgba(189, 240, 82, 0.05);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+            border: 1px solid rgba(189, 240, 82, 0.2);
+          }
+          .lesson-content pre code {
+            background-color: transparent;
+            padding: 0;
+            border: none;
+          }
+          .lesson-content blockquote {
+            background-color: rgba(179, 161, 255, 0.1);
+            border-left: 4px solid #b3a1ff;
+            padding: 1rem 1.5rem;
+            margin: 1rem 0;
+            border-radius: 4px;
+            font-style: italic;
+            color: #e0e0e0;
+          }
+          .lesson-content blockquote p {
+            margin-bottom: 0;
+          }
+          .lesson-content ul,
+          .lesson-content ol {
+            margin-bottom: 1rem;
+            padding-left: 2rem;
+          }
+          .lesson-content li {
+            margin-bottom: 0.5rem;
+          }
+          .lesson-content a {
+            color: #bdf052;
+            text-decoration: underline;
+          }
+          .lesson-content a:hover {
+            color: #a8d944;
+          }
+          .lesson-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin: 1rem 0;
+          }
+          .lesson-content table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1rem;
+          }
+          .lesson-content th,
+          .lesson-content td {
+            border: 1px solid rgba(189, 240, 82, 0.2);
+            padding: 0.75rem;
+            text-align: left;
+          }
+          .lesson-content th {
+            background-color: rgba(189, 240, 82, 0.1);
+            font-weight: 600;
+            color: #bdf052;
+          }
+        `}</style>
       </Card>
 
       {/* Navigation */}

@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Modal,
-  Box,
-  Stack,
-  Text,
-  Group,
-  Button,
-  Center,
-  rem,
-} from "@mantine/core";
+import { Modal, Stack, Text, Group, Button, rem } from "@mantine/core";
 import { Dropzone, IMAGE_MIME_TYPE } from "@mantine/dropzone";
 import { Upload, X, Image } from "lucide-react";
 import { useState } from "react";
@@ -26,7 +17,6 @@ export function ProfilePictureUpload({
   opened,
   onClose,
   onUpload,
-  currentImage,
 }: ProfilePictureUploadProps) {
   const [uploading, setUploading] = useState(false);
 

@@ -9,14 +9,14 @@ export const languageOptions = [
 
 export const defaultCode = {
   javascript: `// JavaScript Example
-console.log("Hello, World!");
+;
 
 function fibonacci(n) {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-console.log("Fibonacci(10):", fibonacci(10));`,
+;`,
   python: `# Python Example
 print("Hello, World!")
 
@@ -66,14 +66,14 @@ public class Main {
     }
 }`,
   typescript: `// TypeScript Example
-console.log("Hello, World!");
+;
 
 function fibonacci(n: number): number {
   if (n <= 1) return n;
   return fibonacci(n - 1) + fibonacci(n - 2);
 }
 
-console.log("Fibonacci(10):", fibonacci(10));`,
+;`,
 };
 
 export const themeData = [

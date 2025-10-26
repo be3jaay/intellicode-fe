@@ -41,6 +41,7 @@ export type GradebookStudent = {
   student_id: string;
   first_name: string;
   last_name: string;
+  profile_picture: string;
   email: string;
   student_number: string;
   section: string;

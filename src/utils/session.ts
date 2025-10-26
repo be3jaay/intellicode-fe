@@ -29,7 +29,6 @@ export async function decrypt(session: string | undefined = "") {
 
 export async function createSession(payload: SessionPayload) {
   try {
-    console.log("=== createSession START ===");
     console.log("Payload:", {
       userId: payload.user.id,
       email: payload.user.email,
@@ -42,26 +41,13 @@ export async function createSession(payload: SessionPayload) {
     });
 
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-    console.log("Session expires at:", expiresAt.toISOString());
-
-    console.log("Creating JWT with payload...");
-    console.log("SECRET_KEY exists:", !!SECRET_KEY);
-    console.log("SECRET_KEY length:", SECRET_KEY?.length || 0);
-
     const session = await new SignJWT(payload)
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
       .setExpirationTime("7d")
       .sign(encodedKey);
 
-    console.log("JWT created successfully");
-    console.log("JWT length:", session.length);
-    console.log("JWT preview:", session.substring(0, 50) + "...");
-
-    console.log("Getting cookie store...");
     const cookieStore = await cookies();
-    console.log("Cookie store obtained");
-
     const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -78,8 +64,6 @@ export async function createSession(payload: SessionPayload) {
     });
 
     cookieStore.set("session", session, cookieOptions);
-    console.log("Cookie set command executed");
-
     // Verify the cookie was set
     const verifyCookie = cookieStore.get("session");
     console.log("Cookie verification:", {
@@ -91,8 +75,6 @@ export async function createSession(payload: SessionPayload) {
     if (!verifyCookie) {
       console.error("WARNING: Cookie was not found after setting!");
     }
-
-    console.log("=== createSession END ===");
   } catch (error) {
     console.error("=== createSession ERROR ===");
     console.error("Error details:", error);
@@ -173,8 +155,6 @@ export async function updateToken({
     throw new Error("Session not found!");
   }
 
-  console.log("📝 Creating new session payload with updated tokens...");
-
   const newPayload: SessionPayload = {
     user: {
       ...payload.user,
@@ -183,7 +163,5 @@ export async function updateToken({
     refresh_token: refreshToken,
   };
 
-  console.log("💾 Saving new session...");
   await createSession(newPayload);
-  console.log("✅ Session updated with new tokens");
 }

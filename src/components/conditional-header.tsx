@@ -18,36 +18,30 @@ const NO_HEADER_PAGES = [
   "/onboarding",
 ];
 
-// Pages that should show header only for authenticated users
 const AUTH_HEADER_PAGES = ["/marketplace", "/profile", "/settings"];
 
 export function ConditionalHeader({ customHeader }: ConditionalHeaderProps) {
   const pathname = usePathname();
 
-  // Safely get auth state, default to false if not available
   let isAuthenticated = false;
-  let user = null;
+  let user: any = null;
 
   try {
     const auth = useAuth();
     isAuthenticated = auth.isAuthenticated;
     user = auth.user;
   } catch (error) {
-    // AuthProvider not available, treat as unauthenticated
     console.warn("AuthProvider not available in ConditionalHeader");
   }
 
-  // Don't show header on specific pages
   if (NO_HEADER_PAGES.some((page) => pathname.startsWith(page))) {
     return null;
   }
 
-  // Show custom header if provided
   if (customHeader) {
     return <>{customHeader}</>;
   }
 
-  // Show header for public pages or authenticated users
   if (
     !isAuthenticated ||
     AUTH_HEADER_PAGES.some((page) => pathname.startsWith(page))
@@ -55,11 +49,9 @@ export function ConditionalHeader({ customHeader }: ConditionalHeaderProps) {
     return <HeaderMenu />;
   }
 
-  // Default: show header for public pages
   return <HeaderMenu />;
 }
 
-// Hook to determine if header should be shown
 export function useShouldShowHeader(): boolean {
   const pathname = usePathname();
 
@@ -68,14 +60,12 @@ export function useShouldShowHeader(): boolean {
     const auth = useAuth();
     isAuthenticated = auth.isAuthenticated;
   } catch (error) {
-    // AuthProvider not available, treat as unauthenticated
+    console.error(error);
   }
 
-  // Never show header on these pages
   if (NO_HEADER_PAGES.some((page) => pathname.startsWith(page))) {
     return false;
   }
 
-  // Always show header on public pages
   return true;
 }

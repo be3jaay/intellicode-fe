@@ -1,5 +1,7 @@
 import config from "@/config";
 
+const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/", "/code-sandbox"];
+
 class ApiClient {
   private accessToken: string | null = null;
   private tokenPromise: Promise<string | null> | null = null;
@@ -30,7 +32,14 @@ class ApiClient {
         }
         return null;
       } catch (error) {
-        console.error("Failed to get access token:", error);
+        // Only log error if not on a public route
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
+          if (!isPublicRoute) {
+            console.error("Failed to get access token:", error);
+          }
+        }
         return null;
       } finally {
         this.tokenPromise = null;
@@ -41,42 +50,44 @@ class ApiClient {
   }
 
   private async refreshAccessToken(): Promise<boolean> {
-    // If a refresh is already in progress, wait for it
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
 
     this.refreshPromise = (async () => {
       try {
-        console.log("🔄 Starting token refresh...");
         const response = await fetch("/api/auth/refresh", {
           method: "POST",
           credentials: "include",
         });
 
         if (response.ok) {
-          const data = await response.json();
-          console.log("✅ Token refresh successful:", {
-            success: data.success,
-            hasAccessToken: !!data.access_token,
-          });
-
-          // Clear the cached token so next request fetches the new one
+          await response.json();
           this.clearToken();
-
-          // Immediately fetch and cache the new token
-          const newToken = await this.getAccessToken();
-          console.log("📝 New token fetched and cached:", {
-            hasToken: !!newToken,
-            tokenLength: newToken?.length,
-          });
-
+          await this.getAccessToken();
           return true;
         }
-        console.error("❌ Token refresh failed with status:", response.status);
+
+        // Only log error if not on a public route
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
+          if (!isPublicRoute) {
+            console.error(
+              "❌ Token refresh failed with status:",
+              response.status
+            );
+          }
+        }
         return false;
       } catch (error) {
-        console.error("Failed to refresh token:", error);
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
+          if (!isPublicRoute) {
+            console.error("Failed to refresh token:", error);
+          }
+        }
         return false;
       } finally {
         this.refreshPromise = null;
@@ -95,17 +106,14 @@ class ApiClient {
     options: RequestInit = {},
     isRetry: boolean = false
   ): Promise<T> {
-    // Use relative URLs for server-side routes, absolute for direct backend calls
     const url = endpoint.startsWith("/api/")
       ? endpoint
       : `${this.getBaseURL()}${endpoint}`;
 
     const defaultHeaders: Record<string, string> = {};
 
-    // Check if body is FormData
     const isFormData = options.body instanceof FormData;
 
-    // Only set Content-Type if NOT FormData (browser will set it with boundary)
     if (!isFormData) {
       const existingHeaders = options.headers as
         | Record<string, string>
@@ -115,22 +123,11 @@ class ApiClient {
       }
     }
 
-    // Add Authorization header for backend API calls (not for Next.js API routes)
     if (!endpoint.startsWith("/api/")) {
       const token = await this.getAccessToken();
       if (token) {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
       }
-    }
-
-    // Debug logging in development
-    if (process.env.NODE_ENV === "development" && isFormData) {
-      console.log("📤 Sending FormData request:", {
-        url,
-        method: options.method,
-        hasAuthorization: !!defaultHeaders["Authorization"],
-        headers: Object.keys(defaultHeaders),
-      });
     }
 
     const response = await fetch(url, {
@@ -142,24 +139,35 @@ class ApiClient {
       credentials: "include",
     });
 
-    // Handle 401 Unauthorized - try to refresh token and retry once
     if (response.status === 401 && !isRetry && !endpoint.startsWith("/api/")) {
-      console.log("🔄 Token expired, attempting to refresh...");
-
       const refreshed = await this.refreshAccessToken();
 
       if (refreshed) {
-        console.log("✅ Token refreshed successfully, retrying request...");
-        // Retry the request with the new token
         return this.request<T>(endpoint, options, true);
       } else {
-        console.error("❌ Token refresh failed, redirecting to login...");
-        // Clear token and redirect to login
         this.clearToken();
+
         if (typeof window !== "undefined") {
-          window.location.href = "/sign-in";
+          const currentPath = window.location.pathname;
+          const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
+
+          if (!isPublicRoute) {
+            console.error("Session expired, redirecting to login...");
+            window.location.href = "/sign-in";
+          }
         }
-        throw new Error("Session expired. Please login again.");
+
+        // Throw error to stop execution (but only log if not on public route)
+        const error = new Error("Session expired. Please login again.");
+        if (typeof window !== "undefined") {
+          const currentPath = window.location.pathname;
+          const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
+          if (isPublicRoute) {
+            // Silently fail on public routes
+            throw error;
+          }
+        }
+        throw error;
       }
     }
 
@@ -170,7 +178,6 @@ class ApiClient {
       );
     }
 
-    // Return the response directly since the backend returns the data directly
     return response.json();
   }
 

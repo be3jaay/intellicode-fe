@@ -18,21 +18,8 @@ function AdminDashboardPage() {
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#222222" }}>
-      <main style={{ maxWidth: 1400, margin: "0 auto", padding: "2rem 1rem" }}>
-        <Title
-          order={1}
-          style={{
-            color: "#BDF052",
-            marginBottom: "2rem",
-            fontSize: "2rem",
-            fontWeight: 700,
-          }}
-        >
-          Admin Analytics Dashboard
-        </Title>
-
+      <main style={{ margin: "0 auto", padding: "2rem 1rem" }}>
         {isLoading && <AdminSkeletons />}
-
         {isError && (
           <Paper
             style={{

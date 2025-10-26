@@ -21,7 +21,7 @@ export default function CertificatesPage() {
           My Certificates
         </Text>
         <Text c="dimmed" size="lg">
-          View and download your course completion certificates
+          View your course completion certificates
         </Text>
       </div>
 

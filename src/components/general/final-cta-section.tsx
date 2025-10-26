@@ -98,44 +98,8 @@ export function FinalCtaSection() {
               }}
               rightIcon={<ArrowRight size={24} />}
               onClick={() => router.push("/sign-up")}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-3px)";
-                e.currentTarget.style.boxShadow =
-                  "0 12px 30px rgba(34, 34, 34, 0.4)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow =
-                  "0 8px 20px rgba(34, 34, 34, 0.3)";
-              }}
             >
               Get Started Free
-            </Button>
-
-            <Button
-              size="xl"
-              style={{
-                background: "transparent",
-                color: "#222222",
-                border: "2px solid #222222",
-                fontWeight: 700,
-                padding: "18px 40px",
-                fontSize: "18px",
-                transition: "all 0.3s ease",
-              }}
-              onClick={() => {
-                window.open("https://intellicode-demo.vercel.app", "_blank");
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#222222";
-                e.currentTarget.style.color = "#FFFFFF";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.color = "#222222";
-              }}
-            >
-              View Demo
             </Button>
           </Flex>
 

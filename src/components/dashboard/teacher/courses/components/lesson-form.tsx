@@ -4,25 +4,12 @@ import {
   Text,
   ActionIcon,
   Button,
-  Card,
   Group,
   ScrollArea,
-  Loader,
-  Center,
   Accordion,
 } from "@mantine/core";
-import {
-  IconPlus,
-  IconTrash,
-  IconCheck,
-  IconChevronDown,
-} from "@tabler/icons-react";
-import {
-  useFieldArray,
-  Control,
-  useWatch,
-  UseFormSetValue,
-} from "react-hook-form";
+import { IconPlus, IconTrash, IconChevronDown } from "@tabler/icons-react";
+import { Control, UseFormSetValue } from "react-hook-form";
 import { useState } from "react";
 import {
   ControlledTextInput,
@@ -85,9 +72,6 @@ export function LessonForm({
   remove,
   onAddLink,
   setValue,
-  courseId,
-  moduleId,
-  onSuccess,
 }: LessonFormProps) {
   const bulkLessonMutation = useBulkLessonCreation();
   const [activeAccordion, setActiveAccordion] = useState<string | null>("0");
@@ -106,35 +90,6 @@ export function LessonForm({
     });
     // Open the newly added lesson accordion
     setActiveAccordion(newIndex);
-  };
-
-  const handleSubmit = async () => {
-    try {
-      // Transform the form data to match the API format
-      const lessonsData = fields.map((lesson) => ({
-        title: lesson.title,
-        description: lesson.description,
-        content: lesson.content,
-        order_index: lesson.order,
-        difficulty: lesson.difficulty,
-        estimated_duration: lesson.estimatedDuration,
-        is_published: true, // Always true
-        tags: lesson.tags,
-      }));
-
-      await bulkLessonMutation.mutateAsync({
-        courseId,
-        moduleId,
-        lessons: { lessons: lessonsData },
-      });
-
-      // Call success callback if provided
-      if (onSuccess) {
-        onSuccess();
-      }
-    } catch (error) {
-      console.error("Failed to create lessons:", error);
-    }
   };
 
   return (

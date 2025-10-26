@@ -1,7 +1,6 @@
 "use client";
-import { GoogleIcon, HiredUpLogo } from "@/icons";
-import { Divider, Flex, Text, Box, Stack, Anchor } from "@mantine/core";
-import { AtSign, LockKeyhole, Brain, Code } from "lucide-react";
+import { Flex, Text, Box, Stack, Anchor } from "@mantine/core";
+import { AtSign, LockKeyhole, Code } from "lucide-react";
 import {
   ControlledTextInput,
   ControlledPasswordInput,
@@ -14,7 +13,6 @@ import {
   type UseFormReturn,
 } from "react-hook-form";
 import type { SignInSchemaType } from "./schema/sign-in-schema";
-import { redirect } from "next/navigation";
 import { Button } from "@/components/ui";
 
 type SignInFormProps = {
@@ -123,39 +121,6 @@ export function SignInForm({
               <LockKeyhole size={18} color="rgba(255, 255, 255, 0.6)" />
             }
           />
-
-          <Flex justify="space-between" align="center">
-            <ControlledCheckbox
-              name="rememberMe"
-              control={control}
-              label="Remember me"
-              size="sm"
-              styles={{
-                label: {
-                  color: "rgba(255, 255, 255, 0.8)",
-                  fontSize: "0.875rem",
-                },
-                input: {
-                  "&:checked": {
-                    backgroundColor: "#bdf052",
-                    borderColor: "#bdf052",
-                  },
-                },
-              }}
-            />
-            <Anchor
-              size="sm"
-              href="#"
-              underline="hover"
-              fw={500}
-              style={{
-                color: "#bdf052",
-                textDecoration: "none",
-              }}
-            >
-              Forgot password?
-            </Anchor>
-          </Flex>
 
           <Button
             fullWidth

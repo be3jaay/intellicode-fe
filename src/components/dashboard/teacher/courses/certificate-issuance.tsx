@@ -14,14 +14,12 @@ import {
   Tooltip,
   Modal,
   Textarea,
+  Button,
 } from "@mantine/core";
-import { Button } from "@/components/ui/button";
 import {
   Award,
   AlertCircle,
   CheckCircle,
-  Download,
-  Mail,
   TrendingUp,
   Users,
   XCircle,
@@ -57,7 +55,7 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
     studentName: string
   ) => {
     try {
-      const response = await issueCertificateMutation.mutateAsync({
+      await issueCertificateMutation.mutateAsync({
         courseId,
         studentId,
       });
@@ -350,6 +348,7 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
                 },
                 td: {
                   color: "#e9eeea",
+                  background: "#222222",
                   padding: "1rem",
                   borderBottom: "1px solid rgba(255, 255, 255, 0.05)",
                 },
@@ -444,7 +443,39 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
                       </Badge>
                     </Table.Td>
                     <Table.Td>
-                      {student.has_certificate ? (
+                      {student.is_certificate_revoked ? (
+                        <Stack gap={4}>
+                          <Group gap="xs">
+                            <XCircle size={18} color="#EF4444" />
+                            <div>
+                              <Text size="sm" fw={500} c="#EF4444">
+                                Revoked
+                              </Text>
+                              {student.certificate_revoked_at && (
+                                <Text size="xs" c="dimmed">
+                                  {format(
+                                    new Date(student.certificate_revoked_at),
+                                    "MMM dd, yyyy"
+                                  )}
+                                </Text>
+                              )}
+                            </div>
+                          </Group>
+                          {student.certificate_revocation_reason && (
+                            <Text
+                              size="xs"
+                              c="dimmed"
+                              style={{
+                                fontStyle: "italic",
+                                maxWidth: "250px",
+                              }}
+                              lineClamp={2}
+                            >
+                              Reason: {student.certificate_revocation_reason}
+                            </Text>
+                          )}
+                        </Stack>
+                      ) : student.has_certificate ? (
                         <Group gap="xs">
                           <CheckCircle size={18} color="#22C55E" />
                           <div>
@@ -472,55 +503,39 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
                     </Table.Td>
                     <Table.Td>
                       <Group gap="xs">
-                        {student.has_certificate ? (
-                          <>
-                            <Tooltip label="Download Certificate">
-                              <ActionIcon
-                                variant="light"
-                                size="lg"
-                                style={{
-                                  background: "rgba(189, 240, 82, 0.15)",
-                                  color: "#bdf052",
-                                  border: "1px solid rgba(189, 240, 82, 0.3)",
-                                }}
-                              >
-                                <Download size={18} />
-                              </ActionIcon>
-                            </Tooltip>
-                            <Tooltip label="Resend Email">
-                              <ActionIcon
-                                variant="light"
-                                size="lg"
-                                style={{
-                                  background: "rgba(179, 161, 255, 0.15)",
-                                  color: "#b3a1ff",
-                                  border: "1px solid rgba(179, 161, 255, 0.3)",
-                                }}
-                              >
-                                <Mail size={18} />
-                              </ActionIcon>
-                            </Tooltip>
-                            <Tooltip label="Revoke Certificate">
-                              <ActionIcon
-                                variant="light"
-                                size="lg"
-                                onClick={() =>
-                                  handleRevokeClick(
-                                    student.student_id,
-                                    `${student.first_name} ${student.last_name}`
-                                  )
-                                }
-                                loading={revokeCertificateMutation.isPending}
-                                style={{
-                                  background: "rgba(239, 68, 68, 0.15)",
-                                  color: "#EF4444",
-                                  border: "1px solid rgba(239, 68, 68, 0.3)",
-                                }}
-                              >
-                                <XCircle size={18} />
-                              </ActionIcon>
-                            </Tooltip>
-                          </>
+                        {student.is_certificate_revoked ? (
+                          <Badge
+                            size="sm"
+                            variant="light"
+                            style={{
+                              background: "rgba(156, 163, 175, 0.15)",
+                              color: "#9ca3af",
+                              border: "1px solid rgba(156, 163, 175, 0.3)",
+                            }}
+                          >
+                            Cannot Re-issue
+                          </Badge>
+                        ) : student.has_certificate ? (
+                          <Tooltip label="Revoke Certificate">
+                            <ActionIcon
+                              variant="light"
+                              size="lg"
+                              onClick={() =>
+                                handleRevokeClick(
+                                  student.student_id,
+                                  `${student.first_name} ${student.last_name}`
+                                )
+                              }
+                              loading={revokeCertificateMutation.isPending}
+                              style={{
+                                background: "rgba(239, 68, 68, 0.15)",
+                                color: "#EF4444",
+                                border: "1px solid rgba(239, 68, 68, 0.3)",
+                              }}
+                            >
+                              <XCircle size={18} />
+                            </ActionIcon>
+                          </Tooltip>
                         ) : (
                           <Button
                             size="sm"
@@ -572,7 +587,7 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
             </Text>
           </Group>
         }
-        size="md"
+        size="lg"
         styles={{
           content: {
             background: "linear-gradient(135deg, #1a1a1a 0%, #222222 100%)",
@@ -582,6 +597,7 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
             background: "transparent",
             borderBottom: "1px solid rgba(239, 68, 68, 0.2)",
             paddingBottom: "1rem",
+            color: "red",
           },
           title: {
             width: "100%",
@@ -603,16 +619,26 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
               },
             }}
           >
-            <Text size="sm">
-              You are about to revoke the certificate for{" "}
-              <strong>{selectedStudent?.name}</strong>. This action will
-              invalidate their certificate.
-            </Text>
+            <Stack gap="xs">
+              <Text size="sm" c="white" fw={600}>
+                ⚠️ Warning: This action is permanent and cannot be undone
+              </Text>
+              <Text size="sm" c="white">
+                You are about to revoke the certificate for{" "}
+                <strong>{selectedStudent?.name}</strong>. This will permanently
+                invalidate their certificate.
+              </Text>
+              <Text size="sm" c="#EF4444" fw={500} mt="xs">
+                Once revoked, this certificate cannot be re-issued. The student
+                will not be able to get this certificate again.
+              </Text>
+            </Stack>
           </Alert>
 
           <Textarea
-            label="Revocation Reason"
+            label="Revocation Reason (Required)"
             placeholder="Enter the reason for revoking this certificate..."
+            description="This reason will be visible to the student and recorded permanently."
             value={revocationReason}
             onChange={(e) => setRevocationReason(e.target.value)}
             minRows={4}
@@ -622,6 +648,11 @@ export function CertificateIssuance({ courseId }: CertificateIssuanceProps) {
                 color: "#e9eeea",
                 fontWeight: 500,
                 marginBottom: "0.5rem",
+              },
+              description: {
+                color: "#9ca3af",
+                fontSize: "0.75rem",
+                marginTop: "0.25rem",
               },
               input: {
                 background: "rgba(26, 26, 26, 0.8)",

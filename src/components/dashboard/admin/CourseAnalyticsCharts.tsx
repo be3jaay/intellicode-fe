@@ -154,7 +154,7 @@ export default function CourseAnalyticsCharts({ courses = [] }: Props) {
             data={enrollmentData}
             dataKey="course"
             series={[
-              { name: "enrolled", color: "#60A5FA", label: "Total Enrolled" },
+              { name: "enrolled", color: "#b3a1ff", label: "Total Enrolled" },
               {
                 name: "certificates",
                 color: "#F59E0B",

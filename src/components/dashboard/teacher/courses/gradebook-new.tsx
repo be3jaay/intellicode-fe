@@ -34,6 +34,7 @@ import type {
 } from "@/services/student-service/student-type";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
+import { useDebouncedValue } from "@mantine/hooks";
 
 interface GradebookProps {
   courseId: string;
@@ -51,6 +52,7 @@ type SortKey =
 export function Gradebook({ courseId }: GradebookProps) {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch] = useDebouncedValue(searchTerm, 500);
   const [sectionFilter, setSectionFilter] = useState<string | null>(null);
   const [assignmentTypeFilter, setAssignmentTypeFilter] = useState<
     string | null
@@ -65,7 +67,7 @@ export function Gradebook({ courseId }: GradebookProps) {
   const queryParams: GradebookQueryParams = {
     offset,
     limit,
-    search: searchTerm || undefined,
+    search: debouncedSearch.trim() !== "" ? debouncedSearch : undefined,
     section: sectionFilter || undefined,
     assignment_type: assignmentTypeFilter || undefined,
     sort_by: sortBy,
@@ -91,10 +93,19 @@ export function Gradebook({ courseId }: GradebookProps) {
     }
   }, [data, limit, offset]);
 
+  // Reset to first page when filters change
+  useEffect(() => {
+    if (offset !== 0) {
+      setOffset(0);
+    } else {
+      // If offset is already 0, we need to refetch manually
+      refetch();
+    }
+    setAllStudents([]);
+  }, [debouncedSearch, sectionFilter, assignmentTypeFilter, sortBy, sortOrder]);
+
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    setOffset(0);
-    setAllStudents([]);
   };
 
   const handleFilterChange = (filterType: string, value: string | null) => {
@@ -103,8 +114,6 @@ export function Gradebook({ courseId }: GradebookProps) {
     } else if (filterType === "assignmentType") {
       setAssignmentTypeFilter(value);
     }
-    setOffset(0);
-    setAllStudents([]);
   };
 
   const handleSortChange = (key: SortKey) => {
@@ -114,8 +123,6 @@ export function Gradebook({ courseId }: GradebookProps) {
       setSortBy(key);
       setSortOrder("asc");
     }
-    setOffset(0);
-    setAllStudents([]);
   };
 
   const handleViewMore = () => {
@@ -444,7 +451,7 @@ export function Gradebook({ courseId }: GradebookProps) {
               padding="md"
               radius="md"
               style={{
-                background: "rgba(34, 34, 34, 0.6)",
+                backgroundColor: "rgba(34, 34, 34, 0.6)",
                 border: `1px solid ${getGradeBorderColor(
                   student.overall_grade
                 )}`,
@@ -454,7 +461,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                 e.currentTarget.style.borderColor = getGradeBorderColor(
                   student.overall_grade
                 ).replace("0.3", "0.6");
-                e.currentTarget.style.background = getGradeBgColor(
+                e.currentTarget.style.backgroundColor = getGradeBgColor(
                   student.overall_grade
                 );
               }}
@@ -462,7 +469,7 @@ export function Gradebook({ courseId }: GradebookProps) {
                 e.currentTarget.style.borderColor = getGradeBorderColor(
                   student.overall_grade
                 );
-                e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)";
+                e.currentTarget.style.backgroundColor = "rgba(34, 34, 34, 0.6)";
               }}
             >
               <Group justify="space-between" wrap="nowrap" align="flex-start">

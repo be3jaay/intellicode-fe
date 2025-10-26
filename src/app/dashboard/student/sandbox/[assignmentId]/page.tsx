@@ -74,10 +74,6 @@ export default function DashboardSandboxPage() {
   };
 
   const handleSubmit = async () => {
-    console.log("Submitting assignment code:", code);
-    console.log("Assignment ID:", assignmentId);
-    console.log("Language:", language);
-
     if (!code.trim()) {
       console.error("Code is empty. Please write some code before submitting.");
       notifications.show({
@@ -90,13 +86,12 @@ export default function DashboardSandboxPage() {
 
     setIsSubmitting(true);
     try {
-      const response = await AssignmentService.submitCodeAssignment(
+      await AssignmentService.submitCodeAssignment(
         assignmentId,
         code,
         language
       );
 
-      console.log("Code assignment submitted successfully:", response);
       notifications.show({
         title: "Success",
         message: "Code submitted successfully!",

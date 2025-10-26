@@ -221,7 +221,8 @@ export function MyGradebookComponent({ courseId }: MyGradebookProps) {
             </Text>
           </Stack>
 
-          {assignment.percentage !== undefined ? (
+          {assignment.percentage !== undefined &&
+          assignment.percentage !== null ? (
             <Stack align="flex-end" gap={4}>
               <Text
                 size="xl"

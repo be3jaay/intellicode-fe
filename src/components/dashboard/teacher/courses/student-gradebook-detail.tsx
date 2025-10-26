@@ -13,12 +13,9 @@ import {
   Loader,
   Center,
   Tabs,
-  Table,
-  ActionIcon,
 } from "@mantine/core";
 import {
   ArrowLeft,
-  User,
   Mail,
   Hash,
   BookOpen,
@@ -583,7 +580,10 @@ function AssignmentList({
                   {assignment.module_title}
                 </Text>
                 <Group gap="md">
-                  {assignment.score !== undefined && (
+                  {assignment.score !== undefined &&
+                  assignment.score !== null &&
+                  assignment.percentage !== undefined &&
+                  assignment.percentage !== null ? (
                     <Group gap={4}>
                       <TrendingUp size={12} color="#9ca3af" />
                       <Text size="xs" c="dimmed">
@@ -591,8 +591,15 @@ function AssignmentList({
                         {assignment.percentage.toFixed(1)}%)
                       </Text>
                     </Group>
-                  )}
-                  {!assignment.score && (
+                  ) : assignment.score !== undefined &&
+                    assignment.score !== null ? (
+                    <Group gap={4}>
+                      <TrendingUp size={12} color="#9ca3af" />
+                      <Text size="xs" c="dimmed">
+                        Score: {assignment.score}/{assignment.max_score}
+                      </Text>
+                    </Group>
+                  ) : (
                     <Group gap={4}>
                       <Text size="xs" c="dimmed">
                         Max Score: {assignment.max_score}

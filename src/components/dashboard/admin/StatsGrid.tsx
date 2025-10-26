@@ -41,7 +41,7 @@ const statItems = (s: any) => [
     icon: IconUsers,
   },
   {
-    label: "Certificates Earned",
+    label: "Certificates Active",
     value: s.total_certificates,
     color: "#F59E0B",
     icon: IconCertificate,

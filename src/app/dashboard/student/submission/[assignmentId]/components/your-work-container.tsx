@@ -1,11 +1,11 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { notifications } from "@mantine/notifications";
 import { IconCheck, IconAlertTriangle } from "@tabler/icons-react";
 import { YourWorkCard } from "./your-work-card";
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
-import type { Submission, SubmissionFile } from "@/types/assignment";
+import type { Submission } from "@/types/assignment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 
@@ -28,18 +28,14 @@ export function YourWorkContainer({
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [fetchingSubmissions, setFetchingSubmissions] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [lastSubmission, setLastSubmission] = useState<Submission | null>(null);
+  const [, setFetchingSubmissions] = useState(true);
+  const [, setError] = useState<string | null>(null);
+  const [, setSubmissions] = useState<Submission[]>([]);
+  const [, setLastSubmission] = useState<Submission | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    fetchSubmissions();
-  }, [assignmentId]);
-
-  const fetchSubmissions = async () => {
+  const fetchSubmissions = useCallback(async () => {
     try {
       setFetchingSubmissions(true);
       const response = await AssignmentService.getStudentSubmissions(
@@ -57,14 +53,17 @@ export function YourWorkContainer({
       }
     } catch (err: any) {
       console.error("Error fetching submissions:", err);
-      // Don't show error notification on initial fetch if it's just 404 (no submissions yet)
       if (!err.message?.includes("404")) {
         setError(err.message || "Failed to fetch submissions");
       }
     } finally {
       setFetchingSubmissions(false);
     }
-  };
+  }, [assignmentId]);
+
+  useEffect(() => {
+    fetchSubmissions();
+  }, [fetchSubmissions]);
 
   const handleUploadClick = () => {
     fileInputRef.current?.click();

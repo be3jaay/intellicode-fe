@@ -1,11 +1,28 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Paper, Text, Group, Stack, ActionIcon, Image, ScrollArea, Modal, Loader } from "@mantine/core";
-import { IconFile, IconX, IconFileText, IconPhoto, IconDownload, IconEye, IconZoomIn } from "@tabler/icons-react";
+import {
+  Paper,
+  Text,
+  Group,
+  Stack,
+  ActionIcon,
+  Image,
+  ScrollArea,
+  Modal,
+} from "@mantine/core";
+import {
+  IconFile,
+  IconX,
+  IconFileText,
+  IconPhoto,
+  IconDownload,
+  IconZoomIn,
+} from "@tabler/icons-react";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import "@/styles/zoom-custom.css";
+import NextImage from "next/image";
 // @ts-ignore - mammoth doesn't have perfect TypeScript definitions
 import mammoth from "mammoth";
 
@@ -32,9 +49,13 @@ export function FilePreviewList({
   maxHeight = 400,
   title = "Uploaded Files",
 }: FilePreviewListProps) {
-  const [filesWithPreviews, setFilesWithPreviews] = useState<FilePreviewItem[]>([]);
+  const [filesWithPreviews, setFilesWithPreviews] = useState<FilePreviewItem[]>(
+    []
+  );
   const [viewModalOpened, setViewModalOpened] = useState(false);
-  const [selectedFile, setSelectedFile] = useState<FilePreviewItem | null>(null);
+  const [selectedFile, setSelectedFile] = useState<FilePreviewItem | null>(
+    null
+  );
 
   useEffect(() => {
     const loadPreviews = async () => {
@@ -56,7 +77,10 @@ export function FilePreviewList({
     };
   }, [files]);
 
-  const createFilePreview = async (file: File, index: number): Promise<FilePreviewItem> => {
+  const createFilePreview = async (
+    file: File,
+    index: number
+  ): Promise<FilePreviewItem> => {
     const fileWithPreview: FilePreviewItem = {
       file,
       id: `${file.name}-${index}`,
@@ -100,7 +124,8 @@ export function FilePreviewList({
         reader.readAsDataURL(file);
       });
     } else if (
-      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      file.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       file.name.endsWith(".docx")
     ) {
       // For DOCX files, use mammoth to extract HTML
@@ -152,7 +177,7 @@ export function FilePreviewList({
     const k = 1024;
     const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + " " + sizes[i];
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + " " + sizes[i];
   };
 
   const handleDownload = (file: File) => {
@@ -189,7 +214,8 @@ export function FilePreviewList({
 
   const isWordDocument = (file: File) => {
     return (
-      file.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
+      file.type ===
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ||
       file.type === "application/msword" ||
       file.name.endsWith(".doc") ||
       file.name.endsWith(".docx")
@@ -261,8 +287,8 @@ export function FilePreviewList({
                 {/* Actions */}
                 <Group gap={4}>
                   {/* View button for images, PDFs, text files, and Word docs */}
-                  {(item.file.type.startsWith("image/") || 
-                    item.file.type === "application/pdf" || 
+                  {(item.file.type.startsWith("image/") ||
+                    item.file.type === "application/pdf" ||
                     isTextFile(item.file) ||
                     isWordDocument(item.file)) && (
                     <ActionIcon
@@ -346,8 +372,11 @@ export function FilePreviewList({
                           wordBreak: "break-word",
                         }}
                       >
-                        {typeof item.preview === 'string' && item.preview.substring(0, 300)}
-                        {typeof item.preview === 'string' && item.preview.length > 300 && "..."}
+                        {typeof item.preview === "string" &&
+                          item.preview.substring(0, 300)}
+                        {typeof item.preview === "string" &&
+                          item.preview.length > 300 &&
+                          "..."}
                       </Text>
                     </Paper>
                   ) : isWordDocument(item.file) ? (
@@ -395,7 +424,9 @@ export function FilePreviewList({
                         }}
                       >
                         <div
-                          dangerouslySetInnerHTML={{ __html: item.preview || "" }}
+                          dangerouslySetInnerHTML={{
+                            __html: item.preview || "",
+                          }}
                           style={{
                             fontSize: "11px",
                             lineHeight: 1.4,
@@ -441,11 +472,14 @@ export function FilePreviewList({
       >
         {selectedFile && (
           <div style={{ maxHeight: "80vh", overflow: "auto" }}>
-            {selectedFile.file.type.startsWith("image/") && selectedFile.preview ? (
+            {selectedFile.file.type.startsWith("image/") &&
+            selectedFile.preview ? (
               <Zoom>
-                <img
+                <NextImage
                   src={selectedFile.preview}
                   alt={selectedFile.file.name}
+                  width={800}
+                  height={600}
                   style={{
                     width: "100%",
                     height: "auto",
@@ -453,9 +487,11 @@ export function FilePreviewList({
                     objectFit: "contain",
                     cursor: "zoom-in",
                   }}
+                  unoptimized
                 />
               </Zoom>
-            ) : selectedFile.file.type === "application/pdf" && selectedFile.preview ? (
+            ) : selectedFile.file.type === "application/pdf" &&
+              selectedFile.preview ? (
               <div style={{ position: "relative" }}>
                 <iframe
                   src={`${selectedFile.preview}#toolbar=1&navpanes=1&scrollbar=1&view=FitH`}
@@ -522,11 +558,21 @@ export function FilePreviewList({
                       borderStyle: "solid",
                     }}
                   >
-                    <IconFileText size={48} color="#4A90E2" style={{ marginBottom: 12 }} />
-                    <Text size="lg" style={{ color: "#FFFFFF", marginBottom: 8 }}>
+                    <IconFileText
+                      size={48}
+                      color="#4A90E2"
+                      style={{ marginBottom: 12 }}
+                    />
+                    <Text
+                      size="lg"
+                      style={{ color: "#FFFFFF", marginBottom: 8 }}
+                    >
                       {selectedFile.file.name}
                     </Text>
-                    <Text size="sm" style={{ color: "#999999", marginBottom: 16 }}>
+                    <Text
+                      size="sm"
+                      style={{ color: "#999999", marginBottom: 16 }}
+                    >
                       .doc format not supported - Download to view
                     </Text>
                     <Group justify="center" gap="sm">
@@ -541,7 +587,7 @@ export function FilePreviewList({
                       </ActionIcon>
                     </Group>
                   </Paper>
-                  
+
                   <Paper
                     p="md"
                     style={{
@@ -551,23 +597,32 @@ export function FilePreviewList({
                       borderStyle: "solid",
                     }}
                   >
-                    <Text size="sm" style={{ color: "#E9EEEA", marginBottom: 8 }}>
+                    <Text
+                      size="sm"
+                      style={{ color: "#E9EEEA", marginBottom: 8 }}
+                    >
                       <strong>File Information:</strong>
                     </Text>
                     <Stack gap="xs">
                       <Text size="xs" style={{ color: "#999999" }}>
-                        Type: {selectedFile.file.type || "Microsoft Word Document (.doc)"}
+                        Type:{" "}
+                        {selectedFile.file.type ||
+                          "Microsoft Word Document (.doc)"}
                       </Text>
                       <Text size="xs" style={{ color: "#999999" }}>
                         Size: {formatFileSize(selectedFile.file.size)}
                       </Text>
                       <Text size="xs" style={{ color: "#999999" }}>
-                        Last Modified: {new Date(selectedFile.file.lastModified).toLocaleString()}
+                        Last Modified:{" "}
+                        {new Date(
+                          selectedFile.file.lastModified
+                        ).toLocaleString()}
                       </Text>
                     </Stack>
                   </Paper>
                 </Stack>
-              ) : selectedFile.preview && selectedFile.preview.startsWith("Error") ? (
+              ) : selectedFile.preview &&
+                selectedFile.preview.startsWith("Error") ? (
                 <Paper
                   p="lg"
                   style={{
@@ -606,14 +661,24 @@ export function FilePreviewList({
                   }}
                 >
                   <div
-                    dangerouslySetInnerHTML={{ __html: selectedFile.preview || "" }}
+                    dangerouslySetInnerHTML={{
+                      __html: selectedFile.preview || "",
+                    }}
                     style={{
                       fontSize: "14px",
                       lineHeight: 1.6,
                       color: "#000000",
                     }}
                   />
-                  <Group justify="center" gap="sm" style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid #ddd" }}>
+                  <Group
+                    justify="center"
+                    gap="sm"
+                    style={{
+                      marginTop: 16,
+                      paddingTop: 16,
+                      borderTop: "1px solid #ddd",
+                    }}
+                  >
                     <ActionIcon
                       size="lg"
                       variant="filled"

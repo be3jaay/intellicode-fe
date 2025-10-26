@@ -1,8 +1,11 @@
-import { NextRequest } from 'next/server';
+import { NextRequest } from "next/server";
 
 // Rate Limiting
 export class RateLimiter {
-  private static readonly store = new Map<string, { count: number; resetTime: number }>();
+  private static readonly store = new Map<
+    string,
+    { count: number; resetTime: number }
+  >();
   private static readonly WINDOW_MS = 15 * 60 * 1000; // 15 minutes
   private static readonly MAX_ATTEMPTS = 5;
 
@@ -53,9 +56,9 @@ export class InputSanitizer {
   public static sanitizeString(input: string): string {
     return input
       .trim()
-      .replace(/[<>]/g, '') // Remove potential HTML tags
-      .replace(/javascript:/gi, '') // Remove javascript: protocol
-      .replace(/on\w+=/gi, '') // Remove event handlers
+      .replace(/[<>]/g, "") // Remove potential HTML tags
+      .replace(/javascript:/gi, "") // Remove javascript: protocol
+      .replace(/on\w+=/gi, "") // Remove event handlers
       .substring(0, 1000); // Limit length
   }
 
@@ -68,46 +71,57 @@ export class InputSanitizer {
     return emailRegex.test(email) && email.length <= 254;
   }
 
-  public static validatePassword(password: string): { valid: boolean; errors: string[] } {
+  public static validatePassword(password: string): {
+    valid: boolean;
+    errors: string[];
+  } {
     const errors: string[] = [];
 
     if (password.length < 8) {
-      errors.push('Password must be at least 8 characters long');
+      errors.push("Password must be at least 8 characters long");
     }
 
     if (password.length > 128) {
-      errors.push('Password must be less than 128 characters');
+      errors.push("Password must be less than 128 characters");
     }
 
     if (!/[A-Z]/.test(password)) {
-      errors.push('Password must contain at least one uppercase letter');
+      errors.push("Password must contain at least one uppercase letter");
     }
 
     if (!/[a-z]/.test(password)) {
-      errors.push('Password must contain at least one lowercase letter');
+      errors.push("Password must contain at least one lowercase letter");
     }
 
     if (!/\d/.test(password)) {
-      errors.push('Password must contain at least one number');
+      errors.push("Password must contain at least one number");
     }
 
     if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
-      errors.push('Password must contain at least one special character');
+      errors.push("Password must contain at least one special character");
     }
 
     // Check for common passwords
     const commonPasswords = [
-      'password', '123456', '123456789', 'qwerty', 'abc123',
-      'password123', 'admin', 'letmein', 'welcome', 'monkey'
+      "password",
+      "123456",
+      "123456789",
+      "qwerty",
+      "abc123",
+      "password123",
+      "admin",
+      "letmein",
+      "welcome",
+      "monkey",
     ];
 
     if (commonPasswords.includes(password.toLowerCase())) {
-      errors.push('Password is too common');
+      errors.push("Password is too common");
     }
 
     return {
       valid: errors.length === 0,
-      errors
+      errors,
     };
   }
 }
@@ -115,13 +129,13 @@ export class InputSanitizer {
 // Security Headers
 export function getSecurityHeaders(): Record<string, string> {
   return {
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-    'X-XSS-Protection': '1; mode=block',
-    'Referrer-Policy': 'strict-origin-when-cross-origin',
-    'Permissions-Policy': 'camera=(), microphone=(), geolocation=()',
-    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-    'Content-Security-Policy': [
+    "X-Content-Type-Options": "nosniff",
+    "X-Frame-Options": "DENY",
+    "X-XSS-Protection": "1; mode=block",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
+    "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
+    "Content-Security-Policy": [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
       "style-src 'self' 'unsafe-inline'",
@@ -130,23 +144,23 @@ export function getSecurityHeaders(): Record<string, string> {
       "connect-src 'self'",
       "frame-ancestors 'none'",
       "base-uri 'self'",
-      "form-action 'self'"
-    ].join('; ')
+      "form-action 'self'",
+    ].join("; "),
   };
 }
 
 // IP Address utilities
 export function getClientIP(request: NextRequest): string {
-  const forwarded = request.headers.get('x-forwarded-for');
-  const realIP = request.headers.get('x-real-ip');
-  const cfConnectingIP = request.headers.get('cf-connecting-ip');
-  
+  const forwarded = request.headers.get("x-forwarded-for");
+  const realIP = request.headers.get("x-real-ip");
+  const cfConnectingIP = request.headers.get("cf-connecting-ip");
+
   if (cfConnectingIP) return cfConnectingIP;
   if (realIP) return realIP;
-  if (forwarded) return forwarded.split(',')[0].trim();
-  
+  if (forwarded) return forwarded.split(",")[0].trim();
+
   // Note: request.ip is not available in Edge Runtime
-  return 'unknown';
+  return "unknown";
 }
 
 // Session Security
@@ -155,7 +169,9 @@ export class SessionSecurity {
     // Use Web Crypto API for Edge Runtime compatibility
     const array = new Uint8Array(32);
     crypto.getRandomValues(array);
-    return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, "0")).join(
+      ""
+    );
   }
 
   public static validateSessionId(sessionId: string): boolean {
@@ -166,9 +182,9 @@ export class SessionSecurity {
     // Use Web Crypto API for Edge Runtime compatibility
     const encoder = new TextEncoder();
     const data = encoder.encode(sessionId);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 }
 
@@ -187,25 +203,24 @@ export interface AuditLogEntry {
 export class AuditLogger {
   private static logs: AuditLogEntry[] = [];
 
-  public static log(entry: Omit<AuditLogEntry, 'timestamp'>): void {
+  public static log(entry: Omit<AuditLogEntry, "timestamp">): void {
     const logEntry: AuditLogEntry = {
       ...entry,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     };
 
     this.logs.push(logEntry);
-    
+
     // In production, send to external logging service
-    console.log('AUDIT:', JSON.stringify(logEntry));
   }
 
   public static getLogs(userId?: string, limit = 100): AuditLogEntry[] {
     let filteredLogs = this.logs;
-    
+
     if (userId) {
-      filteredLogs = this.logs.filter(log => log.userId === userId);
+      filteredLogs = this.logs.filter((log) => log.userId === userId);
     }
-    
+
     return filteredLogs
       .sort((a, b) => b.timestamp - a.timestamp)
       .slice(0, limit);

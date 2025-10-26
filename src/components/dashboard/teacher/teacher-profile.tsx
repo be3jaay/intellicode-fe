@@ -8,7 +8,7 @@ import { ProfilePictureUpload } from "@/components/dashboard/shared/profile-pict
 import { ControlledTextInput } from "@/components/controlled-fields";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Users, Hash } from "lucide-react";
+import { Users } from "lucide-react";
 import * as z from "zod";
 import {
   useCurrentUser,

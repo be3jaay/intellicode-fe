@@ -37,7 +37,7 @@ export function ErrorState({ onRetry }: ErrorStateProps) {
               Failed to Load Dashboard
             </Text>
             <Text size="sm" c="dimmed">
-              We couldn't fetch your dashboard data. Please check your
+              We couldn&apos;t fetch your dashboard data. Please check your
               connection and try again.
             </Text>
           </Box>

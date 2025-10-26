@@ -9,7 +9,6 @@ import {
   TextInput,
   Select,
   Badge,
-  ActionIcon,
   Button,
   Loader,
   Center,
@@ -22,13 +21,9 @@ import {
   Mail,
   User,
   Calendar,
-  Clock,
   CheckCircle,
   XCircle,
   Activity,
-  BookOpen,
-  Download,
-  MoreVertical,
 } from "lucide-react";
 import { useGetEnrolledStudents } from "@/hooks/query-hooks/student-query";
 import {
@@ -54,7 +49,7 @@ export function StudentContent({ courseId }: StudentContentProps) {
   const queryParams: StudentQueryParams = {
     offset,
     limit,
-    search: debouncedSearch || undefined,
+    search: debouncedSearch.trim() !== "" ? debouncedSearch : undefined,
     section: sectionFilter || undefined,
     enrollment_status: (statusFilter as any) || undefined,
   };
@@ -70,10 +65,13 @@ export function StudentContent({ courseId }: StudentContentProps) {
     }
   }, [data, limit]);
 
-  // Reset to first page when debounced search changes
   useEffect(() => {
-    setOffset(0);
-  }, [debouncedSearch]);
+    if (offset !== 0) {
+      setOffset(0);
+    } else {
+      refetch();
+    }
+  }, [debouncedSearch, sectionFilter, statusFilter]);
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
@@ -85,7 +83,6 @@ export function StudentContent({ courseId }: StudentContentProps) {
     } else if (filterType === "status") {
       setStatusFilter(value);
     }
-    setOffset(0); // Reset to first page when filtering
   };
 
   const handleViewMore = () => {
@@ -99,15 +96,7 @@ export function StudentContent({ courseId }: StudentContentProps) {
     return "#f6acae";
   };
 
-  const getProgressBackground = (percentage: number) => {
-    if (percentage >= 80) return "rgba(189, 240, 82, 0.2)";
-    if (percentage >= 60) return "rgba(255, 165, 0, 0.2)";
-    if (percentage >= 40) return "rgba(255, 140, 0, 0.2)";
-    return "rgba(246, 172, 174, 0.2)";
-  };
-
-  // Show loading only on initial load (not when searching)
-  const isInitialLoading = isLoading && offset === 0 && !searchTerm;
+  const isInitialLoading = isLoading && offset === 0;
 
   if (isInitialLoading) {
     return (
@@ -254,18 +243,19 @@ export function StudentContent({ courseId }: StudentContentProps) {
               padding="md"
               radius="md"
               style={{
-                background: "rgba(34, 34, 34, 0.6)",
+                backgroundColor: "rgba(34, 34, 34, 0.6)",
                 border: "1px solid rgba(189, 240, 82, 0.1)",
                 transition: "all 0.2s ease",
                 cursor: "pointer",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.4)";
-                e.currentTarget.style.background = "rgba(189, 240, 82, 0.05)";
+                e.currentTarget.style.backgroundColor =
+                  "rgba(189, 240, 82, 0.05)";
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.borderColor = "rgba(189, 240, 82, 0.1)";
-                e.currentTarget.style.background = "rgba(34, 34, 34, 0.6)";
+                e.currentTarget.style.backgroundColor = "rgba(34, 34, 34, 0.6)";
               }}
             >
               <Group justify="space-between" wrap="nowrap">
