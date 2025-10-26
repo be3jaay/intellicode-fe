@@ -164,9 +164,6 @@ export function QuizInterface({
         // For multiple choice, use the actual option text (not index)
         if (a.type === "multiple_choice" && !Array.isArray(a.answer)) {
           answerText = a.answer as string;
-          console.log(
-            `Multiple Choice - Question: ${a.questionId}, Answer: "${answerText}"`
-          );
         } else if (a.type === "enumeration") {
           // For enumeration, split by newlines and trim each line, then join with comma+space
           const enumAnswers =
@@ -179,24 +176,11 @@ export function QuizInterface({
               ? a.answer
               : [];
           answerText = enumAnswers.join(", ");
-          console.log(
-            `Enumeration - Question: ${a.questionId}, Answers: ${JSON.stringify(
-              enumAnswers
-            )}, Formatted: "${answerText}"`
-          );
         } else if (Array.isArray(a.answer)) {
           // For other array types, join with ", " (comma + space) for proper formatting
           answerText = a.answer.join(", ");
-          console.log(
-            `Array - Question: ${a.questionId}, Answers: ${JSON.stringify(
-              a.answer
-            )}, Formatted: "${answerText}"`
-          );
         } else {
           answerText = a.answer ?? "";
-          console.log(
-            `${a.type} - Question: ${a.questionId}, Answer: "${answerText}"`
-          );
         }
 
         return {

@@ -115,26 +115,6 @@ export function ActivityCreator({ course, onBack }: ActivityCreatorProps) {
     dynamicFieldArray.handleSave();
   };
 
-  const onSubmit = (data: ActivityFormData) => {
-    console.log("Activity Data:", {
-      title: data.title,
-      instructions: data.instructions,
-      dueDate: data.dueDate,
-      totalScore: data.totalScore,
-      difficulty: data.difficulty,
-      activityType: data.activityType,
-      moduleId: data.moduleId,
-    });
-
-    if (data.activityType === "quiz_form") {
-    } else if (data.activityType === "code_sandbox") {
-      console.log("Code Sandbox Details:", {
-        starterCode: data.starterCode,
-        testCases: data.testCases,
-      });
-    }
-  };
-
   return (
     <Box
       style={{

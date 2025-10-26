@@ -335,14 +335,6 @@ export async function signIn(
     if (res.success && (res.statusCode === 200 || res.statusCode === 201)) {
       const { data } = res;
 
-      console.log("Creating session with user data:", {
-        id: data.user.id,
-        email: data.user.email,
-        role: data.user.role,
-        firstName: data.user.firstName,
-      });
-
-      // Create session with new structure
       try {
         await createSession({
           user: {

@@ -29,17 +29,6 @@ export async function decrypt(session: string | undefined = "") {
 
 export async function createSession(payload: SessionPayload) {
   try {
-    console.log("Payload:", {
-      userId: payload.user.id,
-      email: payload.user.email,
-      role: payload.user.role,
-      firstName: payload.user.firstName,
-      hasAccessToken: !!payload.access_token,
-      hasRefreshToken: !!payload.refresh_token,
-      accessTokenLength: payload.access_token?.length || 0,
-      refreshTokenLength: payload.refresh_token?.length || 0,
-    });
-
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
     const session = await new SignJWT(payload)
       .setProtectedHeader({ alg: "HS256" })
@@ -56,21 +45,9 @@ export async function createSession(payload: SessionPayload) {
       path: "/",
     };
 
-    console.log("Setting cookie with options:", {
-      ...cookieOptions,
-      secure: cookieOptions.secure,
-      expiresAt: expiresAt.toISOString(),
-      nodeEnv: process.env.NODE_ENV,
-    });
-
     cookieStore.set("session", session, cookieOptions);
     // Verify the cookie was set
     const verifyCookie = cookieStore.get("session");
-    console.log("Cookie verification:", {
-      found: !!verifyCookie,
-      hasValue: !!verifyCookie?.value,
-      valueLength: verifyCookie?.value?.length || 0,
-    });
 
     if (!verifyCookie) {
       console.error("WARNING: Cookie was not found after setting!");
@@ -134,13 +111,6 @@ export async function updateToken({
   accessToken: string;
   refreshToken: string;
 }) {
-  console.log("🔄 updateToken called with:", {
-    hasAccessToken: !!accessToken,
-    hasRefreshToken: !!refreshToken,
-    accessTokenLength: accessToken?.length,
-    refreshTokenLength: refreshToken?.length,
-  });
-
   const session = (await cookies()).get("session")?.value;
 
   if (!session) {

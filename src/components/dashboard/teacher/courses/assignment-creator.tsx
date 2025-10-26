@@ -64,7 +64,6 @@ export function AssignmentCreator({
   const { control, handleSubmit, setValue, watch, register, reset } = form;
   const assignmentSubtype = watch("assignmentSubtype");
 
-  // Dynamic field array for quiz questions
   const dynamicFieldArray = useDynamicFieldArray<AssignmentFormData>({
     control,
     setValue,
@@ -92,7 +91,6 @@ export function AssignmentCreator({
     handleCancelEdit,
   } = dynamicFieldArray;
 
-  // Custom save with validation for quiz questions
   const handleSaveWithValidation = () => {
     const currentIndex =
       editingIndex !== null ? editingIndex : fields.length - 1;
@@ -100,7 +98,6 @@ export function AssignmentCreator({
 
     if (!question) return;
 
-    // Basic validation before saving
     if (!question.question?.trim()) {
       alert("Please enter a question");
       return;
@@ -131,13 +128,11 @@ export function AssignmentCreator({
       }
     }
 
-    // If validation passes, save
     dynamicFieldArray.handleSave();
   };
 
   async function onSubmit(data: AssignmentFormData) {
     try {
-      // Validate assignment subtype specific requirements
       if (data.assignmentSubtype === "file_upload") {
         const file = watch("attachment");
         if (!file) {
@@ -168,13 +163,11 @@ export function AssignmentCreator({
         return;
       }
 
-      // Get the file from form data if it's a file upload assignment
       const file =
         data.assignmentSubtype === "file_upload"
           ? watch("attachment")
           : undefined;
 
-      // Transform AssignmentFormData to CreateQuizForm
       const createQuizData: CreateQuizForm = {
         title: data.title,
         description: data.description,
@@ -225,19 +218,6 @@ export function AssignmentCreator({
         color: "red",
       });
     }
-
-    // if (data.assignmentType === "quiz_form") {
-    //     notifications.show({
-    //         title: "Quiz Questions:",
-    //         message: "Quiz Questions:",
-    //         color: "green",
-    //     })
-    // } else if (data.assignmentType === "code_sandbox") {
-    //     console.log("Code Sandbox Details:", {
-    //         starterCode: data.starterCode,
-    //         testCases: data.testCases,
-    //     })
-    // }
   }
 
   return (
