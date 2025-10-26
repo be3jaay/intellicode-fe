@@ -29,7 +29,6 @@ import type { CourseValueResponse } from "@/services/course-service/course-type"
 import { BulkModuleCreator } from "./bulk-module-creator";
 import { AssignmentCreator } from "./assignment-creator";
 import { LessonCreator } from "./lesson-creator";
-import { ActivityCreator } from "./activity-creator";
 import { AssignmentContent } from "./assignment-content";
 import { StudentContent } from "./student-content";
 import { ModuleContent } from "./module-content";
@@ -135,10 +134,6 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
 
   if (currentView === "lesson") {
     return <LessonCreator course={course} onBack={handleBackToMain} />;
-  }
-
-  if (currentView === "activity") {
-    return <ActivityCreator course={course} onBack={handleBackToMain} />;
   }
 
   return (

@@ -39,7 +39,6 @@ import { ModuleService } from "@/services/module-service/module-service";
 import { BulkModuleCreator } from "./bulk-module-creator";
 import { AssignmentCreator } from "./assignment-creator";
 import { LessonCreator } from "./lesson-creator";
-import { ActivityCreator } from "./activity-creator";
 import { AssignmentContent } from "./assignment-content";
 import { StudentContent } from "./student-content";
 import { ModuleContent } from "./module-content";
@@ -182,10 +181,6 @@ export function CourseContentViewer({
 
   if (currentView === "lesson") {
     return <LessonCreator course={course} onBack={handleBackToMain} />;
-  }
-
-  if (currentView === "activity") {
-    return <ActivityCreator course={course} onBack={handleBackToMain} />;
   }
 
   return (

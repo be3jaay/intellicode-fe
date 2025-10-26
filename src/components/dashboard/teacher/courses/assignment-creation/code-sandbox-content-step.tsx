@@ -16,6 +16,7 @@ import type { AssignmentFormData } from "./types";
 interface CodeSandboxContentStepProps {
   register: UseFormRegister<AssignmentFormData>;
   onBack: () => void;
+  isCreating: boolean;
   onSubmit: () => void;
 }
 
@@ -23,6 +24,7 @@ export function CodeSandboxContentStep({
   register,
   onBack,
   onSubmit,
+  isCreating,
 }: CodeSandboxContentStepProps) {
   return (
     <Stack gap="lg" mt="xl">
@@ -88,6 +90,7 @@ export function CodeSandboxContentStep({
         <Button
           leftSection={<IconDeviceFloppy size={20} />}
           onClick={onSubmit}
+          loading={isCreating}
           size="lg"
           radius="md"
           styles={{
