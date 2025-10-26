@@ -1,21 +1,8 @@
-/* 
-  Certificate utilities (types, formatting, HTML builders)
-
-  Reference code algorithm:
-  - Take the issued date's 4-digit year (YYYY).
-  - Extract only alphanumeric characters from studentNumber.
-  - Take the last 5 characters of that cleaned string; padStart to 5 with '0'.
-  - Format: REF-{YYYY}-{last5}
-
-  Date formatting:
-  - Display issued date in long form using toLocaleDateString('en-US', 
-    { year: 'numeric', month: 'long', day: 'numeric' }).
-*/
 export interface CertificateData {
   studentName: string;
   courseName: string;
   studentNumber: string;
-  issuedDate?: string; // ISO string or omitted
+  issuedDate?: string;
 }
 
 export interface NormalizedCertificateData {
@@ -59,7 +46,6 @@ export function normalizeCertificateData(input: CertificateData): NormalizedCert
 
 export function getCertificateCSS() {
   return `
-  /* Print setup - A4 Landscape */
   @page {
     size: A4 landscape;
     margin: 0;
@@ -84,7 +70,7 @@ export function getCertificateCSS() {
   .cert-page {
     width: 297mm;
     height: 210mm;
-    background: #fafafa;
+    background: #ffffff;
     position: relative;
     overflow: hidden;
   }
@@ -93,7 +79,7 @@ export function getCertificateCSS() {
     position: relative;
     width: 100%;
     height: 100%;
-    padding: 12mm;
+    padding: 0;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -103,19 +89,18 @@ export function getCertificateCSS() {
     width: 100%;
     height: 100%;
     background: white;
-    border: 1px solid #d1d5db;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border: none;
+    box-shadow: none;
     position: relative;
   }
 
-  /* Subtle decorative top wave + inner frame */
   .cert-card::before {
     content: '';
     position: absolute;
-    inset: 0 0 55% 0; /* top area */
+    inset: 0 0 55% 0;
     background:
-      radial-gradient(120% 80% at 100% 0%, #eef2ff 0%, #ffffff 70%),
-      repeating-linear-gradient(-12deg, rgba(30, 64, 175, 0.06) 0 2px, transparent 2px 10px);
+      radial-gradient(120% 80% at 100% 0%, #f7ffe9 0%, #ffffff 70%),
+      repeating-linear-gradient(-12deg, rgba(189, 240, 82, 0.10) 0 2px, transparent 2px 10px);
     -webkit-mask: linear-gradient(to bottom, black 70%, transparent);
             mask: linear-gradient(to bottom, black 70%, transparent);
     pointer-events: none;
@@ -125,11 +110,11 @@ export function getCertificateCSS() {
   .cert-card::after {
     content: '';
     position: absolute;
-    inset: 8mm;
-    border: 1px solid #e5e7eb;
-    border-radius: 2mm;
+    inset: 10mm;
+    border: 2px solid #bdf052;
+    border-radius: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 1;
   }
 
   .cert-inner {
@@ -139,10 +124,9 @@ export function getCertificateCSS() {
     padding: 20mm 30mm;
     display: flex;
     flex-direction: column;
-    z-index: 1; /* above decorative layers */
+    z-index: 2;
   }
 
-  /* Faint diagonal watermark */
   .cert-watermark {
     position: absolute;
     inset: 0;
@@ -153,15 +137,14 @@ export function getCertificateCSS() {
     font-weight: 700;
     font-size: 90pt;
     letter-spacing: 8px;
-    color: #1e40af;
-    opacity: 0.03;
+    color: #bdf052;
+    opacity: 0.05;
     transform: rotate(-8deg);
     user-select: none;
     pointer-events: none;
     z-index: 0;
   }
   
-  /* Logo positioned at top-left like Cisco */
   .cert-logo-wrapper {
     position: absolute;
     top: 20mm;
@@ -214,7 +197,6 @@ export function getCertificateCSS() {
     margin-left: 2px;
   }
 
-  /* Main content area - centered */
   .cert-content {
     flex: 1;
     display: flex;
@@ -238,7 +220,7 @@ export function getCertificateCSS() {
     font-family: 'Crimson Text', serif;
     font-size: 48pt;
     font-weight: 600;
-    color: #1e40af;
+    color: #111827;
     margin-bottom: 8mm;
     line-height: 1.2;
   }
@@ -256,10 +238,18 @@ export function getCertificateCSS() {
     font-family: 'Montserrat', sans-serif;
     font-size: 26pt;
     font-weight: 700;
-    color: #1e40af;
-    margin-bottom: 3mm;
+    color: #111827;
+    margin-bottom: 1mm;
     line-height: 1.3;
     letter-spacing: 0.5px;
+  }
+
+  .cert-accent-line {
+    width: 60mm;
+    height: 3px;
+    background: linear-gradient(90deg, #bdf052 0%, #a3d742 100%);
+    border-radius: 2px;
+    margin: 0.5mm auto 0 auto;
   }
   
   .cert-course-subtext {
@@ -270,7 +260,6 @@ export function getCertificateCSS() {
     font-style: italic;
   }
 
-  /* Footer - aligned like Cisco */
   .cert-footer {
     display: flex;
     justify-content: space-between;
@@ -317,7 +306,6 @@ export function buildCertificateInnerHTML(d: NormalizedCertificateData): string 
         <div class="cert-card">
           <div class="cert-watermark" aria-hidden="true">INTELLICODE</div>
           <div class="cert-inner">
-            <!-- Logo at top-left -->
             <div class="cert-logo-wrapper">
               <div class="cert-logo-box" aria-label="IntelliCode logo">
                 <svg class="cert-logo-svg" viewBox="0 0 40 32" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
@@ -335,7 +323,6 @@ export function buildCertificateInnerHTML(d: NormalizedCertificateData): string 
               </div>
             </div>
 
-            <!-- Main centered content -->
             <div class="cert-content">
               <p class="cert-award-text">This certificate is awarded to</p>
               
@@ -344,11 +331,11 @@ export function buildCertificateInnerHTML(d: NormalizedCertificateData): string 
               <p class="cert-completion-text">for successfully completing</p>
               
               <div class="cert-course-name">${escapeHtml(d.courseName)}</div>
+              <div class="cert-accent-line" aria-hidden="true"></div>
               
               <p class="cert-course-subtext">through the IntelliCode program.</p>
             </div>
 
-            <!-- Footer with date and reference -->
             <footer class="cert-footer">
               <div class="cert-footer-left">
                 <div class="cert-footer-value">${d.issuedDateLong}</div>

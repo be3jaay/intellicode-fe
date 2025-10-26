@@ -12,10 +12,21 @@ import {
 import { CertificateCard } from "@/components/dashboard/student/certificate-card";
 import { Award, AlertCircle } from "lucide-react";
 import { useStudentCertificates } from "@/hooks/query-hooks/student-certificate-query";
+import { useMemo, useState } from "react";
+import CertificatePreviewModal from "@/components/certificate/CertificatePreviewModal";
+import { CertificateData, normalizeCertificateData } from "@/lib/certificates";
 
-// Component to fetch and display all certificates for a student
 export function StudentCertificatesView() {
   const { data: certificates, isLoading, error } = useStudentCertificates();
+  const [previewData, setPreviewData] = useState<CertificateData | null>(null);
+  const [opened, setOpened] = useState(false);
+
+  const toCertData = (c: any): CertificateData => ({
+    studentName: `${c.student.first_name} ${c.student.last_name}`,
+    courseName: c.course.title,
+    studentNumber: c.student.student_number,
+    issuedDate: c.issued_at,
+  });
 
   if (isLoading) {
     return (
@@ -80,16 +91,48 @@ export function StudentCertificatesView() {
             <CertificateCard
               key={certificate.id}
               certificate={certificate}
-              onDownload={() => {
-                window.open(
-                  `/api/certificates/${certificate.id}/download`,
-                  "_blank"
-                );
+              onPreview={() => {
+                setPreviewData(toCertData(certificate));
+                setOpened(true);
+              }}
+              onDownload={async () => {
+                const data = toCertData(certificate);
+                const normalized = normalizeCertificateData(data);
+                try {
+                  const res = await fetch("/api/generate-certificate", {
+                    method: "POST",
+                    headers: { "content-type": "application/json" },
+                    body: JSON.stringify(data),
+                  });
+                  if (!res.ok) {
+                    const error = await res.json().catch(() => ({} as any));
+                    alert(`Failed to generate PDF: ${error.error || "Unknown error"}`);
+                    return;
+                  }
+                  const blob = await res.blob();
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `certificate-${normalized.referenceCode}.pdf`;
+                  document.body.appendChild(a);
+                  a.click();
+                  a.remove();
+                  URL.revokeObjectURL(url);
+                } catch (e) {
+                  console.error(e);
+                  alert("Failed to download certificate");
+                }
               }}
             />
           ))}
         </SimpleGrid>
       )}
+
+      <CertificatePreviewModal
+        opened={opened}
+        onClose={() => setOpened(false)}
+        data={previewData}
+      />
     </>
   );
 }

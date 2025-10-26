@@ -9,6 +9,7 @@ import {
   Center,
   Box,
   Divider,
+  Button,
 } from "@mantine/core";
 import {
   Award,
@@ -56,11 +57,13 @@ interface CertificateCardProps {
     } | null;
   };
   onDownload?: () => void;
+  onPreview?: () => void;
 }
 
 export function CertificateCard({
   certificate,
   onDownload,
+  onPreview,
 }: CertificateCardProps) {
   const isRevoked = certificate.status === "revoked";
 
@@ -82,7 +85,6 @@ export function CertificateCard({
         flexDirection: "column",
       }}
     >
-      {/* Decorative top border */}
       <Box
         style={{
           height: "4px",
@@ -93,7 +95,6 @@ export function CertificateCard({
       />
 
       <Stack gap="lg" p="lg" style={{ flex: 1 }}>
-        {/* Header with Award Icon and Status */}
         <Group justify="space-between" align="flex-start">
           <Group gap="xs">
             <Award
@@ -128,9 +129,7 @@ export function CertificateCard({
           }}
         />
 
-        {/* Certificate Content */}
         <Stack gap="md" style={{ flex: 1 }}>
-          {/* Student Name */}
           <Box>
             <Text size="xs" c="dimmed" mb={4}>
               Awarded to
@@ -149,7 +148,6 @@ export function CertificateCard({
             </Text>
           </Box>
 
-          {/* Course Title */}
           <Box>
             <Text size="xs" c="dimmed" mb={4}>
               For completing
@@ -159,7 +157,6 @@ export function CertificateCard({
             </Text>
           </Box>
 
-          {/* Grade */}
           <Group gap="xs">
             <Text size="xs" c="dimmed">
               Final Grade:
@@ -181,7 +178,6 @@ export function CertificateCard({
             </Badge>
           </Group>
 
-          {/* Revocation Alert */}
           {isRevoked && certificate.revoked_at && (
             <Box
               style={{
@@ -215,7 +211,6 @@ export function CertificateCard({
           }}
         />
 
-        {/* Footer Info */}
         <Stack gap="xs">
           <Group justify="space-between">
             <Group gap="xs">
@@ -245,6 +240,17 @@ export function CertificateCard({
               #{certificate.id.slice(0, 8).toUpperCase()}
             </Text>
           </Center>
+
+          <Group justify="space-between" mt="xs">
+            <Button variant="light" color="#bdf052" onClick={onPreview} size="xs">
+              See certificate
+            </Button>
+            {onDownload && (
+              <Button variant="outline" color="#bdf052" onClick={onDownload} size="xs">
+                Download PDF
+              </Button>
+            )}
+          </Group>
         </Stack>
       </Stack>
     </Card>
