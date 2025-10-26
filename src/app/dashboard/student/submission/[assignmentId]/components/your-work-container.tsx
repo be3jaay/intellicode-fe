@@ -2,12 +2,19 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { notifications } from "@mantine/notifications";
-import { IconCheck, IconAlertTriangle } from "@tabler/icons-react";
+import {
+  IconCheck,
+  IconAlertTriangle,
+  IconCircleCheck,
+  IconX,
+} from "@tabler/icons-react";
 import { YourWorkCard } from "./your-work-card";
 import { AssignmentService } from "@/services/assignment-service/assignment-service";
 import type { Submission } from "@/types/assignment";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
+import { useUndoSubmission } from "@/hooks/query-hooks/assignment-query";
+import { useAuth } from "@/providers/auth-context";
 
 interface YourWorkContainerProps {
   assignmentId: string;
@@ -23,6 +30,8 @@ export function YourWorkContainer({
   const queryClient = useQueryClient();
   const searchParams = useSearchParams();
   const courseId = searchParams.get("courseId");
+  const { user } = useAuth();
+  const { undoSubmission, isUndoing } = useUndoSubmission();
 
   // State
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -255,14 +264,73 @@ export function YourWorkContainer({
     }
   };
 
-  const handleUnmark = () => {
-    notifications.show({
-      title: "Unsubmit Not Supported",
-      message:
-        "Once submitted, assignments cannot be unsubmitted. Please contact your instructor if you need to make changes.",
-      color: "blue",
-      autoClose: 4000,
-    });
+  const handleUnmark = async () => {
+    if (!user?.id) {
+      notifications.show({
+        title: "Error",
+        message: "Unable to identify user. Please refresh and try again.",
+        color: "red",
+        icon: <IconX size={18} />,
+        autoClose: 4000,
+      });
+      return;
+    }
+
+    try {
+      const response = await undoSubmission({
+        assignmentId,
+        studentId: user.id,
+      });
+
+      if (response.success) {
+        setIsSubmitted(false);
+        setUploadedFiles([]);
+        setLastSubmission(null);
+
+        notifications.show({
+          title: "Submission Undone! ✓",
+          message:
+            response.message ||
+            "Your submission has been successfully removed. You can now resubmit the assignment.",
+          color: "green",
+          icon: <IconCircleCheck size={18} />,
+          autoClose: 5000,
+        });
+
+        await fetchSubmissions();
+
+        if (courseId) {
+          queryClient.invalidateQueries({
+            queryKey: ["student-course", courseId],
+          });
+        }
+        queryClient.invalidateQueries({
+          queryKey: ["assignment", assignmentId],
+        });
+
+        onSubmissionSuccess?.();
+      }
+    } catch (err: any) {
+      console.error("Undo submission error:", err);
+
+      let errorMessage = "Failed to undo submission";
+
+      if (err.message?.includes("not found")) {
+        errorMessage = "Submission not found or already removed";
+      } else if (err.message?.includes("Cannot undo")) {
+        errorMessage = err.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      notifications.show({
+        title: "Undo Failed",
+        message: errorMessage,
+        color: "red",
+        icon: <IconX size={18} />,
+        autoClose: 5000,
+      });
+    }
   };
 
   // Compute
@@ -281,6 +349,7 @@ export function YourWorkContainer({
         onUnmark={handleUnmark}
         onRemoveFile={handleRemoveFile}
         loading={loading}
+        undoLoading={isUndoing}
       />
 
       {/* Hidden file input */}

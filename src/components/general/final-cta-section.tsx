@@ -109,7 +109,7 @@ export function FinalCtaSection() {
             fw={500}
             style={{ color: "#222222", opacity: 0.7 }}
           >
-            🎓 Free for students • 💼 Affordable for institutions
+            🎓 Free learning platform
           </Text>
         </Stack>
       </Container>

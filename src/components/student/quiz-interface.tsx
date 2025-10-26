@@ -99,7 +99,12 @@ export function QuizInterface({
   useLeaveDetection(async () => {
     if (!isSecured || !leaveDetectionEnabled) return;
     if (hasAutoSubmitted) {
-      setShowLeaveModal(true);
+      // Redirect back to course after auto-submit
+      if (courseId) {
+        window.location.href = `/dashboard/student/courses/${courseId}?tab=assignments`;
+      } else {
+        window.location.href = "/dashboard/student/courses";
+      }
       return;
     }
 
@@ -119,7 +124,11 @@ export function QuizInterface({
     } finally {
       setHasAutoSubmitted(true);
       setIsAutoSubmitting(false);
-      setShowLeaveModal(true);
+      if (courseId) {
+        window.location.href = `/dashboard/student/courses/${courseId}?tab=assignments`;
+      } else {
+        window.location.href = "/dashboard/student/courses";
+      }
     }
   });
   const currentQuestion = assignment.questions[currentQuestionIndex];
@@ -165,13 +174,13 @@ export function QuizInterface({
         if (a.type === "multiple_choice" && !Array.isArray(a.answer)) {
           answerText = a.answer as string;
         } else if (a.type === "enumeration") {
-          // For enumeration, split by newlines and trim each line, then join with comma+space
+          // For enumeration, split by comma and trim each answer
           const enumAnswers =
             typeof a.answer === "string"
               ? a.answer
-                  .split("\n")
-                  .map((line) => line.trim())
-                  .filter((line) => line)
+                  .split(",")
+                  .map((item) => item.trim())
+                  .filter((item) => item)
               : Array.isArray(a.answer)
               ? a.answer
               : [];
@@ -472,36 +481,61 @@ export function QuizInterface({
           )}
 
           {currentQuestion.type === "enumeration" && (
-            <Textarea
-              placeholder="Enter each answer on a new line (press Enter after each answer)"
-              description="Type each answer and press Enter to start a new line"
-              value={
-                Array.isArray(getCurrentAnswer(currentQuestion.id))
-                  ? (getCurrentAnswer(currentQuestion.id) as string[]).join(
-                      "\n"
-                    )
-                  : (getCurrentAnswer(currentQuestion.id) as string)
-              }
-              onChange={(event) => {
-                const textValue = event.currentTarget.value;
-                // Store as string to preserve spaces while typing
-                // Will be split into array when submitting
-                handleAnswerChange(
-                  currentQuestion.id,
-                  textValue,
-                  "enumeration"
-                );
-              }}
-              minRows={4}
-              size="md"
-              styles={{
-                description: {
-                  color: "#9ca3af",
-                  fontSize: "12px",
-                  marginTop: "4px",
-                },
-              }}
-            />
+            <Stack gap="xs">
+              <Alert
+                color="blue"
+                variant="light"
+                styles={{
+                  root: {
+                    backgroundColor: "rgba(59, 130, 246, 0.1)",
+                    border: "1px solid rgba(59, 130, 246, 0.3)",
+                  },
+                  message: {
+                    color: "#60a5fa",
+                  },
+                }}
+              >
+                <Text size="sm" fw={500}>
+                  How to answer enumeration questions:
+                </Text>
+                <Text size="sm" mt={4}>
+                  • Format your answers with commas: answer1, answer2, answer3
+                </Text>
+                <Text size="sm">• Example: Apple, Banana, Orange, Grape</Text>
+                <Text size="sm" c="dimmed" mt={4}>
+                  Each answer should be separated by a comma and space
+                </Text>
+              </Alert>
+              <Textarea
+                placeholder="Enter your answers separated by commas (e.g., answer1, answer2, answer3)"
+                description="Format: answer1, answer2, answer3 (with commas)"
+                value={
+                  Array.isArray(getCurrentAnswer(currentQuestion.id))
+                    ? (getCurrentAnswer(currentQuestion.id) as string[]).join(
+                        ", "
+                      )
+                    : (getCurrentAnswer(currentQuestion.id) as string)
+                }
+                onChange={(event) => {
+                  const textValue = event.currentTarget.value;
+                  // Store as string to preserve the comma-separated format
+                  handleAnswerChange(
+                    currentQuestion.id,
+                    textValue,
+                    "enumeration"
+                  );
+                }}
+                minRows={4}
+                size="md"
+                styles={{
+                  description: {
+                    color: "#9ca3af",
+                    fontSize: "12px",
+                    marginTop: "4px",
+                  },
+                }}
+              />
+            </Stack>
           )}
         </Stack>
       </Paper>

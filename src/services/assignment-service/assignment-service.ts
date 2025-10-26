@@ -291,6 +291,27 @@ export class AssignmentService {
       throw error;
     }
   }
+
+  /**
+   * Undo student submission for an assignment
+   * @param assignmentId - The assignment ID
+   * @param studentId - The student ID
+   * @returns Response with success message
+   */
+  public static async undoSubmission(
+    assignmentId: string,
+    studentId: string
+  ): Promise<{ success: boolean; message: string }> {
+    try {
+      return await apiClient.delete(
+        `/course/assignments/${assignmentId}/submissions/${studentId}/undo`
+      );
+    } catch (error) {
+      console.error("Error undoing submission:", error);
+      throw error;
+    }
+  }
+
   /**
    * Delete an assignment by ID
    * @param assignmentId - The assignment ID

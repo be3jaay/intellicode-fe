@@ -170,3 +170,30 @@ export function useGradeSubmission() {
     isError: isError,
   };
 }
+
+export function useUndoSubmission() {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending, isError } = useMutation({
+    mutationFn: ({
+      assignmentId,
+      studentId,
+    }: {
+      assignmentId: string;
+      studentId: string;
+    }) => AssignmentService.undoSubmission(assignmentId, studentId),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["assignments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["assignment", variables.assignmentId],
+      });
+    },
+    onError: (error: ErrorResponse) => {
+      console.error(error.message);
+    },
+  });
+  return {
+    undoSubmission: mutateAsync,
+    isUndoing: isPending,
+    isError: isError,
+  };
+}

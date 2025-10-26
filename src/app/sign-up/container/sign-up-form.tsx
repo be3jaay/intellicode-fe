@@ -3,10 +3,10 @@ import { Text, Box, Stack, Anchor, Grid } from "@mantine/core";
 import {
   AtSign,
   LockKeyhole,
-  Brain,
   User,
   Users,
   GraduationCap,
+  Code,
 } from "lucide-react";
 import {
   type Control,
@@ -92,7 +92,7 @@ export const SignUpForm = ({
               boxShadow: "0 8px 32px rgba(189, 240, 82, 0.3)",
             }}
           >
-            <Brain size={28} color="#222222" />
+            <Code size={28} color="#222222" />
           </Box>
 
           <Text
@@ -104,7 +104,7 @@ export const SignUpForm = ({
               letterSpacing: "-0.02em",
             }}
           >
-            Join Inspira
+            Join Intellicode
           </Text>
 
           <Text

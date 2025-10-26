@@ -1,5 +1,10 @@
 import { Box, Stack, Text, Button, Divider } from "@mantine/core";
-import { IconUpload, IconCheck, IconCircleCheck } from "@tabler/icons-react";
+import {
+  IconUpload,
+  IconCheck,
+  IconCircleCheck,
+  IconArrowBackUp,
+} from "@tabler/icons-react";
 import { FilePreviewList } from "@/components/ui/file-preview-list";
 import { colors, styles } from "../styles";
 
@@ -12,6 +17,7 @@ interface YourWorkCardProps {
   onUnmark: () => void;
   onRemoveFile: (index: number) => void;
   loading?: boolean;
+  undoLoading?: boolean;
 }
 
 export function YourWorkCard({
@@ -20,8 +26,10 @@ export function YourWorkCard({
   uploadedFiles,
   onUploadClick,
   onMarkAsDone,
+  onUnmark,
   onRemoveFile,
   loading = false,
+  undoLoading = false,
 }: YourWorkCardProps) {
   return (
     <Stack gap="md">
@@ -115,6 +123,30 @@ export function YourWorkCard({
               </Text>
             </Stack>
           </Box>
+
+          {/* Undo Submission Button */}
+          <Button
+            fullWidth
+            variant="outline"
+            size="md"
+            color="orange"
+            leftSection={<IconArrowBackUp size={18} />}
+            onClick={onUnmark}
+            loading={undoLoading}
+            disabled={undoLoading}
+            styles={{
+              root: {
+                borderColor: "rgba(251, 146, 60, 0.5)",
+                color: "#fb923c",
+                "&:hover": {
+                  background: "rgba(251, 146, 60, 0.1)",
+                  borderColor: "#fb923c",
+                },
+              },
+            }}
+          >
+            Undo Submission
+          </Button>
 
           {/* Hide Unmark button since backend doesn't support unsubmit */}
           {/* <Button
