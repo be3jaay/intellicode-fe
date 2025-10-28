@@ -182,7 +182,6 @@ class ApiClient {
   }
 
   private getBaseURL(): string {
-    const configValue = config.getConfigValue();
     return process.env.NEXT_LOCAL_API_BASE_URL || "http://localhost:8000";
   }
 
