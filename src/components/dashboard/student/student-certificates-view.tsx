@@ -14,7 +14,7 @@ import { Award, AlertCircle } from "lucide-react";
 import { useStudentCertificates } from "@/hooks/query-hooks/student-certificate-query";
 import { useMemo, useState } from "react";
 import CertificatePreviewModal from "@/components/certificate/CertificatePreviewModal";
-import { CertificateData, normalizeCertificateData } from "@/lib/certificates";
+import { CertificateData, normalizeCertificateData, fetchCertificatePDF } from "@/lib/certificates";
 
 export function StudentCertificatesView() {
   const { data: certificates, isLoading, error } = useStudentCertificates();
@@ -99,28 +99,15 @@ export function StudentCertificatesView() {
                 const data = toCertData(certificate);
                 const normalized = normalizeCertificateData(data);
                 try {
-                  const res = await fetch("/api/generate-certificate", {
-                    method: "POST",
-                    headers: { "content-type": "application/json" },
-                    body: JSON.stringify(data),
+                  await fetchCertificatePDF({
+                    studentName: normalized.studentName,
+                    studentNumber: normalized.studentNumber,
+                    courseName: normalized.courseName,
+                    referenceCode: normalized.referenceCode,
+                    issuedAt: normalized.issuedDateISO,
                   });
-                  if (!res.ok) {
-                    const error = await res.json().catch(() => ({} as any));
-                    alert(`Failed to generate PDF: ${error.error || "Unknown error"}`);
-                    return;
-                  }
-                  const blob = await res.blob();
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `certificate-${normalized.referenceCode}.pdf`;
-                  document.body.appendChild(a);
-                  a.click();
-                  a.remove();
-                  URL.revokeObjectURL(url);
-                } catch (e) {
-                  console.error(e);
-                  alert("Failed to download certificate");
+                } catch (e: any) {
+                  alert(e?.message || "Failed to download certificate");
                 }
               }}
             />

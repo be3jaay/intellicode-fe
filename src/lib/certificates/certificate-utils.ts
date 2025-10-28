@@ -1,3 +1,65 @@
+/**
+ * Fetches the certificate PDF from the backend and triggers a browser download.
+ * @param params - Certificate data for the request body
+ * @param backendUrl - Optional backend base URL (default: http://localhost:8000)
+ * @returns Promise<void>
+ * @throws Error with message for 400 responses or network errors
+ */
+export async function fetchCertificatePDF(
+  params: {
+    studentName: string;
+    studentNumber: string;
+    courseName: string;
+    referenceCode: string;
+    issuedAt: string;
+  },
+  backendUrl: string = "http://localhost:8000"
+): Promise<void> {
+  try {
+    const response = await fetch(`${backendUrl}/course/certificates/pdf`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (response.status === 400) {
+      let errorMsg = "Invalid request data.";
+      try {
+        const errorJson = await response.json();
+        errorMsg = errorJson.message || errorMsg;
+      } catch {}
+      throw new Error(errorMsg);
+    }
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch certificate PDF. Status: ${response.status}`);
+    }
+
+    const blob = await response.blob();
+    const contentDisposition = response.headers.get("content-disposition");
+    let filename = "certificate.pdf";
+    if (contentDisposition) {
+      const match = contentDisposition.match(/filename="([^"]+)"/);
+      if (match) filename = match[1];
+    }
+
+    // Trigger browser download
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 100);
+  } catch (err: any) {
+    throw new Error(err?.message || "Could not download certificate PDF.");
+  }
+}
 export interface CertificateData {
   studentName: string;
   courseName: string;

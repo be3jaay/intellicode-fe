@@ -12,7 +12,6 @@ export interface CertificateTemplateProps {
 export default function CertificateTemplate({ data }: CertificateTemplateProps) {
   const normalized = normalizeCertificateData(data);
   const css = getCertificateCSS();
-
   return (
     <div aria-live="polite">
       <style dangerouslySetInnerHTML={{ __html: css }} />
