@@ -183,7 +183,7 @@ class ApiClient {
 
   private getBaseURL(): string {
     const configValue = config.getConfigValue();
-    return process.env.NEXT_LOCAL_API_BASE_URL || "http://localhost:8000";
+    return configValue.BASE_API_URL;
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
