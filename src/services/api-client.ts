@@ -120,7 +120,9 @@ class ApiClient {
     // Check if this is a Next.js API route or a backend endpoint
     const isNextJsRoute = NEXTJS_API_ROUTES.some(route => endpoint.startsWith(route));
     
-    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+    let baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_LOCAL_API_BASE_URL || "http://localhost:8000";
+    // Remove trailing slash if present
+    baseURL = baseURL.replace(/\/+$/, '');
     const url = isNextJsRoute ? endpoint : `${baseURL}${endpoint}`;
 
     const defaultHeaders: Record<string, string> = {};
