@@ -1,6 +1,17 @@
-import config from "@/config";
-
 const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/", "/code-sandbox"];
+
+// Next.js API routes that should NOT go to the backend
+const NEXTJS_API_ROUTES = [
+  "/api/auth/token",
+  "/api/auth/refresh",
+  "/api/auth/me",
+  "/api/auth/logout",
+  "/api/auth/login",
+  "/api/auth/register",
+  "/api/ai-check",
+  "/api/code",
+  "/api/generate-certificate",
+];
 
 class ApiClient {
   private accessToken: string | null = null;
@@ -106,9 +117,13 @@ class ApiClient {
     options: RequestInit = {},
     isRetry: boolean = false
   ): Promise<T> {
-    const url = endpoint.startsWith("/api/")
-      ? endpoint
-      : `${this.getBaseURL()}${endpoint}`;
+    // Check if this is a Next.js API route or a backend endpoint
+    const isNextJsRoute = NEXTJS_API_ROUTES.some(route => endpoint.startsWith(route));
+    
+    let baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_LOCAL_API_BASE_URL || "http://localhost:8000";
+    // Remove trailing slash if present
+    baseURL = baseURL.replace(/\/+$/, '');
+    const url = isNextJsRoute ? endpoint : `${baseURL}${endpoint}`;
 
     const defaultHeaders: Record<string, string> = {};
 
@@ -123,7 +138,8 @@ class ApiClient {
       }
     }
 
-    if (!endpoint.startsWith("/api/")) {
+    // Add auth token for backend endpoints only
+    if (!isNextJsRoute) {
       const token = await this.getAccessToken();
       if (token) {
         defaultHeaders["Authorization"] = `Bearer ${token}`;
@@ -139,7 +155,8 @@ class ApiClient {
       credentials: "include",
     });
 
-    if (response.status === 401 && !isRetry && !endpoint.startsWith("/api/")) {
+    // Only retry with token refresh for backend endpoints (not Next.js routes)
+    if (response.status === 401 && !isRetry && !isNextJsRoute) {
       const refreshed = await this.refreshAccessToken();
 
       if (refreshed) {
@@ -179,10 +196,6 @@ class ApiClient {
     }
 
     return response.json();
-  }
-
-  private getBaseURL(): string {
-    return process.env.NEXT_LOCAL_API_BASE_URL || "http://localhost:8000";
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
