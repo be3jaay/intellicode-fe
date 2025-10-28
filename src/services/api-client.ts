@@ -1,5 +1,3 @@
-import config from "@/config";
-
 const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/", "/code-sandbox"];
 
 class ApiClient {
@@ -106,9 +104,10 @@ class ApiClient {
     options: RequestInit = {},
     isRetry: boolean = false
   ): Promise<T> {
+    const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
     const url = endpoint.startsWith("/api/")
       ? endpoint
-      : `${this.getBaseURL()}${endpoint}`;
+      : `${baseURL}${endpoint}`;
 
     const defaultHeaders: Record<string, string> = {};
 
@@ -179,11 +178,6 @@ class ApiClient {
     }
 
     return response.json();
-  }
-
-  private getBaseURL(): string {
-    const configValue = config.getConfigValue();
-    return configValue.BASE_API_URL;
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {
