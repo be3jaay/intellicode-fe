@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { Box, Text, rem } from "@mantine/core";
 import { RichTextEditor } from "@mantine/tiptap";
 import { useEditor } from "@tiptap/react";
@@ -120,6 +121,13 @@ export function CustomRichTextEditor({
       onChange(html);
     },
   });
+
+  // Update editor content when content prop changes (for pre-filled forms)
+  useEffect(() => {
+    if (editor && content !== editor.getHTML()) {
+      editor.commands.setContent(content);
+    }
+  }, [editor, content]);
 
   return (
     <Box>

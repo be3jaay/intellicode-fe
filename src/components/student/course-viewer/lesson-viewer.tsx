@@ -124,26 +124,26 @@ export function LessonViewer({
 
         notifications.show({
           title: "Success",
-          message: response.data.message,
+          message: (response as any).data.message,
           color: "green",
           icon: <IconCheck size={18} />,
         });
 
         // Move to next lesson if available
         if (
-          response.data.next_lesson_id &&
-          response.data.next_lesson_unlocked
+          (response as any).data.next_lesson_id &&
+          (response as any).data.next_lesson_unlocked
         ) {
           const nextLessonData = allLessons.find(
-            (l: any) => l.id === response.data.next_lesson_id
+            (l: any) => l.id === (response as any).data.next_lesson_id
           );
           if (nextLessonData) {
             onLessonChange(
-              response.data.next_lesson_id,
+              (response as any).data.next_lesson_id,
               nextLessonData.moduleId
             );
           }
-        } else if (!response.data.next_lesson_id) {
+        } else if (!(response as any).data.next_lesson_id) {
           notifications.show({
             title: "Module Completed! 🎉",
             message: "You've completed all lessons in this module!",

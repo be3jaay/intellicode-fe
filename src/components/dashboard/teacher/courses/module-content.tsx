@@ -11,6 +11,7 @@ import {
   Center,
 } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { useRouter } from "next/navigation";
 import { useGetModulesList } from "@/hooks/query-hooks/module-query";
 import { useDeleteModule } from "@/hooks/query-hooks/module-query";
 import { useDeleteLesson } from "@/hooks/query-hooks/lesson-query";
@@ -23,13 +24,13 @@ import { notifications } from "@mantine/notifications";
 import { ModuleItem } from "./module-item";
 import { DeleteConfirmationModal } from "./delete-confirmation-modal";
 import { EditModuleDrawer } from "./edit-module-drawer";
-import { EditLessonDrawer } from "./edit-lesson-drawer";
 
 interface ModuleContentProps {
   courseId: string;
 }
 
 export function ModuleContent({ courseId }: ModuleContentProps) {
+  const router = useRouter();
   const [offset, setOffset] = useState(0);
   const [limit] = useState(10);
   const [hasMore, setHasMore] = useState(false);
@@ -42,13 +43,10 @@ export function ModuleContent({ courseId }: ModuleContentProps) {
   const [moduleToDelete, setModuleToDelete] = useState<Module | null>(null);
 
   // Lesson states
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | null>(null);
   const [lessonToDelete, setLessonToDelete] = useState<Lesson | null>(null);
 
   // Drawers and modals
   const [editModuleOpened, { open: openEditModule, close: closeEditModule }] =
-    useDisclosure(false);
-  const [editLessonOpened, { open: openEditLesson, close: closeEditLesson }] =
     useDisclosure(false);
   const [
     deleteModuleOpened,
@@ -130,8 +128,7 @@ export function ModuleContent({ courseId }: ModuleContentProps) {
 
   // Lesson handlers
   const handleEditLesson = (lesson: Lesson) => {
-    setSelectedLesson(lesson);
-    openEditLesson();
+    router.push(`/dashboard/teacher/lessons/${lesson.id}/edit`);
   };
 
   const handleDeleteLessonClick = (lesson: Lesson) => {
@@ -261,13 +258,6 @@ export function ModuleContent({ courseId }: ModuleContentProps) {
         opened={editModuleOpened}
         onClose={closeEditModule}
         module={selectedModule}
-      />
-
-      {/* Edit Lesson Drawer */}
-      <EditLessonDrawer
-        opened={editLessonOpened}
-        onClose={closeEditLesson}
-        lesson={selectedLesson}
       />
 
       {/* Delete Module Modal */}
