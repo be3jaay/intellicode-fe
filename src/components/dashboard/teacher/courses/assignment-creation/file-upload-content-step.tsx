@@ -88,7 +88,7 @@ export function FileUploadContentStep({
             },
           }}
         >
-          Create Assignment
+          Create Coursework
         </Button>
       </Group>
     </Stack>

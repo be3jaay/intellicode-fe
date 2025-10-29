@@ -1,4 +1,12 @@
-const PUBLIC_ROUTES = ["/sign-in", "/sign-up", "/", "/code-sandbox"];
+const PUBLIC_ROUTES = [
+  "/sign-in",
+  "/sign-up",
+  "/",
+  "/code-sandbox",
+  "/forgot-password",
+  "/verify-otp",
+  "/reset-password",
+];
 
 // Next.js API routes that should NOT go to the backend
 const NEXTJS_API_ROUTES = [
@@ -190,9 +198,15 @@ class ApiClient {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      throw new Error(
+      const error: any = new Error(
         errorData.message || `HTTP ${response.status}: ${response.statusText}`
       );
+      error.response = {
+        status: response.status,
+        statusText: response.statusText,
+        data: errorData,
+      };
+      throw error;
     }
 
     return response.json();

@@ -34,7 +34,7 @@ export function UserRolesSection() {
       description: "Create and manage learning content",
       features: [
         "Build courses and modules",
-        "Create assignments and exams",
+        "Create courseworks and exams",
         "Grade student submissions",
         "Track student progress",
       ],

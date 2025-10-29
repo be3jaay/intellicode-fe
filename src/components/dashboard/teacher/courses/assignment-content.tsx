@@ -251,7 +251,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
       <Center py="xl">
         <Stack align="center" gap="md">
           <Loader size="lg" color="#bdf052" />
-          <Text c="dimmed">Loading assignments...</Text>
+          <Text c="dimmed">Loading courseworks...</Text>
         </Stack>
       </Center>
     );
@@ -445,11 +445,10 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                           color: assignment.is_published
                             ? "#bdf052"
                             : "#f6acae",
-                          border: `1px solid ${
-                            assignment.is_published
+                          border: `1px solid ${assignment.is_published
                               ? "rgba(189, 240, 82, 0.3)"
                               : "rgba(246, 172, 174, 0.3)"
-                          }`,
+                            }`,
                         }}
                         leftSection={
                           assignment.is_published ? (

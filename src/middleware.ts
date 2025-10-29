@@ -2,8 +2,22 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getSession } from "@/utils/session";
 
-const publicRoutes = ["/sign-in", "/sign-up", "/", "/code-sandbox"];
-const authRoutes = ["/sign-in", "/sign-up"];
+const publicRoutes = [
+  "/sign-in",
+  "/sign-up",
+  "/",
+  "/code-sandbox",
+  "/forgot-password",
+  "/verify-otp",
+  "/reset-password",
+];
+const authRoutes = [
+  "/sign-in",
+  "/sign-up",
+  "/forgot-password",
+  "/verify-otp",
+  "/reset-password",
+];
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;

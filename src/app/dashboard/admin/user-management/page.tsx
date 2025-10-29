@@ -51,23 +51,26 @@ export default function UserManagementPage() {
       statusFilter === "suspended"
         ? true
         : statusFilter === "active"
-        ? false
-        : undefined,
+          ? false
+          : undefined,
   };
 
   const {
     data: usersData,
     isLoading: usersLoading,
+    isRefetching: usersRefetching,
     refetch: refetchUsers,
   } = useUsers(queryParams);
   const {
     data: pendingApprovals,
     isLoading: pendingLoading,
+    isRefetching: pendingRefetching,
     refetch: refetchPending,
   } = usePendingApprovals();
   const {
     data: suspendedUsers,
     isLoading: suspendedLoading,
+    isRefetching: suspendedRefetching,
     refetch: refetchSuspended,
   } = useSuspendedUsers();
 
@@ -134,6 +137,7 @@ export default function UserManagementPage() {
 
   const users = usersData?.users || [];
   const totalUsers = usersData?.total || 0;
+  const isRefreshing = usersRefetching || pendingRefetching || suspendedRefetching;
 
   return (
     <div style={{ minHeight: "100vh", backgroundColor: "#222222" }}>
@@ -254,6 +258,8 @@ export default function UserManagementPage() {
               <Button
                 leftSection={<RefreshCw size={16} />}
                 onClick={handleRefresh}
+                loading={isRefreshing}
+                disabled={isRefreshing}
                 style={{
                   backgroundColor: "#0F0F0F",
                   color: "#BDF052",
@@ -341,6 +347,7 @@ export default function UserManagementPage() {
               page={currentPage}
               limit={pageSize}
               loading={usersLoading}
+              isRefetching={isRefreshing}
               onPageChange={setCurrentPage}
               onLimitChange={setPageSize}
               onSearch={setSearchQuery}

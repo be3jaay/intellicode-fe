@@ -214,7 +214,7 @@ export function AssignmentCreator({
         message:
           error instanceof Error
             ? error.message
-            : "Failed to create assignment. Please try again.",
+            : "Failed to create course work. Please try again.",
         color: "red",
       });
     }
@@ -306,7 +306,7 @@ export function AssignmentCreator({
                       letterSpacing: "-0.5px",
                     }}
                   >
-                    Create Assignment
+                    Create Coursework
                   </Text>
                 </Group>
                 <Text
@@ -374,8 +374,8 @@ export function AssignmentCreator({
                 assignmentSubtype === "file_upload"
                   ? "Add materials"
                   : assignmentSubtype === "quiz_form"
-                  ? "Create questions"
-                  : "Add code"
+                    ? "Create questions"
+                    : "Add code"
               }
               styles={{
                 stepLabel: {

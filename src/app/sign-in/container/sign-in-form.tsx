@@ -111,16 +111,31 @@ export function SignInForm({
             leftSection={<AtSign size={18} color="rgba(255, 255, 255, 0.6)" />}
           />
 
-          <ControlledPasswordInput
-            control={control}
-            name="password"
-            label="Password"
-            placeholder="Enter your password"
-            isRequired
-            leftSection={
-              <LockKeyhole size={18} color="rgba(255, 255, 255, 0.6)" />
-            }
-          />
+          <Box>
+            <ControlledPasswordInput
+              control={control}
+              name="password"
+              label="Password"
+              placeholder="Enter your password"
+              isRequired
+              leftSection={
+                <LockKeyhole size={18} color="rgba(255, 255, 255, 0.6)" />
+              }
+            />
+            <Flex justify="flex-end" mt="xs">
+              <Anchor
+                href="/forgot-password"
+                size="sm"
+                style={{
+                  color: "#bdf052",
+                  textDecoration: "none",
+                  fontWeight: 500,
+                }}
+              >
+                Forgot password?
+              </Anchor>
+            </Flex>
+          </Box>
 
           <Button
             fullWidth

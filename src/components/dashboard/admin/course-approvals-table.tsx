@@ -22,28 +22,33 @@ import {
   CheckCircle,
   XCircle,
   ChevronDown,
+  Eye,
 } from "lucide-react";
 import { CourseApprovalItem } from "@/services/course-service/course-approval-type";
 
-interface CourseApprovalsTableProps {
+export interface CourseApprovalsTableProps {
   courses: CourseApprovalItem[];
   onActionClick: (
     course: CourseApprovalItem,
     action: "approve" | "reject"
   ) => void;
+  onViewCourse?: (courseId: string) => void;
   onLoadMore: () => void;
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   isLoading: boolean;
+  isRefetching?: boolean;
 }
 
 export function CourseApprovalsTable({
   courses,
   onActionClick,
+  onViewCourse,
   onLoadMore,
   hasNextPage,
   isFetchingNextPage,
   isLoading,
+  isRefetching,
 }: CourseApprovalsTableProps) {
   const getCategoryIcon = (category: string) => {
     switch (category.toLowerCase()) {
@@ -69,6 +74,7 @@ export function CourseApprovalsTable({
         border: "1px solid #2D2D2D",
         borderRadius: "12px",
         overflow: "hidden",
+        position: "relative",
       }}
       padding={0}
     >
@@ -104,6 +110,45 @@ export function CourseApprovalsTable({
           </Group>
         </Group>
       </div>
+
+      {isRefetching && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(15, 15, 15, 0.8)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+            borderRadius: "12px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            <Loader size="lg" color="#BDF052" />
+            <Text
+              style={{
+                color: "#BDF052",
+                fontSize: "1rem",
+                fontWeight: 600,
+              }}
+            >
+              Refreshing courses...
+            </Text>
+          </div>
+        </div>
+      )}
 
       <div style={{ overflow: "auto" }}>
         <Table
@@ -145,8 +190,9 @@ export function CourseApprovalsTable({
               <Table.Th>Course</Table.Th>
               <Table.Th>Instructor</Table.Th>
               <Table.Th>Category</Table.Th>
+              <Table.Th>Status</Table.Th>
               <Table.Th>Submitted</Table.Th>
-              <Table.Th style={{ width: "120px", textAlign: "center" }}>
+              <Table.Th style={{ width: "180px", textAlign: "center" }}>
                 Actions
               </Table.Th>
             </Table.Tr>
@@ -232,54 +278,107 @@ export function CourseApprovalsTable({
                   </Badge>
                 </Table.Td>
                 <Table.Td>
+                  <Badge
+                    size="md"
+                    style={{
+                      backgroundColor:
+                        course.status === "approved"
+                          ? "rgba(16, 185, 129, 0.15)"
+                          : course.status === "rejected"
+                            ? "rgba(239, 68, 68, 0.15)"
+                            : "rgba(245, 158, 11, 0.15)",
+                      color:
+                        course.status === "approved"
+                          ? "#10B981"
+                          : course.status === "rejected"
+                            ? "#EF4444"
+                            : "#F59E0B",
+                      textTransform: "capitalize",
+                      border:
+                        course.status === "approved"
+                          ? "1px solid #10B981"
+                          : course.status === "rejected"
+                            ? "1px solid #EF4444"
+                            : "1px solid #F59E0B",
+                    }}
+                  >
+                    {course.status.replace(/_/g, " ")}
+                  </Badge>
+                </Table.Td>
+                <Table.Td>
                   <Text style={{ color: "#FFFFFF", fontSize: "0.9375rem" }}>
                     {formatDate(course.created_at)}
                   </Text>
                 </Table.Td>
                 <Table.Td>
                   <Group gap="xs" justify="center">
-                    <Tooltip label="Approve" position="top">
+                    <Tooltip label="View Course" position="top">
                       <ActionIcon
                         size="lg"
                         variant="filled"
                         style={{
-                          backgroundColor: "#10B981",
+                          backgroundColor: "#3B82F6",
                           color: "#FFFFFF",
                         }}
-                        onClick={() => onActionClick(course, "approve")}
+                        onClick={() => onViewCourse?.(course.id)}
                         disabled={isLoading}
                         styles={{
                           root: {
                             "&:hover": {
-                              backgroundColor: "#059669",
+                              backgroundColor: "#2563EB",
                             },
                           },
                         }}
                       >
-                        <CheckCircle size={18} />
+                        <Eye size={18} />
                       </ActionIcon>
                     </Tooltip>
-                    <Tooltip label="Reject" position="top">
-                      <ActionIcon
-                        size="lg"
-                        variant="filled"
-                        style={{
-                          backgroundColor: "#EF4444",
-                          color: "#FFFFFF",
-                        }}
-                        onClick={() => onActionClick(course, "reject")}
-                        disabled={isLoading}
-                        styles={{
-                          root: {
-                            "&:hover": {
-                              backgroundColor: "#DC2626",
-                            },
-                          },
-                        }}
-                      >
-                        <XCircle size={18} />
-                      </ActionIcon>
-                    </Tooltip>
+                    {course.status !== "approved" && (
+                      <>
+                        <Tooltip label="Approve" position="top">
+                          <ActionIcon
+                            size="lg"
+                            variant="filled"
+                            style={{
+                              backgroundColor: "#10B981",
+                              color: "#FFFFFF",
+                            }}
+                            onClick={() => onActionClick(course, "approve")}
+                            disabled={isLoading}
+                            styles={{
+                              root: {
+                                "&:hover": {
+                                  backgroundColor: "#059669",
+                                },
+                              },
+                            }}
+                          >
+                            <CheckCircle size={18} />
+                          </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label="Reject" position="top">
+                          <ActionIcon
+                            size="lg"
+                            variant="filled"
+                            style={{
+                              backgroundColor: "#EF4444",
+                              color: "#FFFFFF",
+                            }}
+                            onClick={() => onActionClick(course, "reject")}
+                            disabled={isLoading}
+                            styles={{
+                              root: {
+                                "&:hover": {
+                                  backgroundColor: "#DC2626",
+                                },
+                              },
+                            }}
+                          >
+                            <XCircle size={18} />
+                          </ActionIcon>
+                        </Tooltip>
+                      </>
+                    )}
                   </Group>
                 </Table.Td>
               </Table.Tr>

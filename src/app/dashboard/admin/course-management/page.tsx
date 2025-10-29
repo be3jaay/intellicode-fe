@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Group, Text, Button, Card, Tabs, Badge, Stack } from "@mantine/core";
 import { BookOpen, TrendingUp, Clock, RefreshCw } from "lucide-react";
+import { useRouter } from "next/navigation";
 import {
   useInfinitePendingCourses,
   useApproveCourse,
@@ -19,6 +20,7 @@ import {
 } from "@/components/dashboard/admin";
 
 function CourseManagementPage() {
+  const router = useRouter();
   const [modalOpened, setModalOpened] = useState(false);
   const [selectedCourse, setSelectedCourse] =
     useState<CourseApprovalItem | null>(null);
@@ -37,6 +39,7 @@ function CourseManagementPage() {
     isError,
     error,
     refetch,
+    isRefetching,
   } = useInfinitePendingCourses(10);
 
   const approveCourseMutation = useApproveCourse();
@@ -79,6 +82,10 @@ function CourseManagementPage() {
     setModalOpened(false);
     setSelectedCourse(null);
     setSelectedAction(null);
+  };
+
+  const handleViewCourse = (courseId: string) => {
+    router.push(`/dashboard/admin/course-management/${courseId}`);
   };
 
   const handleClearFilters = () => {
@@ -236,7 +243,8 @@ function CourseManagementPage() {
               <Button
                 leftSection={<RefreshCw size={16} />}
                 onClick={() => refetch()}
-                loading={isLoadingAny}
+                loading={isRefetching || isLoadingAny}
+                disabled={isRefetching || isLoadingAny}
                 style={{
                   backgroundColor: "#0F0F0F",
                   color: "#BDF052",
@@ -279,10 +287,12 @@ function CourseManagementPage() {
           <CourseApprovalsTable
             courses={filteredCourses}
             onActionClick={handleActionClick}
+            onViewCourse={handleViewCourse}
             onLoadMore={fetchNextPage}
             hasNextPage={hasNextPage || false}
             isFetchingNextPage={isFetchingNextPage}
             isLoading={isLoadingAny}
+            isRefetching={isRefetching}
           />
         )}
       </main>

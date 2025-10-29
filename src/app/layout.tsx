@@ -31,6 +31,10 @@ export const metadata: Metadata = {
   title: "Intellicode - AI-Powered Learning",
   description:
     "Master coding with AI-powered assessments and personalized feedback for Java, Python, and C",
+  icons: {
+    icon: "/icon.svg",
+    apple: "/apple-icon.svg",
+  },
 };
 
 export default function RootLayout({

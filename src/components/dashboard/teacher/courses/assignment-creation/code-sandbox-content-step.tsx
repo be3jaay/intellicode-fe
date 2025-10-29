@@ -106,7 +106,7 @@ export function CodeSandboxContentStep({
             },
           }}
         >
-          Create Assignment
+          Create Coursework
         </Button>
       </Group>
     </Stack>

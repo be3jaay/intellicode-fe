@@ -51,6 +51,7 @@ export function ControlledPinInput<
             size={size}
             length={length}
             type={type}
+            placeholder="_"
             value={value}
             onChange={onChange}
             onBlur={onBlur}
@@ -58,7 +59,7 @@ export function ControlledPinInput<
             inputMode={inputMode}
             inputType={inputType}
           />
-          {showResendCode ? (
+          {showResendCode && (
             <Container fluid>
               <Flex
                 direction="column"
@@ -69,24 +70,6 @@ export function ControlledPinInput<
               >
                 <Text>Didn't get the otp code?</Text>
                 <Button variant="transparent">Resend Code</Button>
-              </Flex>
-            </Container>
-          ) : (
-            <Container fluid py={12}>
-              <Flex
-                direction="column"
-                align="center"
-                justify="center"
-                gap={4}
-                my={4}
-              >
-                <Flex align="center" gap={12}>
-                  <Loader size={16} />
-                  Remaining Time: {remainingTime}
-                </Flex>
-                <Button variant="transparent">
-                  You have reached your max attempts. Please try again later.
-                </Button>
               </Flex>
             </Container>
           )}

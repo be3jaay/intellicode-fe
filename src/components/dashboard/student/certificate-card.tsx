@@ -241,16 +241,18 @@ export function CertificateCard({
             </Text>
           </Center>
 
-          <Group justify="space-between" mt="xs">
-            <Button variant="light" color="#bdf052" onClick={onPreview} size="xs">
-              See certificate
-            </Button>
-            {onDownload && (
-              <Button variant="outline" color="#bdf052" onClick={onDownload} size="xs">
-                Download PDF
+          {!isRevoked && (
+            <Group justify="space-between" mt="xs">
+              <Button variant="light" color="#bdf052" onClick={onPreview} size="xs">
+                See certificate
               </Button>
-            )}
-          </Group>
+              {onDownload && (
+                <Button variant="outline" color="#bdf052" onClick={onDownload} size="xs">
+                  Download PDF
+                </Button>
+              )}
+            </Group>
+          )}
         </Stack>
       </Stack>
     </Card>

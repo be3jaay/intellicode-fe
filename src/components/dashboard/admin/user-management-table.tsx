@@ -30,12 +30,13 @@ import { UserProfile } from "@/services/user-service/user-management-types";
 import { StatusBadge, getUserStatus } from "@/components/ui/status-badge";
 import { useDebouncedValue } from "@mantine/hooks";
 
-interface UserManagementTableProps {
+export interface UserManagementTableProps {
   users: UserProfile[];
   total: number;
   page: number;
   limit: number;
   loading: boolean;
+  isRefetching?: boolean;
   onPageChange: (page: number) => void;
   onLimitChange: (limit: number) => void;
   onSearch: (search: string) => void;
@@ -53,6 +54,7 @@ export function UserManagementTable({
   page,
   limit,
   loading,
+  isRefetching,
   onPageChange,
   onSearch,
   onAction,
@@ -131,9 +133,49 @@ export function UserManagementTable({
         border: "1px solid #2D2D2D",
         borderRadius: "12px",
         overflow: "hidden",
+        position: "relative",
       }}
       padding={0}
     >
+      {isRefetching && (
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: "rgba(15, 15, 15, 0.8)",
+            backdropFilter: "blur(4px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 10,
+            borderRadius: "12px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            <Loader size="lg" color="#BDF052" />
+            <Text
+              style={{
+                color: "#BDF052",
+                fontSize: "1rem",
+                fontWeight: 600,
+              }}
+            >
+              Refreshing users...
+            </Text>
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           padding: "1.5rem",

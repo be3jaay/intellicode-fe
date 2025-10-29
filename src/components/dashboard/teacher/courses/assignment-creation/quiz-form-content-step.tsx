@@ -483,16 +483,16 @@ export function QuizFormContentStep({
                                     />
                                     {(watch(`questions.${index}.options`) || [])
                                       .length > 2 && (
-                                      <ActionIcon
-                                        color="red"
-                                        variant="light"
-                                        onClick={() =>
-                                          removeMcOption(index, optIndex)
-                                        }
-                                      >
-                                        <IconTrash size={16} />
-                                      </ActionIcon>
-                                    )}
+                                        <ActionIcon
+                                          color="red"
+                                          variant="light"
+                                          onClick={() =>
+                                            removeMcOption(index, optIndex)
+                                          }
+                                        >
+                                          <IconTrash size={16} />
+                                        </ActionIcon>
+                                      )}
                                   </Group>
                                 ))}
                               </Stack>
@@ -595,16 +595,16 @@ export function QuizFormContentStep({
                                         `questions.${index}.correct_answers`
                                       ) || []
                                     ).length > 1 && (
-                                      <ActionIcon
-                                        color="red"
-                                        variant="light"
-                                        onClick={() =>
-                                          removeEnumAnswer(index, ansIndex)
-                                        }
-                                      >
-                                        <IconTrash size={16} />
-                                      </ActionIcon>
-                                    )}
+                                        <ActionIcon
+                                          color="red"
+                                          variant="light"
+                                          onClick={() =>
+                                            removeEnumAnswer(index, ansIndex)
+                                          }
+                                        >
+                                          <IconTrash size={16} />
+                                        </ActionIcon>
+                                      )}
                                   </Group>
                                 ))}
                               </Stack>
@@ -1016,7 +1016,7 @@ export function QuizFormContentStep({
               },
             }}
           >
-            Create Assignment ({fields.length} question
+            Create Coursework ({fields.length} question
             {fields.length !== 1 ? "s" : ""})
           </Button>
         </Group>
