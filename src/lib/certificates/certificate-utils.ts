@@ -1,10 +1,3 @@
-/**
- * Fetches the certificate PDF from the backend and triggers a browser download.
- * @param params - Certificate data for the request body
- * @param backendUrl - Optional backend base URL (default: http://localhost:8000)
- * @returns Promise<void>
- * @throws Error with message for 400 responses or network errors
- */
 export async function fetchCertificatePDF(
   params: {
     studentName: string;
@@ -13,10 +6,9 @@ export async function fetchCertificatePDF(
     referenceCode: string;
     issuedAt: string;
   },
-  backendUrl: string = "http://localhost:8000"
 ): Promise<void> {
   try {
-    const response = await fetch(`${backendUrl}/course/certificates/pdf`, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/course/certificates/pdf`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
