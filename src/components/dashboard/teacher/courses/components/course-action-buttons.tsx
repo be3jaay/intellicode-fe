@@ -1,16 +1,18 @@
 import { ActionIcon, Tooltip } from "@mantine/core";
-import { Percent, Award, Trash2 } from "lucide-react";
+import { Percent, Award, Trash2, Send } from "lucide-react";
 
 interface CourseActionButtonsProps {
   onSetGradeWeights: () => void;
   onSetPassingGrade: () => void;
   onDeleteCourse: () => void;
+  onSubmitCourse?: () => void;
 }
 
 export function CourseActionButtons({
   onSetGradeWeights,
   onSetPassingGrade,
   onDeleteCourse,
+  onSubmitCourse,
 }: CourseActionButtonsProps) {
   return (
     <>
@@ -63,6 +65,32 @@ export function CourseActionButtons({
           }}
         >
           <Award size={20} color="#bdf052" />
+        </ActionIcon>
+      </Tooltip>
+
+      <Tooltip label="Submit course to admin" position="left">
+        <ActionIcon
+          variant="filled"
+          size="lg"
+          radius="md"
+          style={{
+            backgroundColor: "rgba(59, 130, 246, 0.15)",
+            backdropFilter: "blur(10px)",
+            border: "1px solid rgba(59, 130, 246, 0.3)",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.3)",
+            transition: "all 0.2s ease",
+          }}
+          onClick={() => onSubmitCourse && onSubmitCourse()}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.25)";
+            e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.5)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.backgroundColor = "rgba(59, 130, 246, 0.15)";
+            e.currentTarget.style.borderColor = "rgba(59, 130, 246, 0.3)";
+          }}
+        >
+          <Send size={20} color="#3b82f6" />
         </ActionIcon>
       </Tooltip>
 

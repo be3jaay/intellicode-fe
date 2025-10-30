@@ -11,8 +11,9 @@ import {
   Center,
   Loader,
   ActionIcon,
+  Modal,
+  Button,
 } from "@mantine/core";
-import { Button } from "@/components/ui/button";
 import {
   BookOpen,
   FileText,
@@ -34,7 +35,10 @@ import { StudentContent } from "./student-content";
 import { ModuleContent } from "./module-content";
 import { Gradebook } from "./gradebook";
 import { CertificateIssuance } from "./certificate-issuance";
-import { useResubmitCourse } from "@/hooks/query-hooks/course-approval-query";
+import {
+  useResubmitCourse,
+  useSubmitCourse,
+} from "@/hooks/query-hooks/course-approval-query";
 import { notifications } from "@mantine/notifications";
 import { GradeWeightsModal } from "./grade-weights-modal";
 import { useCourseDetailStore } from "./stores";
@@ -77,11 +81,16 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
     { open: openPassingGradeModal, close: closePassingGradeModal },
   ] = useDisclosure(false);
   const [
+    submitModalOpened,
+    { open: openSubmitModal, close: closeSubmitModal },
+  ] = useDisclosure(false);
+  const [
     gradeWeightsModalOpened,
     { open: openGradeWeightsModal, close: closeGradeWeightsModal },
   ] = useDisclosure(false);
 
   const resubmitCourseMutation = useResubmitCourse();
+  const submitCourseMutation = useSubmitCourse();
 
   const handleAddModule = () => {
     setCurrentView("modules");
@@ -112,6 +121,25 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
       notifications.show({
         title: "Error",
         message: `Failed to resubmit course. Please try again. ${error}`,
+        color: "red",
+      });
+    }
+  };
+
+  const handleSubmitToAdmin = async () => {
+    try {
+      await submitCourseMutation.mutateAsync(course.id);
+      notifications.show({
+        title: "Submitted",
+        message: "Course submitted to admin for review",
+        color: "green",
+        icon: <Check size={18} />,
+      });
+      closeSubmitModal();
+    } catch (error) {
+      notifications.show({
+        title: "Error",
+        message: `Failed to submit course. Please try again. ${error}`,
         color: "red",
       });
     }
@@ -148,6 +176,7 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
         onSetGradeWeights={openGradeWeightsModal}
         onSetPassingGrade={openPassingGradeModal}
         onDeleteCourse={openDeleteModal}
+        onSubmitCourse={openSubmitModal}
       />
 
       {/* Rejection Alert */}
@@ -180,6 +209,64 @@ export function CourseDetailView({ course, onBack }: CourseDetailViewProps) {
         onClose={closePassingGradeModal}
         courseId={course.id}
       />
+
+      {/* Submit to Admin Modal */}
+      <Modal
+        opened={submitModalOpened}
+        onClose={closeSubmitModal}
+        title="Submit course to admin"
+        centered
+        size="lg"
+        styles={{
+          content: {
+            backgroundColor: "#0F0F0F",
+            color: "#fff",
+            border: "1px solid #2D2D2D",
+            borderRadius: "16px",
+          },
+          header: {
+            backgroundColor: "#bdf052",
+            color: "#222222",
+          },
+          body: {
+            padding: 40,
+          },
+        }}
+      >
+        <Stack gap="md">
+          <Text size="md" p="lg">
+            Are you sure you want to submit this course to the admin for review?
+            Once submitted, an admin will review the course and approve or
+            reject it.
+          </Text>
+          <Group style={{ justifyContent: "flex-end" }}>
+            <Button
+              size="sm"
+              onClick={closeSubmitModal}
+              style={{
+                background: "transparent",
+                border: "1px solid rgba(255,255,255,0.06)",
+                color: "#e9eeea",
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleSubmitToAdmin}
+              loading={submitCourseMutation.isPending}
+              style={{
+                background: "#bdf052",
+                color: "#222222",
+                fontWeight: 600,
+                marginLeft: 8,
+              }}
+            >
+              {submitCourseMutation.isPending ? "Submitting..." : "Yes, submit"}
+            </Button>
+          </Group>
+        </Stack>
+      </Modal>
 
       {/* Grade Weights Modal Component */}
       <GradeWeightsModal

@@ -9,6 +9,7 @@ interface CourseDetailBannerProps {
   onSetGradeWeights: () => void;
   onSetPassingGrade: () => void;
   onDeleteCourse: () => void;
+  onSubmitCourse?: () => void;
 }
 
 export function CourseDetailBanner({
@@ -17,6 +18,7 @@ export function CourseDetailBanner({
   onSetGradeWeights,
   onSetPassingGrade,
   onDeleteCourse,
+  onSubmitCourse,
 }: CourseDetailBannerProps) {
   return (
     <Card
@@ -101,6 +103,7 @@ export function CourseDetailBanner({
             onSetGradeWeights={onSetGradeWeights}
             onSetPassingGrade={onSetPassingGrade}
             onDeleteCourse={onDeleteCourse}
+            onSubmitCourse={onSubmitCourse}
           />
         </Group>
 

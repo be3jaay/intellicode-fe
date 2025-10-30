@@ -135,3 +135,19 @@ export function useUpdateUserProfile() {
     },
   });
 }
+
+// Hook for changing current user's password
+export function useChangePassword() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (payload: { old_password: string; new_password: string }) =>
+      UserManagementService.changePassword(payload),
+    onSuccess: () => {
+      // Invalidate current user profile just in case
+      queryClient.invalidateQueries({
+        queryKey: userManagementKeys.currentUser(),
+      });
+    },
+  });
+}

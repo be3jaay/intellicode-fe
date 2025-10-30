@@ -67,4 +67,17 @@ export class CourseApprovalService {
       throw error;
     }
   }
+
+  public static async submitCourse(
+    courseId: string
+  ): Promise<CourseResubmitResponse> {
+    try {
+      const response = await apiClient.patch<CourseResubmitResponse>(
+        `/course/${courseId}/submit`
+      );
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

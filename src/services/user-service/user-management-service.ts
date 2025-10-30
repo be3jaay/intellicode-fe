@@ -131,4 +131,19 @@ export class UserManagementService {
       throw error;
     }
   }
+
+  public static async changePassword(payload: {
+    old_password: string;
+    new_password: string;
+  }): Promise<{ success: boolean; message?: string }> {
+    try {
+      const response = await apiClient.patch<{
+        success: boolean;
+        data?: { message?: string };
+      }>(`/users/me/password`, payload);
+      return { success: response.success, message: response.data?.message };
+    } catch (error) {
+      throw error;
+    }
+  }
 }

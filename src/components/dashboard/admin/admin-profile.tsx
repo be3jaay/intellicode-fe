@@ -1,7 +1,16 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Stack, Grid, Box, Text, Group, LoadingOverlay } from "@mantine/core";
+import {
+  Stack,
+  Grid,
+  Box,
+  Text,
+  Group,
+  LoadingOverlay,
+  Card,
+  Button,
+} from "@mantine/core";
 import { notifications } from "@mantine/notifications";
 import { ProfileHeader } from "@/components/dashboard/shared/profile-header";
 import { ProfilePictureUpload } from "@/components/dashboard/shared/profile-picture-upload";
@@ -10,10 +19,15 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Users } from "lucide-react";
 import * as z from "zod";
+import { signUpSchema } from "@/app/sign-up/container/schema/sign-up-schema";
+import { useAuth } from "@/providers/auth-context";
+import { apiClient } from "@/services/api-client";
 import {
   useCurrentUser,
   useUpdateUserProfile,
+  useChangePassword,
 } from "@/hooks/query-hooks/user-management-query";
+import { ControlledPasswordInput } from "@/components/controlled-fields";
 
 const adminSpecificSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
@@ -31,6 +45,9 @@ export function AdminProfile() {
   } = useCurrentUser();
   const { mutateAsync: updateProfile, isPending: isUpdating } =
     useUpdateUserProfile();
+  const changePasswordMutation = useChangePassword();
+  const isChangingPassword = (changePasswordMutation as any).isPending;
+  const { signOut } = useAuth();
   const [uploadModalOpened, setUploadModalOpened] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
@@ -86,6 +103,53 @@ export function AdminProfile() {
   const handleProfilePictureUpload = (file: File) => {
     setSelectedFile(file);
     setUploadModalOpened(false);
+  };
+
+  // Password change form - reuse sign-up password rules
+  const passwordSchema = z
+    .object({
+      oldPassword: z.string().min(1, "Old password is required"),
+      newPassword: (signUpSchema.shape as any).password as z.ZodTypeAny,
+      confirmNewPassword: z.string().min(1, "Please confirm new password"),
+    })
+    .refine((data) => data.newPassword === data.confirmNewPassword, {
+      message: "Passwords do not match",
+      path: ["confirmNewPassword"],
+    });
+
+  type PasswordForm = z.infer<typeof passwordSchema>;
+
+  const passwordForm = useForm<PasswordForm>({
+    mode: "onChange",
+    resolver: zodResolver(passwordSchema),
+  });
+
+  const handleChangePassword = async (data: PasswordForm) => {
+    try {
+      await changePasswordMutation.mutateAsync({
+        old_password: data.oldPassword,
+        new_password: String(data.newPassword),
+      });
+      notifications.show({
+        title: "Success",
+        message: "Password changed successfully",
+        color: "green",
+      });
+      passwordForm.reset();
+      // Clear session and redirect
+      try {
+        await signOut();
+      } catch (err) {
+        apiClient.clearToken();
+        window.location.href = "/sign-in";
+      }
+    } catch (error: any) {
+      notifications.show({
+        title: "Error",
+        message: error?.message || "Failed to change password",
+        color: "red",
+      });
+    }
   };
 
   if (isLoadingUser) {
@@ -244,6 +308,55 @@ export function AdminProfile() {
         onUpload={handleProfilePictureUpload}
         currentImage={profile.profilePicture}
       />
+      {/* Password Change */}
+      <Grid>
+        <Grid.Col span={12}>
+          <Card
+            style={{
+              background: "rgba(255,255,255,0.02)",
+              border: "1px solid rgba(255,255,255,0.05)",
+              padding: 16,
+            }}
+          >
+            <Text size="lg" fw={600} c="white" mb="md">
+              Change Password
+            </Text>
+            <form onSubmit={passwordForm.handleSubmit(handleChangePassword)}>
+              <Stack>
+                <ControlledPasswordInput
+                  control={passwordForm.control}
+                  name="oldPassword"
+                  label="Old Password"
+                  placeholder="Enter current password"
+                  isRequired
+                />
+
+                <ControlledPasswordInput
+                  control={passwordForm.control}
+                  name="newPassword"
+                  label="New Password"
+                  placeholder="Enter new password"
+                  isRequired
+                />
+
+                <ControlledPasswordInput
+                  control={passwordForm.control}
+                  name="confirmNewPassword"
+                  label="Confirm New Password"
+                  placeholder="Confirm new password"
+                  isRequired
+                />
+
+                <Group style={{ justifyContent: "flex-end" }}>
+                  <Button type="submit" loading={isChangingPassword}>
+                    {isChangingPassword ? "Changing..." : "Change Password"}
+                  </Button>
+                </Group>
+              </Stack>
+            </form>
+          </Card>
+        </Grid.Col>
+      </Grid>
     </Stack>
   );
 }

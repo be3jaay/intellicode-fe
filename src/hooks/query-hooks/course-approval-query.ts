@@ -78,3 +78,18 @@ export function useResubmitCourse() {
     },
   });
 }
+
+// Hook for submitting a course to admin
+export function useSubmitCourse() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (courseId: string) =>
+      CourseApprovalService.submitCourse(courseId),
+    onSuccess: () => {
+      // Invalidate courses listing and course detail
+      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["course"] });
+    },
+  });
+}
