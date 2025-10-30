@@ -1,3 +1,5 @@
+import CertificateService from "@/services/certificate-service/certificate-service";
+
 export async function fetchCertificatePDF(
   params: {
     studentName: string;
@@ -8,46 +10,7 @@ export async function fetchCertificatePDF(
   },
 ): Promise<void> {
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/course/certificates/pdf`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    });
-
-    if (response.status === 400) {
-      let errorMsg = "Invalid request data.";
-      try {
-        const errorJson = await response.json();
-        errorMsg = errorJson.message || errorMsg;
-      } catch {}
-      throw new Error(errorMsg);
-    }
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch certificate PDF. Status: ${response.status}`);
-    }
-
-    const blob = await response.blob();
-    const contentDisposition = response.headers.get("content-disposition");
-    let filename = "certificate.pdf";
-    if (contentDisposition) {
-      const match = contentDisposition.match(/filename="([^"]+)"/);
-      if (match) filename = match[1];
-    }
-
-    // Trigger browser download
-    const url = window.URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(() => {
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    }, 100);
+    await CertificateService.downloadAndSaveCertificate(params);
   } catch (err: any) {
     throw new Error(err?.message || "Could not download certificate PDF.");
   }

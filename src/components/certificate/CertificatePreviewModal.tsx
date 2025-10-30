@@ -5,6 +5,7 @@ import { Modal, Group, Button, Paper, Text } from "@mantine/core";
 import CertificateTemplate from "@/components/certificate/CertificateTemplate";
 import { CertificateData, normalizeCertificateData } from "@/lib/certificates";
 import { IconDownload } from "@tabler/icons-react";
+import { debugCertificateDownload, testCertificateEndpoint } from "@/lib/certificates/debug";
 
 export interface CertificatePreviewModalProps {
   opened: boolean;
@@ -12,18 +13,25 @@ export interface CertificatePreviewModalProps {
   data: CertificateData | null;
 }
 
-export function CertificatePreviewModal({ opened, onClose, data }: CertificatePreviewModalProps) {
+export function CertificatePreviewModal({
+  opened,
+  onClose,
+  data,
+}: CertificatePreviewModalProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [scale, setScale] = useState(0.5);
   const [downloading, setDownloading] = useState(false);
 
-  const normalized = useMemo(() => (data ? normalizeCertificateData(data) : null), [data]);
+  const normalized = useMemo(
+    () => (data ? normalizeCertificateData(data) : null),
+    [data]
+  );
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-      const BASE_WIDTH_PX = 1123;
+    const BASE_WIDTH_PX = 1123;
 
     const updateScale = () => {
       const available = el.clientWidth;
@@ -95,7 +103,6 @@ export function CertificatePreviewModal({ opened, onClose, data }: CertificatePr
               ref={containerRef}
               style={{
                 width: "100%",
-                maxWidth: "min(95vw, 1100px)",
                 overflow: "auto",
                 border: "1px solid #e9ecef",
                 borderRadius: 8,
@@ -123,8 +130,18 @@ export function CertificatePreviewModal({ opened, onClose, data }: CertificatePr
               {normalized?.referenceCode} • Issued {normalized?.issuedDateLong}
             </Text>
             <Group>
-              <Button onClick={onClose} variant="default">Close</Button>
-              <Button leftSection={<IconDownload size={16} />} onClick={handleDownload} loading={downloading}>
+              <Button onClick={onClose} variant="default">
+                Close
+              </Button>
+              <Button
+                leftSection={<IconDownload size={16} />}
+                onClick={() => {
+                  handleDownload();
+                  debugCertificateDownload();
+                  testCertificateEndpoint();
+                }}
+                loading={downloading}
+              >
                 Download PDF
               </Button>
             </Group>
