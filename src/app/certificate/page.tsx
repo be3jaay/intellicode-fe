@@ -7,6 +7,7 @@ import {
 import CertificateTemplate from "@/components/certificate/CertificateTemplate";
 import { CertificateData, normalizeCertificateData } from "@/lib/certificates";
 import { IconDownload, IconInfoCircle } from "@tabler/icons-react";
+import CertificateService from "@/services/certificate-service/certificate-service";
 
 export default function CertificatePage() {
   const [form, setForm] = useState<CertificateData>({
@@ -57,30 +58,16 @@ export default function CertificatePage() {
   const handleDownload = async () => {
     setLoading(true);
     try {
-      const res = await fetch("/api/generate-certificate", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      
-      if (!res.ok) {
-        const error = await res.json();
-        alert(`Failed to generate PDF: ${error.error || 'Unknown error'}`);
-        return;
-      }
-      
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `certificate-${normalized.referenceCode}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (error) {
+      await CertificateService.downloadAndSaveCertificate({
+        studentName: form.studentName,
+        studentNumber: form.studentNumber,
+        courseName: form.courseName,
+        referenceCode: normalized.referenceCode,
+        issuedAt: normalized.issuedDateISO,
+      }, `certificate-${normalized.referenceCode}.pdf`);
+    } catch (error: any) {
       console.error("Download failed:", error);
-      alert("Failed to download certificate");
+      alert(error?.message || "Failed to download certificate");
     } finally {
       setLoading(false);
     }

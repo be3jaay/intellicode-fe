@@ -18,7 +18,6 @@ const NEXTJS_API_ROUTES = [
   "/api/auth/register",
   "/api/ai-check",
   "/api/code",
-  "/api/generate-certificate",
 ];
 
 class ApiClient {

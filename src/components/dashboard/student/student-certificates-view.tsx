@@ -105,7 +105,7 @@ export function StudentCertificatesView() {
                     courseName: normalized.courseName,
                     referenceCode: normalized.referenceCode,
                     issuedAt: normalized.issuedDateISO,
-                  });
+                  }, `certificate-${normalized.referenceCode}.pdf`);
                 } catch (e: any) {
                   alert(e?.message || "Failed to download certificate");
                 }

@@ -8,9 +8,10 @@ export async function fetchCertificatePDF(
     referenceCode: string;
     issuedAt: string;
   },
+  filename?: string,
 ): Promise<void> {
   try {
-    await CertificateService.downloadAndSaveCertificate(params);
+    await CertificateService.downloadAndSaveCertificate(params, filename);
   } catch (err: any) {
     throw new Error(err?.message || "Could not download certificate PDF.");
   }

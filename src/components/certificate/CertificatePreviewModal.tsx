@@ -5,7 +5,11 @@ import { Modal, Group, Button, Paper, Text } from "@mantine/core";
 import CertificateTemplate from "@/components/certificate/CertificateTemplate";
 import { CertificateData, normalizeCertificateData } from "@/lib/certificates";
 import { IconDownload } from "@tabler/icons-react";
-import { debugCertificateDownload, testCertificateEndpoint } from "@/lib/certificates/debug";
+import CertificateService from "@/services/certificate-service/certificate-service";
+import {
+  debugCertificateDownload,
+  testCertificateEndpoint,
+} from "@/lib/certificates/debug";
 
 export interface CertificatePreviewModalProps {
   opened: boolean;
@@ -54,28 +58,19 @@ export function CertificatePreviewModal({
     if (!data || !normalized) return;
     setDownloading(true);
     try {
-      const res = await fetch("/api/generate-certificate", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const error = await res.json().catch(() => ({} as any));
-        alert(`Failed to generate PDF: ${error.error || "Unknown error"}`);
-        return;
-      }
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `certificate-${normalized.referenceCode}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch (e) {
+      await CertificateService.downloadAndSaveCertificate(
+        {
+          studentName: data.studentName,
+          studentNumber: data.studentNumber,
+          courseName: data.courseName,
+          referenceCode: normalized.referenceCode,
+          issuedAt: normalized.issuedDateISO,
+        },
+        `certificate-${normalized.referenceCode}.pdf`
+      );
+    } catch (e: any) {
       console.error(e);
-      alert("Failed to download certificate");
+      alert(e?.message || "Failed to download certificate");
     } finally {
       setDownloading(false);
     }

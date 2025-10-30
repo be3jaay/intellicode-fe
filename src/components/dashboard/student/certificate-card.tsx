@@ -19,6 +19,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { format } from "date-fns";
+import { debugCertificateDownload, testCertificateEndpoint } from "@/lib/certificates/debug";
 
 interface CertificateCardProps {
   certificate: {
@@ -243,11 +244,25 @@ export function CertificateCard({
 
           {!isRevoked && (
             <Group justify="space-between" mt="xs">
-              <Button variant="light" color="#bdf052" onClick={onPreview} size="xs">
+              <Button
+                variant="light"
+                color="#bdf052"
+                onClick={onPreview}
+                size="xs"
+              >
                 See certificate
               </Button>
               {onDownload && (
-                <Button variant="outline" color="#bdf052" onClick={onDownload} size="xs">
+                <Button
+                  variant="outline"
+                  color="#bdf052"
+                  onClick={() => {
+                    onDownload();
+                    debugCertificateDownload();
+                    testCertificateEndpoint();
+                  }}
+                  size="xs"
+                >
                   Download PDF
                 </Button>
               )}
