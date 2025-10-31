@@ -44,32 +44,26 @@ import {
   AssignmentQueryParams,
 } from "@/services/assignment-service/assignment-type";
 import { format } from "date-fns";
-import { useDebouncedValue, useDisclosure } from "@mantine/hooks";
-import { EditAssignmentDrawer } from "./edit-assignment-drawer";
+import { useDebouncedValue } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
+import { useRouter } from "next/navigation";
 
 interface AssignmentContentProps {
   moduleId: string;
 }
 
 export function AssignmentContent({ moduleId }: AssignmentContentProps) {
+  const router = useRouter();
+
   // Delete modal state and mutation (must be inside component)
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedAssignment, setSelectedAssignment] =
     useState<Assignment | null>(null);
   const { deleteAssignment, isDeleting } = useDeleteAssignment();
 
-  // Edit drawer state
-  const [editDrawerOpened, { open: openEditDrawer, close: closeEditDrawer }] =
-    useDisclosure(false);
-  const [assignmentToEdit, setAssignmentToEdit] = useState<Assignment | null>(
-    null
-  );
-
-  // Handle edit icon click
+  // Handle edit icon click - navigate to edit page
   const handleEditClick = (assignment: Assignment) => {
-    setAssignmentToEdit(assignment);
-    openEditDrawer();
+    router.push(`/dashboard/teacher/courses/assignments/${assignment.id}/edit`);
   };
 
   // Handle delete icon click
@@ -305,7 +299,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
         <Stack gap="md">
           <Group grow>
             <TextInput
-              placeholder="Search assignments..."
+              placeholder="Search coursework..."
               value={searchTerm}
               onChange={(e) => handleSearch(e.target.value)}
               leftSection={<Search size={16} color="#9ca3af" />}
@@ -356,7 +350,7 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
           }}
         >
           <Text c="dimmed">
-            No assignments found. Create your first assignment to get started.
+            No coursework found. Create your first assignment to get started.
           </Text>
         </Card>
       ) : assignments.length > 0 ? (
@@ -445,10 +439,11 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
                           color: assignment.is_published
                             ? "#bdf052"
                             : "#f6acae",
-                          border: `1px solid ${assignment.is_published
+                          border: `1px solid ${
+                            assignment.is_published
                               ? "rgba(189, 240, 82, 0.3)"
                               : "rgba(246, 172, 174, 0.3)"
-                            }`,
+                          }`,
                         }}
                         leftSection={
                           assignment.is_published ? (
@@ -612,13 +607,6 @@ export function AssignmentContent({ moduleId }: AssignmentContentProps) {
           )}
         </Stack>
       ) : null}
-
-      {/* Edit Assignment Drawer */}
-      <EditAssignmentDrawer
-        opened={editDrawerOpened}
-        onClose={closeEditDrawer}
-        assignment={assignmentToEdit}
-      />
     </Stack>
   );
 }

@@ -116,7 +116,7 @@ export function AssignmentInfoStep({
       <ControlledTextInput
         control={control}
         name="title"
-        label="Assignment Title"
+        label="Coursework Title"
         placeholder="e.g., Build a Calculator App"
         leftSection={<IconFileText size={18} />}
         isRequired
@@ -148,7 +148,7 @@ export function AssignmentInfoStep({
       {/* Assignment Type Selection */}
       <Box>
         <Text size="sm" fw={600} mb={8} c="#bdf052">
-          Assignment Type
+          Coursework Type
         </Text>
         <Radio.Group
           value={assignmentType}
@@ -180,11 +180,11 @@ export function AssignmentInfoStep({
                   <Group gap="xs" mb={4}>
                     <IconFileText size={18} color="#87ceeb" />
                     <Text fw={600} c="#87ceeb">
-                      Assignment
+                      Coursework
                     </Text>
                   </Group>
                   <Text size="xs" c="dimmed">
-                    Regular assignment for students to complete
+                    Regular coursework for students to complete
                   </Text>
                 </Box>
               </Group>
@@ -262,7 +262,7 @@ export function AssignmentInfoStep({
       {/* Assignment Subtype */}
       <Box>
         <Text size="sm" fw={600} mb={8} c="#bdf052">
-          Assignment Format
+          Coursework Format
         </Text>
         <Radio.Group
           value={assignmentSubtype}

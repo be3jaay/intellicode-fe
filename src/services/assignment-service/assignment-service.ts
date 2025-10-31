@@ -13,6 +13,7 @@ import {
   SubmissionsForGradingResponse,
   SubmissionsListResponse,
   SubmitAssignmentJsonPayload,
+  UpdateAssignmentData,
 } from "./assignment-type";
 
 export class AssignmentService {
@@ -328,21 +329,14 @@ export class AssignmentService {
   /**
    * Patch (update) an assignment by ID
    * @param assignmentId - The assignment ID
-   * @param data - Partial assignment data to update
+   * @param data - Assignment data to update
    */
   public static async patchAssignment(
     assignmentId: string,
-    data: Partial<{
-      title: string;
-      description: string;
-      difficulty: string;
-      is_published: boolean;
-      points: number;
-      dueDate: string;
-    }>
-  ): Promise<void> {
+    data: UpdateAssignmentData
+  ): Promise<{ success: boolean; data: Assignment }> {
     try {
-      await apiClient.patch(`/course/assignments/${assignmentId}`, data);
+      return await apiClient.patch(`/course/assignments/${assignmentId}`, data);
     } catch (error) {
       console.error("Error patching assignment:", error);
       throw error;

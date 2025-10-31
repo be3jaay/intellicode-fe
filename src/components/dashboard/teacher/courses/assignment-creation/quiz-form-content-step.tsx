@@ -208,7 +208,7 @@ export function QuizFormContentStep({
             <IconHelp size={32} color="#ffa500" />
             <Box>
               <Text size="md" fw={600} c="#ffa500" mb={4}>
-                Quiz Form Assignment
+                Quiz Form Coursework
               </Text>
               <Text size="sm" c="dimmed">
                 Add quiz questions for students to answer online
@@ -483,16 +483,16 @@ export function QuizFormContentStep({
                                     />
                                     {(watch(`questions.${index}.options`) || [])
                                       .length > 2 && (
-                                        <ActionIcon
-                                          color="red"
-                                          variant="light"
-                                          onClick={() =>
-                                            removeMcOption(index, optIndex)
-                                          }
-                                        >
-                                          <IconTrash size={16} />
-                                        </ActionIcon>
-                                      )}
+                                      <ActionIcon
+                                        color="red"
+                                        variant="light"
+                                        onClick={() =>
+                                          removeMcOption(index, optIndex)
+                                        }
+                                      >
+                                        <IconTrash size={16} />
+                                      </ActionIcon>
+                                    )}
                                   </Group>
                                 ))}
                               </Stack>
@@ -595,16 +595,16 @@ export function QuizFormContentStep({
                                         `questions.${index}.correct_answers`
                                       ) || []
                                     ).length > 1 && (
-                                        <ActionIcon
-                                          color="red"
-                                          variant="light"
-                                          onClick={() =>
-                                            removeEnumAnswer(index, ansIndex)
-                                          }
-                                        >
-                                          <IconTrash size={16} />
-                                        </ActionIcon>
-                                      )}
+                                      <ActionIcon
+                                        color="red"
+                                        variant="light"
+                                        onClick={() =>
+                                          removeEnumAnswer(index, ansIndex)
+                                        }
+                                      >
+                                        <IconTrash size={16} />
+                                      </ActionIcon>
+                                    )}
                                   </Group>
                                 ))}
                               </Stack>

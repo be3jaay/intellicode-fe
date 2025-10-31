@@ -138,8 +138,8 @@ export function EditAssignmentDrawer({
       <form onSubmit={handleSubmit}>
         <Stack gap="lg">
           <TextInput
-            label="Assignment Title"
-            placeholder="Enter assignment title"
+            label="Coursework Title"
+            placeholder="Enter coursework title"
             required
             value={formData.title}
             onChange={(e) =>

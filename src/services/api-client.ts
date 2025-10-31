@@ -125,11 +125,16 @@ class ApiClient {
     isRetry: boolean = false
   ): Promise<T> {
     // Check if this is a Next.js API route or a backend endpoint
-    const isNextJsRoute = NEXTJS_API_ROUTES.some(route => endpoint.startsWith(route));
-    
-    let baseURL = process.env.NEXT_PUBLIC_API_BASE_URL || process.env.NEXT_LOCAL_API_BASE_URL || "http://localhost:8000";
+    const isNextJsRoute = NEXTJS_API_ROUTES.some((route) =>
+      endpoint.startsWith(route)
+    );
+
+    let baseURL =
+      process.env.NEXT_PUBLIC_API_BASE_URL ||
+      process.env.NEXT_LOCAL_API_BASE_URL ||
+      "http://localhost:8000";
     // Remove trailing slash if present
-    baseURL = baseURL.replace(/\/+$/, '');
+    baseURL = baseURL.replace(/\/+$/, "");
     const url = isNextJsRoute ? endpoint : `${baseURL}${endpoint}`;
 
     const defaultHeaders: Record<string, string> = {};
@@ -181,13 +186,11 @@ class ApiClient {
           }
         }
 
-        // Throw error to stop execution (but only log if not on public route)
         const error = new Error("Session expired. Please login again.");
         if (typeof window !== "undefined") {
           const currentPath = window.location.pathname;
           const isPublicRoute = PUBLIC_ROUTES.includes(currentPath);
           if (isPublicRoute) {
-            // Silently fail on public routes
             throw error;
           }
         }
@@ -208,7 +211,23 @@ class ApiClient {
       throw error;
     }
 
-    return response.json();
+    const contentType = response.headers.get("content-type");
+    const contentLength = response.headers.get("content-length");
+
+    if (
+      response.status === 204 ||
+      contentLength === "0" ||
+      !contentType?.includes("application/json")
+    ) {
+      return {} as T;
+    }
+
+    try {
+      return await response.json();
+    } catch (error) {
+      console.warn("Failed to parse JSON response, returning empty object");
+      return {} as T;
+    }
   }
 
   async get<T>(endpoint: string, options?: RequestInit): Promise<T> {

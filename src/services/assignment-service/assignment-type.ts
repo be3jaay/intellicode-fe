@@ -13,6 +13,20 @@ export type CreateQuizForm = {
   attachment?: File | null;
 };
 
+export type UpdateAssignmentData = {
+  title: string;
+  description: string;
+  assignmentType: "assignment" | "activity" | "exam";
+  assignmentSubtype: "quiz_form" | "code_sandbox" | "file_upload";
+  difficulty: "easy" | "medium" | "hard";
+  points: number;
+  dueDate: string;
+  is_published: boolean;
+  secured_browser: boolean;
+  questions?: AssignmentQuestion[];
+  starterCode?: string | null;
+};
+
 export type SubmitAssignmentData = {
   answers: {
     question_id: string;
@@ -211,10 +225,10 @@ export type GradeSubmissionData = {
   mark_as_graded: boolean;
 };
 // Import submission types
-export type { 
-    Submission, 
-    SubmissionResponse, 
-    SubmissionsListResponse,
-    SubmitAssignmentJsonPayload,
-    Answer,
+export type {
+  Submission,
+  SubmissionResponse,
+  SubmissionsListResponse,
+  SubmitAssignmentJsonPayload,
+  Answer,
 } from "@/types/assignment";

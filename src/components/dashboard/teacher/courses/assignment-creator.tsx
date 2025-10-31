@@ -350,7 +350,7 @@ export function AssignmentCreator({
         >
           <Stepper active={activeStep} color="violet">
             <Stepper.Step
-              label="Assignment Info"
+              label="Coursework Info"
               description="Basic details"
               styles={{
                 stepLabel: {
@@ -374,8 +374,8 @@ export function AssignmentCreator({
                 assignmentSubtype === "file_upload"
                   ? "Add materials"
                   : assignmentSubtype === "quiz_form"
-                    ? "Create questions"
-                    : "Add code"
+                  ? "Create questions"
+                  : "Add code"
               }
               styles={{
                 stepLabel: {

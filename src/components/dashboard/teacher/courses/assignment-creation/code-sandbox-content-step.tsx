@@ -40,7 +40,7 @@ export function CodeSandboxContentStep({
           <IconCode size={32} color="#34d399" />
           <Box>
             <Text size="md" fw={600} c="#34d399" mb={4}>
-              Code Sandbox Assignment
+              Code Sandbox Coursework
             </Text>
             <Text size="sm" c="dimmed">
               Configure starter code and test cases for students

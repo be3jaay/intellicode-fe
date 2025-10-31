@@ -27,17 +27,13 @@ export function usePatchAssignment() {
       data,
     }: {
       assignmentId: string;
-      data: Partial<{
-        title: string;
-        description: string;
-        difficulty: string;
-        is_published: boolean;
-        points: number;
-        dueDate: string;
-      }>;
+      data: UpdateAssignmentData;
     }) => AssignmentService.patchAssignment(assignmentId, data),
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["assignments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["assignment", variables.assignmentId],
+      });
     },
     onError: (error: ErrorResponse) => {
       console.error(error.message);
@@ -57,6 +53,7 @@ import {
   AssignmentScoresResponse,
   SubmissionsForGradingResponse,
   GradeSubmissionData,
+  UpdateAssignmentData,
 } from "@/services/assignment-service/assignment-type";
 import { ErrorResponse } from "@/services/course-service/course-type";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";

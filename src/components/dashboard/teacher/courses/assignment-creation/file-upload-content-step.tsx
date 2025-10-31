@@ -40,7 +40,7 @@ export function FileUploadContentStep({
           <IconUpload size={32} color="#87ceeb" />
           <Box>
             <Text size="md" fw={600} c="#87ceeb" mb={4}>
-              File Upload Assignment
+              File Upload Coursework
             </Text>
             <Text size="sm" c="dimmed">
               Add reference materials or instructions for students to download
