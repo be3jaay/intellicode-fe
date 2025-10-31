@@ -231,10 +231,6 @@ export default function AssignmentPage() {
   return (
     <Box
       style={{
-        minHeight: "100vh",
-        background: assignment.secured_browser
-          ? "linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%)"
-          : "#1a1a1a",
         padding: assignment.secured_browser ? "1rem" : "2rem",
       }}
     >

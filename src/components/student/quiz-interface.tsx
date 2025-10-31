@@ -80,6 +80,7 @@ export function QuizInterface({
   courseId,
 }: QuizInterfaceProps) {
   const queryClient = useQueryClient();
+  const [hasStarted, setHasStarted] = useState(isSecured); // Auto-start if secured
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>([]);
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -92,10 +93,11 @@ export function QuizInterface({
   const [hasAutoSubmitted, setHasAutoSubmitted] = useState(false);
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [isAutoSubmitting, setIsAutoSubmitting] = useState(false);
-  const [leaveDetectionEnabled, setLeaveDetectionEnabled] = useState(true);
+  const [leaveDetectionEnabled, setLeaveDetectionEnabled] = useState(isSecured);
 
   const { submitAssignment, isSubmitting } = useSubmitAssignment();
 
+  // Only enable leave detection if secured browser is enabled
   useLeaveDetection(async () => {
     if (!isSecured || !leaveDetectionEnabled) return;
     if (hasAutoSubmitted) {
@@ -235,7 +237,10 @@ export function QuizInterface({
         queryKey: ["assignment", assignment.id],
       });
     } catch (e) {
-      setLeaveDetectionEnabled(true);
+      // Only re-enable leave detection if it was enabled (secured mode)
+      if (isSecured) {
+        setLeaveDetectionEnabled(true);
+      }
       console.error(e);
     }
   };
@@ -257,6 +262,130 @@ export function QuizInterface({
           answers={submitScore.answers}
           courseId={courseId || undefined}
         />
+      </Center>
+    );
+  }
+
+  if (!isSecured && !hasStarted) {
+    return (
+      <Center h="70vh">
+        <Paper
+          shadow="xl"
+          p="xl"
+          radius="md"
+          style={{
+            maxWidth: "600px",
+            width: "100%",
+            background: "rgba(34, 34, 34, 0.8)",
+            border: "1px solid rgba(189, 240, 82, 0.2)",
+          }}
+        >
+          <Stack gap="xl">
+            {/* Header */}
+            <Box>
+              <Text size="xl" fw={700} c="#bdf052" mb="xs">
+                {assignment.title}
+              </Text>
+              <Text size="sm" c="dimmed" lineClamp={3}>
+                {assignment.description}
+              </Text>
+            </Box>
+
+            {/* Assignment Details */}
+            <Stack gap="md">
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Type
+                </Text>
+                <Badge
+                  size="lg"
+                  variant="light"
+                  style={{
+                    background: "rgba(189, 240, 82, 0.15)",
+                    color: "#bdf052",
+                    border: "1px solid rgba(189, 240, 82, 0.3)",
+                  }}
+                >
+                  {assignment.assignmentType}
+                </Badge>
+              </Group>
+
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Difficulty
+                </Text>
+                <Badge
+                  size="lg"
+                  variant="light"
+                  color={
+                    assignment.difficulty === "easy"
+                      ? "green"
+                      : assignment.difficulty === "medium"
+                      ? "yellow"
+                      : "red"
+                  }
+                  leftSection={<IconBrain size={14} />}
+                >
+                  {assignment.difficulty}
+                </Badge>
+              </Group>
+
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Total Points
+                </Text>
+                <Badge
+                  size="lg"
+                  variant="light"
+                  color="violet"
+                  leftSection={<IconTrophy size={14} />}
+                >
+                  {assignment.points} points
+                </Badge>
+              </Group>
+
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Questions
+                </Text>
+                <Text size="sm" fw={600} c="#e9eeea">
+                  {assignment.questions.length} questions
+                </Text>
+              </Group>
+
+              <Group justify="space-between">
+                <Text size="sm" c="dimmed">
+                  Due Date
+                </Text>
+                <Text size="sm" fw={600} c="#e9eeea">
+                  {new Date(assignment.dueDate).toLocaleString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })}
+                </Text>
+              </Group>
+            </Stack>
+
+            {/* Start Button */}
+            <Button
+              size="lg"
+              fullWidth
+              onClick={() => setHasStarted(true)}
+              leftSection={<IconCheck size={20} />}
+              style={{
+                background: "linear-gradient(135deg, #bdf052 0%, #a0d943 100%)",
+                color: "#1a1a1a",
+                fontWeight: 700,
+                fontSize: "16px",
+              }}
+            >
+              Start Quiz
+            </Button>
+          </Stack>
+        </Paper>
       </Center>
     );
   }

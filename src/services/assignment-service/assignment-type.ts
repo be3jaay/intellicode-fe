@@ -121,9 +121,19 @@ export type AssignmentAttachment = {
   filename: string;
   original_name: string;
   file_type: string;
+  category?: string;
   mime_type?: string;
   size: number;
   public_url: string;
+  storage_path?: string;
+  course_id?: string;
+  module_id?: string;
+  lesson_id?: string | null;
+  assignment_id?: string | null;
+  submission_id?: string | null;
+  description?: string | null;
+  uploaded_at?: string;
+  updated_at?: string;
 };
 
 export type Assignment = {

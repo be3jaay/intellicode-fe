@@ -267,10 +267,12 @@ class ApiClient {
     data?: any,
     options?: RequestInit
   ): Promise<T> {
+    const isFormData = data instanceof FormData;
+
     return this.request<T>(endpoint, {
       ...options,
       method: "PATCH",
-      body: data ? JSON.stringify(data) : undefined,
+      body: isFormData ? data : data ? JSON.stringify(data) : undefined,
     });
   }
 

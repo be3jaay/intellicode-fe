@@ -23,7 +23,9 @@ import {
   ActionIcon,
   Radio,
   Checkbox,
+  rem,
 } from "@mantine/core";
+import { Dropzone } from "@mantine/dropzone";
 import { DateTimePicker } from "@mantine/dates";
 import { notifications } from "@mantine/notifications";
 import {
@@ -32,10 +34,15 @@ import {
   IconX,
   IconPlus,
   IconTrash,
+  IconUpload,
+  IconFile,
+  IconFileTypePdf,
+  IconPhoto,
 } from "@tabler/icons-react";
 import {
   useFetchAssignment,
   usePatchAssignment,
+  usePatchAssignmentAttachments,
 } from "@/hooks/query-hooks/assignment-query";
 import {
   Assignment,
@@ -55,6 +62,8 @@ export default function EditAssignmentPage() {
     error,
   } = useFetchAssignment(assignmentId);
   const { patchAssignment, isPatching } = usePatchAssignment();
+  const { patchAttachments, isPatching: isUploadingFile } =
+    usePatchAssignmentAttachments();
 
   const assignment = assignmentResponse?.data;
 
@@ -73,6 +82,7 @@ export default function EditAssignmentPage() {
   const [securedBrowser, setSecuredBrowser] = useState(false);
   const [starterCode, setStarterCode] = useState("");
   const [questions, setQuestions] = useState<AssignmentQuestion[]>([]);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Populate form when assignment data loads
   useEffect(() => {
@@ -142,6 +152,44 @@ export default function EditAssignmentPage() {
   const removeQuestion = (index: number) => {
     const updated = questions.filter((_, i) => i !== index);
     setQuestions(updated);
+  };
+
+  const handleFileUpload = async () => {
+    if (!selectedFile) {
+      notifications.show({
+        title: "No File Selected",
+        message: "Please select a file to upload",
+        color: "red",
+        icon: <IconX size={18} />,
+        autoClose: 3000,
+      });
+      return;
+    }
+
+    try {
+      await patchAttachments({
+        assignmentId,
+        file: selectedFile,
+      });
+
+      notifications.show({
+        title: "Success!",
+        message: "File uploaded successfully",
+        color: "green",
+        icon: <IconCheck size={18} />,
+        autoClose: 3000,
+      });
+
+      setSelectedFile(null);
+    } catch (err: any) {
+      notifications.show({
+        title: "Error",
+        message: err.message || "Failed to upload file. Please try again.",
+        color: "red",
+        icon: <IconX size={18} />,
+        autoClose: 5000,
+      });
+    }
   };
 
   const handleSubmit = async () => {
@@ -446,6 +494,212 @@ export default function EditAssignmentPage() {
               }}
             />
           </Stack>
+
+          {/* File Attachments (Only for file_upload) */}
+          {assignment.assignmentSubtype === "file_upload" && (
+            <>
+              <Divider color="rgba(189, 240, 82, 0.1)" />
+              <Stack gap="md">
+                <Text size="lg" fw={600} c="#bdf052">
+                  Assignment Files
+                </Text>
+
+                {/* Current File or Empty State */}
+                {selectedFile ? (
+                  <Card
+                    p="sm"
+                    radius="md"
+                    style={{
+                      background: "rgba(26, 26, 26, 0.6)",
+                      border: "1px solid rgba(189, 240, 82, 0.2)",
+                    }}
+                  >
+                    <Group justify="space-between">
+                      <Group gap="sm">
+                        <Box
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: 6,
+                            background: "rgba(189, 240, 82, 0.15)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            border: "1px solid rgba(189, 240, 82, 0.3)",
+                          }}
+                        >
+                          <IconFile size={16} color="#bdf052" />
+                        </Box>
+                        <Box>
+                          <Text size="sm" fw={500} c="#e9eeea">
+                            {selectedFile.name}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {(selectedFile.size / 1024).toFixed(2)} KB
+                          </Text>
+                        </Box>
+                      </Group>
+                      <ActionIcon
+                        variant="light"
+                        size="md"
+                        color="red"
+                        onClick={() => setSelectedFile(null)}
+                      >
+                        <IconTrash size={16} />
+                      </ActionIcon>
+                    </Group>
+                  </Card>
+                ) : assignment.attachments &&
+                  assignment.attachments.filter(
+                    (a) => a.assignment_id && !a.submission_id
+                  ).length > 0 ? (
+                  <Stack gap="sm">
+                    {assignment.attachments
+                      .filter(
+                        (attachment) =>
+                          attachment.assignment_id && !attachment.submission_id
+                      )
+                      .map((attachment) => (
+                        <Card
+                          key={attachment.id}
+                          p="sm"
+                          radius="md"
+                          style={{
+                            background: "rgba(26, 26, 26, 0.6)",
+                            border: "1px solid rgba(189, 240, 82, 0.2)",
+                          }}
+                        >
+                          <Group gap="sm">
+                            <Box
+                              style={{
+                                width: 32,
+                                height: 32,
+                                borderRadius: 6,
+                                background: "rgba(189, 240, 82, 0.15)",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "1px solid rgba(189, 240, 82, 0.3)",
+                              }}
+                            >
+                              <IconFile size={16} color="#bdf052" />
+                            </Box>
+                            <Box>
+                              <Text size="sm" fw={500} c="#e9eeea">
+                                {attachment.original_name}
+                              </Text>
+                              <Text size="xs" c="dimmed">
+                                {(attachment.size / 1024).toFixed(2)} KB •{" "}
+                                {attachment.file_type.toUpperCase()}
+                              </Text>
+                            </Box>
+                          </Group>
+                        </Card>
+                      ))}
+                  </Stack>
+                ) : (
+                  <Box
+                    p="md"
+                    style={{
+                      background: "rgba(34, 34, 34, 0.4)",
+                      border: "1px solid rgba(189, 240, 82, 0.1)",
+                      borderRadius: 8,
+                      textAlign: "center",
+                    }}
+                  >
+                    <Text size="sm" c="dimmed">
+                      No files uploaded yet
+                    </Text>
+                  </Box>
+                )}
+
+                {/* Dropzone for Upload */}
+                <Dropzone
+                  onDrop={(files) => {
+                    if (files.length > 0) {
+                      setSelectedFile(files[0]);
+                    }
+                  }}
+                  onReject={(files) => {
+                    notifications.show({
+                      title: "File Rejected",
+                      message: "Please upload a valid file",
+                      color: "red",
+                      icon: <IconX size={18} />,
+                      autoClose: 3000,
+                    });
+                  }}
+                  maxSize={50 * 1024 * 1024} // 50MB
+                  loading={isUploadingFile}
+                  styles={{
+                    root: {
+                      background: "rgba(26, 26, 26, 0.6)",
+                      border: "2px dashed rgba(189, 240, 82, 0.3)",
+                      borderRadius: 8,
+                      "&:hover": {
+                        borderColor: "rgba(189, 240, 82, 0.5)",
+                        background: "rgba(26, 26, 26, 0.8)",
+                      },
+                    },
+                  }}
+                >
+                  <Group
+                    justify="center"
+                    gap="xl"
+                    style={{ minHeight: rem(120), pointerEvents: "none" }}
+                  >
+                    <Dropzone.Accept>
+                      <IconUpload
+                        size={52}
+                        color="rgba(189, 240, 82, 1)"
+                        stroke={1.5}
+                      />
+                    </Dropzone.Accept>
+                    <Dropzone.Reject>
+                      <IconX
+                        size={52}
+                        color="rgba(246, 172, 174, 1)"
+                        stroke={1.5}
+                      />
+                    </Dropzone.Reject>
+                    <Dropzone.Idle>
+                      <IconFileTypePdf
+                        size={52}
+                        color="rgba(189, 240, 82, 0.6)"
+                        stroke={1.5}
+                      />
+                    </Dropzone.Idle>
+
+                    <div>
+                      <Text size="lg" inline c="#e9eeea" fw={500}>
+                        Drag file here or click to select
+                      </Text>
+                      <Text size="sm" c="dimmed" inline mt={7}>
+                        Upload assignment file (max 50MB)
+                      </Text>
+                    </div>
+                  </Group>
+                </Dropzone>
+
+                {/* Upload Button */}
+                {selectedFile && (
+                  <Button
+                    leftSection={<IconUpload size={16} />}
+                    onClick={handleFileUpload}
+                    disabled={isUploadingFile}
+                    loading={isUploadingFile}
+                    style={{
+                      background: "rgba(189, 240, 82, 0.15)",
+                      color: "#bdf052",
+                      border: "1px solid rgba(189, 240, 82, 0.3)",
+                    }}
+                  >
+                    {isUploadingFile ? "Uploading..." : "Upload File"}
+                  </Button>
+                )}
+              </Stack>
+            </>
+          )}
 
           {/* Starter Code (Only for code_sandbox) */}
           {assignment.assignmentSubtype === "code_sandbox" && (

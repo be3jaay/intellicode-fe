@@ -194,3 +194,30 @@ export function useUndoSubmission() {
     isError: isError,
   };
 }
+
+export function usePatchAssignmentAttachments() {
+  const queryClient = useQueryClient();
+  const { mutateAsync, isPending, isError } = useMutation({
+    mutationFn: ({
+      assignmentId,
+      file,
+    }: {
+      assignmentId: string;
+      file: File;
+    }) => AssignmentService.patchAssignmentAttachments(assignmentId, file),
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["assignments"] });
+      queryClient.invalidateQueries({
+        queryKey: ["assignment", variables.assignmentId],
+      });
+    },
+    onError: (error: ErrorResponse) => {
+      console.error(error.message);
+    },
+  });
+  return {
+    patchAttachments: mutateAsync,
+    isPatching: isPending,
+    isError: isError,
+  };
+}

@@ -342,4 +342,28 @@ export class AssignmentService {
       throw error;
     }
   }
+
+  /**
+   * Patch assignment attachments (add new file to assignment)
+   * @param assignmentId - The assignment ID
+   * @param file - The file to upload
+   */
+  public static async patchAssignmentAttachments(
+    assignmentId: string,
+    file: File
+  ): Promise<{ success: boolean; data: Assignment }> {
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // Don't set Content-Type header - browser will set it with boundary
+      return await apiClient.patch(
+        `/course/assignments/${assignmentId}/attachments`,
+        formData
+      );
+    } catch (error) {
+      console.error("Error patching assignment attachments:", error);
+      throw error;
+    }
+  }
 }
